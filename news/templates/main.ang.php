@@ -1,17 +1,71 @@
-<div id="leftcontent_news" class="leftcontent_news" ngapp="News">
+<div id="leftcontent_news" class="leftcontent_news" ng-app="News">
 	<div id="feed_wrapper">
-		<div id="feeds">
-			<ul data-id="0">
-				<li class="subscriptions <?php if($lastViewedFeedType == OCA\News\FeedType::SUBSCRIPTIONS) { echo "active"; }; ?>">
-					<a class="title" href="#" ><?php echo $l->t('New articles'); ?></a>
-					<span class="unread_items_counter"><?php echo $starredCount ?></span>
+		<div id="feeds" ng-controller="FeedController">
+			<ul>
+				<li ng-class="{true: active}[isFeedActive(feedType.Subscriptions, 0)]" 
+				    class="subscriptions">
+					<a class="title" 
+					    href="#" ><?php echo $l->t('New articles'); ?></a>
+					<span class="unread_items_counter">
+						{{ getUnreadCount(feedTypes.Subscriptions, 0) }}
+					</span>
 					<span class="buttons">
-				    	<button class="svg action feeds_markread" title="<?php echo $l->t('Mark all read'); ?>"></button>
+				    	<button class="svg action feeds_markread" 
+				    	        title="<?php echo $l->t('Mark all read'); ?>"></button>
 				    </span>
 				</li>
-				<li class="starred <?php if($lastViewedFeedType == OCA\News\FeedType::STARRED) { echo "active"; }; ?>">
-					<a class="title" href="#" ><?php echo $l->t('Starred'); ?></a>
-					<span class="unread_items_counter"><?php echo $starredCount ?></span>
+				<li ng-class="{true: active}[isFeedActive(feedType.Starred, 0)]" 
+				    class="starred">
+					<a class="title" 
+					   href="#" ><?php echo $l->t('Starred'); ?></a>
+					<span class="unread_items_counter">
+						{{ getUnreadCount(feedTypes.Starred, 0) }}
+					</span>
+				</li>
+
+				<!-- Folders -->
+				<li ng-class="{true: active}[isFeedActive(feedType.Folder, folder.id)]" 
+				    ng-repeat="folder in folders"
+				    class="folder">
+    				<a style="background-image: url(' . $favicon . ');" 
+    				   href="#" class="title">{{folder.name}}</a>
+					<span class="unread_items_counter">
+						{{ getUnreadCount(feedTypes.Folder, folder.id) }}
+					</span>
+					<span class="buttons">
+						<button class="svg action feeds_delete" title="' . $l->t('Delete feed') . '"></button>
+						<button class="svg action feeds_markread" title="' . $l->t('Mark all read') . '"></button>
+					</span>
+					<ul class="collapsable">
+						<li ng-class="{true: active}[isFeedActive(feed.Feed, feed.id)]" 
+						    ng-repeat="feed in feeds|feedInFolder:folder.id"
+						    class="feed">
+		    				<a style="background-image: url(' . $favicon . ');" 
+		    				   href="#" class="title">{{feed.name}}</a>
+							<span class="unread_items_counter">
+								{{ getUnreadCount(feedTypes.Feed, feed.id) }}
+							</span>
+							<span class="buttons">
+								<button class="svg action feeds_delete" title="' . $l->t('Delete feed') . '"></button>
+								<button class="svg action feeds_markread" title="' . $l->t('Mark all read') . '"></button>
+							</span>
+						</li>
+					</ul>
+				</li>
+
+				<!-- Feeds -->
+				<li ng-class="{true: active}[isFeedActive(feed.Feed, feed.id)]" 
+				    ng-repeat="feed in feeds|feedInFolder:0"
+				    class="feed">
+    				<a style="background-image: url(' . $favicon . ');" 
+    				   href="#" class="title">{{feed.name}}</a>
+					<span class="unread_items_counter">
+						{{ getUnreadCount(feedTypes.Feed, feed.id) }}
+					</span>
+					<span class="buttons">
+						<button class="svg action feeds_delete" title="' . $l->t('Delete feed') . '"></button>
+						<button class="svg action feeds_markread" title="' . $l->t('Mark all read') . '"></button>
+					</span>
 				</li>
 			</ul>
 		</div>

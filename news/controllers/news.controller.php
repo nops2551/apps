@@ -37,11 +37,9 @@ class NewsController extends Controller {
 
 
     public function feedPage(){
-        $this->addScript('main');
-        $this->addScript('news');
-        $this->addScript('menu');
-        $this->addScript('items');
+        $this->add3rdPartyScript('angular-1.0.2/angular');
         $this->add3rdPartyScript('jquery.timeago');
+        $this->addScript('app');
 
         $this->addStyle('news');
         $this->addStyle('settings');
@@ -54,7 +52,7 @@ class NewsController extends Controller {
         $lastViewedFeedId = isset( $_GET['feedid'] ) ? $_GET['feedid'] : (int)$this->getUserValue('lastViewedFeed');
         $lastViewedFeedType = isset( $_GET['feedid'] ) ? FeedType::FEED : (int)$this->getUserValue('lastViewedFeedType');
         
-	$showAll = $this->getUserValue('showAll');
+        $showAll = $this->getUserValue('showAll');
 
         if( $lastViewedFeedId === null || $lastViewedFeedType === null) {
             $lastViewedFeedId = $feedMapper->mostRecent();
@@ -87,7 +85,7 @@ class NewsController extends Controller {
             'items' => $items
         );
 
-        $this->render('main', $params, array('items' => true));
+        $this->render('main.ang', $params, array('items' => true));
     }
 
 
