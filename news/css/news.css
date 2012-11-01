@@ -431,6 +431,12 @@ div.add_parentfolder {
         height: 100%;
     }
 
+        #rightcontent #feed_items:after {
+            content: '';
+            display: block;
+            height: 100%;
+        }
+
         #rightcontent #feed_items.loading {
             background-image: url('%webroot%/core/img/loading.gif');
             background-position: center;
