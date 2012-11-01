@@ -83,14 +83,14 @@
             name: 'test',
             unreadCount: 5,
             folder: 0,
-            icon: 'url(http://feeds.feedburner.com/favicon.ico);'
+            icon: 'url(http://feeds.feedburner.com/favicon.ico)'
           });
           this.add({
             id: 2,
             name: 'sub',
             unreadCount: 5,
             folder: 1,
-            icon: 'url(http://feeds.feedburner.com/favicon.ico);'
+            icon: 'url(http://feeds.feedburner.com/favicon.ico)'
           });
         }
 
@@ -280,7 +280,6 @@
           this.feedModel = feedModel;
           this.folderModel = folderModel;
           this.activeFeed = activeFeed;
-          console.log(this.folderModel);
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = feedType;
