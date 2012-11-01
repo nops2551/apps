@@ -88,7 +88,7 @@
           this.add({
             id: 2,
             name: 'sub',
-            unreadCount: 5,
+            unreadCount: 7,
             folder: 1,
             icon: 'url(http://feeds.feedburner.com/favicon.ico)'
           });
@@ -105,6 +105,33 @@
     var showAll;
     return showAll = true;
   });
+
+  angular.module('News').factory('PersistenceNews', [
+    'Persistence', '$http', function(Persistence, $http) {
+      var PersistenceNews;
+      PersistenceNews = (function(_super) {
+
+        __extends(PersistenceNews, _super);
+
+        function PersistenceNews($http) {
+          PersistenceNews.__super__.constructor.call(this, 'news', $http);
+        }
+
+        PersistenceNews.prototype.collapseFolder = function(folderId, value) {
+          var data;
+          data = {
+            folderId: folderId,
+            opened: value
+          };
+          return this.post('collapsefolder', data);
+        };
+
+        return PersistenceNews;
+
+      })(Persistence);
+      return new PersistenceNews($http);
+    }
+  ]);
 
   angular.module('News').factory('FeedType', function() {
     var feedType;
@@ -186,53 +213,46 @@
     }
   ]);
 
-  angular.module('News').factory('Persistence', [
-    '$http', function($http) {
-      var Persistence;
-      Persistence = (function() {
+  angular.module('News').factory('Persistence', function() {
+    var Persistence;
+    return Persistence = (function() {
 
-        function Persistence($http) {
-          this.$http = $http;
+      function Persistence(appName, $http) {
+        this.appName = appName;
+        this.$http = $http;
+      }
+
+      Persistence.prototype.post = function(file, data, callback) {
+        var headers, url;
+        if (data == null) {
+          data = {};
         }
-
-        Persistence.prototype.collapseFolder = function(value) {
-          var data;
-          data = {
-            opened: value
-          };
-          return this.post('collapsefolder', data);
+        if (!callback) {
+          callback = function() {};
+        }
+        url = OC.filePath(this.appName, 'ajax', file + '.php');
+        headers = {
+          requesttoken: OC.Request.Token
         };
+        return this.$http({
+          method: 'POST',
+          url: url,
+          data: data,
+          headers: headers
+        }).success(function(data, status, headers, config) {
+          return callback(data);
+        }).error(function(data, status, headers, config) {
+          console.warn('Error occured: ');
+          console.warn(status);
+          console.warn(headers);
+          return console.warn(config);
+        });
+      };
 
-        Persistence.prototype.post = function(file, data, callback) {
-          var headers, url;
-          if (!callback) {
-            callback = function() {};
-          }
-          url = OC.filePath('news', 'ajax', file + '.php');
-          headers = {
-            requesttoken: OC.Request.Token
-          };
-          return $http({
-            method: 'POST',
-            url: url,
-            data: data,
-            headers: headers
-          }).success(function(data, status, headers, config) {
-            return callback(data);
-          }).error(function(data, status, headers, config) {
-            console.warn('Error occured: ');
-            console.warn(status);
-            console.warn(headers);
-            return console.warn(config);
-          });
-        };
+      return Persistence;
 
-        return Persistence;
-
-      })();
-      return new Persistence($http);
-    }
-  ]);
+    })();
+  });
 
   angular.module('News').factory('Model', function() {
     var Model;
@@ -316,19 +336,19 @@
   ]);
 
   angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'Persistence', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, Persistence) {
+    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews) {
       var FeedController;
       FeedController = (function(_super) {
 
         __extends(FeedController, _super);
 
-        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persitence) {
+        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence) {
           var _this = this;
           this.$scope = $scope;
           this.feedModel = feedModel;
           this.folderModel = folderModel;
           this.activeFeed = activeFeed;
-          this.persitence = persitence;
+          this.persistence = persistence;
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = feedType;
@@ -336,7 +356,7 @@
             var folder;
             folder = _this.folderModel.getItemById(folderId);
             folder.open = !folder.open;
-            return _this.persitence.collapseFolder(folder.open);
+            return _this.persistence.collapseFolder(folder.id, folder.open);
           };
           this.$scope.isFeedActive = function(type, id) {
             if (type === _this.activeFeed.type && id === _this.activeFeed.id) {
@@ -354,7 +374,7 @@
         return FeedController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, Persistence);
+      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews);
     }
   ]);
 

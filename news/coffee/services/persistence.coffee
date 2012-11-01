@@ -1,26 +1,21 @@
-angular.module('News').factory 'Persistence', ['$http', ($http) ->
+angular.module('News').factory 'Persistence', () ->
+
 	class Persistence
 
-		constructor: (@$http) ->
+		constructor: (@appName, @$http) ->
 
 
-		collapseFolder: (value) ->
-			data =
-				opened: value
-			@post('collapsefolder', data)
-
-
-		post: (file, data, callback) ->
+		post: (file, data={}, callback) ->
 			if not callback
 				callback = ->
 
-			url = OC.filePath('news', 'ajax', file + '.php')
+			url = OC.filePath(@appName, 'ajax', file + '.php')
 
 			# csrf token
 			headers =
 				requesttoken: OC.Request.Token
 			
-			$http({method: 'POST', url: url, data: data, headers: headers}).
+			@$http({method: 'POST', url: url, data: data, headers: headers}).
 			success((data, status, headers, config) ->
 				callback(data)
 			).
@@ -30,7 +25,3 @@ angular.module('News').factory 'Persistence', ['$http', ($http) ->
 				console.warn(headers)
 				console.warn(config)
 
-
-	return new Persistence($http)
-
-]

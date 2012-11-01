@@ -1,10 +1,10 @@
 angular.module('News').controller 'FeedController', 
-['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'Persistence' 
-(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, Persistence) ->
+['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews',
+(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews) ->
 
 	class FeedController extends Controller
 
-		constructor: (@$scope, @feedModel, @folderModel, feedType, @activeFeed, @persitence) ->
+		constructor: (@$scope, @feedModel, @folderModel, feedType, @activeFeed, @persistence) ->
 
 			@$scope.feeds = @feedModel.getItems()
 			@$scope.folders = @folderModel.getItems()
@@ -13,7 +13,7 @@ angular.module('News').controller 'FeedController',
 			@$scope.toggleFolder = (folderId) =>
 				folder = @folderModel.getItemById(folderId)
 				folder.open = !folder.open
-				@persitence.collapseFolder(folder.open)
+				@persistence.collapseFolder(folder.id, folder.open)
 
 			@$scope.isFeedActive = (type, id) =>
 				if type == @activeFeed.type && id == @activeFeed.id
@@ -27,5 +27,5 @@ angular.module('News').controller 'FeedController',
 				# TODO: send load command to server
 
 
-	return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, Persistence)
+	return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews)
 ]
