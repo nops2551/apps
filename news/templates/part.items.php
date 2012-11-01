@@ -27,13 +27,13 @@
 			<ul class="secondary_item_utils">
 				<li class="share_link">
 					<a class="share" data-item-type="news_item" 
-					   data-item="{{item.id}}" title="<?php echo $l->t('Share') ?>" 
-					   data-possible-permissions="<?php echo (OCP\Share::PERMISSION_READ | OCP\Share::PERMISSION_SHARE) ?>" 
+					   data-item="{{item.id}}" title="<?php p($l->t('Share')) ?>" 
+					   data-possible-permissions="<?php p((OCP\Share::PERMISSION_READ | OCP\Share::PERMISSION_SHARE)) ?>" 
 					   href="#">
-					   <?php echo $l->t('Share') ?>
+					   <?php p($l->t('Share')) ?>
 		  			</a>
 		  		</li>
-				<li class="keep_unread"><?php echo $l->t('Keep unread'); ?><input type="checkbox" /></li>
+				<li class="keep_unread"><?php p($l->t('Keep unread')); ?><input type="checkbox" /></li>
 			</ul>
 		</div>
 	</li>

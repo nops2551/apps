@@ -6,7 +6,7 @@
     ng-repeat="folder in folders"
     class="folder">
     <button class="collapsable_trigger" 
-            title="<?php echo $l->t('Collapse');?>"
+            title="<?php p($l->t('Collapse'));?>"
             ng-click="toggleFolder(folder.id)"></button>
 	<a href="#" 
 	   class="title"
@@ -19,15 +19,15 @@
 	<span class="buttons">
 		<button ng-click="delete(feedType.Folder, folder.id)"
 		        class="svg action feeds_delete" 
-		        title="<?php echo $l->t('Delete folder'); ?>"></button>
+		        title="<?php p($l->t('Delete folder')); ?>"></button>
 		<button class="svg action feeds_edit" 
 				ng-click="rename(feedType.Folder, folder.id)"
-		        title="<?php echo $l->t('Rename folder'); ?>"></button>
+		        title="<?php p($l->t('Rename folder')); ?>"></button>
 		<button class="svg action feeds_markread" 
 		        ng-click="markRead(feedType.Folder, folder.id)"
-		        title="<?php echo $l->t('Mark all read'); ?>"></button>
+		        title="<?php p($l->t('Mark all read')); ?>"></button>
 	</span>
 	<ul>
-		<?php echo $this->inc('part.listfeed', array('folderId' => 'folder.id')); ?>
+		<?php print_unescaped($this->inc('part.listfeed', array('folderId' => 'folder.id'))); ?>
 	</ul>
 </li>

@@ -1,5 +1,5 @@
 <li ng-class="{active: isFeedActive(feedType.Feed, feed.id)}" 
-    ng-repeat="feed in feeds|feedInFolder:<?php echo $_['folderId']; ?>"
+    ng-repeat="feed in feeds|feedInFolder:<?php p($_['folderId']); ?>"
     class="feed">
 	<a ng-style="{backgroundImage: feed.icon}"
 	   href="#"
@@ -13,9 +13,9 @@
 	<span class="buttons">
 		<button ng-click="delete(feedType.Feed, feed.id)"
 		        class="svg action feeds_delete" 
-		        title="<?php echo $l->t('Delete feed'); ?>"></button>
+		        title="<?php p($l->t('Delete feed')); ?>"></button>
 		<button class="svg action feeds_markread" 
 		        ng-click="markRead(feedType.Feed, feed.id)"
-		        title="<?php echo $l->t('Mark all read'); ?>"></button>
+		        title="<?php p($l->t('Mark all read')); ?>"></button>
 	</span>
 </li>

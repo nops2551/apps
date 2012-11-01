@@ -85,7 +85,7 @@ class NewsController extends Controller {
             'items' => $items
         );
 
-        $this->render('main.ang', $params, array('items' => true));
+        $this->render('main', $params, array('items' => true));
     }
 
 
