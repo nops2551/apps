@@ -6,6 +6,8 @@ angular.module('News').controller 'FeedController',
 
 		constructor: (@$scope, @feedModel, @folderModel, feedType, @activeFeed) ->
 
+			console.log @folderModel
+
 			@$scope.feeds = @feedModel.getItems()
 			@$scope.folders = @folderModel.getItems()
 			@$scope.feedType = feedType

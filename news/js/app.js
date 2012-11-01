@@ -125,25 +125,26 @@
         __extends(FolderModel, _super);
 
         function FolderModel() {
-          return FolderModel.__super__.constructor.apply(this, arguments);
+          FolderModel.__super__.constructor.call(this);
+          this.add({
+            id: 1,
+            name: 'folder',
+            unreadCount: 5,
+            open: true,
+            hasChildren: true
+          });
+          this.add({
+            id: 2,
+            name: 'testfolder',
+            unreadCount: 5,
+            open: true,
+            hasChildren: false
+          });
         }
 
         return FolderModel;
 
       })(Model);
-      ({
-        constructor: function() {
-          constructor.__super__.constructor.call(this);
-          return this.add({
-            id: 1,
-            type: 1,
-            name: 'test',
-            unreadCount: 5,
-            open: true,
-            hasChildren: true
-          });
-        }
-      });
       return new FolderModel();
     }
   ]);
@@ -279,6 +280,7 @@
           this.feedModel = feedModel;
           this.folderModel = folderModel;
           this.activeFeed = activeFeed;
+          console.log(this.folderModel);
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = feedType;
