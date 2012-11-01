@@ -3,17 +3,24 @@ angular.module('News').factory 'Model', ->
 	class Model
 
 		constructor: () ->
-			@_items = []
-			@_itemIds = {}
+			@items = []
+			@itemIds = {}
 
 
 		add: (item) ->
-			@_items.push(item)
-			@_itemIds[item.id] = item
+			# check if we need to update or create the item
+			if item.id of @itemIds
+				@update(item)
+			else
+				@items.push(item)
+				@itemIds[item.id] = item
 
 
 		update: (item) ->
-			@_items = item
+			updatedItem = @items[item.id]
+			for key, value of item
+				if key != 'id'
+					updatedItem[key] = value
 
 
 		removeById: (id) ->
@@ -23,12 +30,12 @@ angular.module('News').factory 'Model', ->
 					removeItemIndex = counter
 			if removeItemIndex != null
 				@items.splice(removeItemId, 1)
-				delete @_itemIds[id]
+				delete @itemIds[id]
 
 
 		getItemById: (id) ->
-			return @_itemIds[id]
+			return @itemIds[id]
 
 
 		getItems: () ->
-			return @_items
+			return @items

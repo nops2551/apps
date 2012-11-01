@@ -1,5 +1,6 @@
 <li ng-class="{active: isFeedActive(feedType.Feed, feed.id)}" 
     ng-repeat="feed in feeds|feedInFolder:<?php p($_['folderId']); ?>"
+    ng-show="feed.show==true"
     class="feed">
 	<a ng-style="{backgroundImage: feed.icon}"
 	   href="#"

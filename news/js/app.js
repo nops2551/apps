@@ -81,8 +81,9 @@
           this.add({
             id: 1,
             name: 'test',
-            unreadCount: 5,
+            unreadCount: 0,
             folder: 0,
+            show: true,
             icon: 'url(http://feeds.feedburner.com/favicon.ico)'
           });
           this.add({
@@ -90,6 +91,7 @@
             name: 'sub',
             unreadCount: 7,
             folder: 1,
+            show: true,
             icon: 'url(http://feeds.feedburner.com/favicon.ico)'
           });
         }
@@ -103,7 +105,9 @@
 
   angular.module('News').factory('ShowAll', function() {
     var showAll;
-    return showAll = true;
+    return showAll = {
+      showAll: true
+    };
   });
 
   angular.module('News').factory('PersistenceNews', [
@@ -156,14 +160,12 @@
           this.add({
             id: 1,
             name: 'folder',
-            unreadCount: 5,
             open: true,
             hasChildren: true
           });
           this.add({
             id: 2,
             name: 'testfolder',
-            unreadCount: 5,
             open: true,
             hasChildren: false
           });
@@ -205,7 +207,8 @@
             id: 1,
             title: 'test',
             isImportant: true,
-            isRead: false
+            isRead: false,
+            feed: 1
           });
         }
       });
@@ -259,17 +262,32 @@
     return Model = (function() {
 
       function Model() {
-        this._items = [];
-        this._itemIds = {};
+        this.items = [];
+        this.itemIds = {};
       }
 
       Model.prototype.add = function(item) {
-        this._items.push(item);
-        return this._itemIds[item.id] = item;
+        if (item.id in this.itemIds) {
+          return this.update(item);
+        } else {
+          this.items.push(item);
+          return this.itemIds[item.id] = item;
+        }
       };
 
       Model.prototype.update = function(item) {
-        return this._items = item;
+        var key, updatedItem, value, _results;
+        updatedItem = this.items[item.id];
+        _results = [];
+        for (key in item) {
+          value = item[key];
+          if (key !== 'id') {
+            _results.push(updatedItem[key] = value);
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
       };
 
       Model.prototype.removeById = function(id) {
@@ -284,21 +302,28 @@
         }
         if (removeItemIndex !== null) {
           this.items.splice(removeItemId, 1);
-          return delete this._itemIds[id];
+          return delete this.itemIds[id];
         }
       };
 
       Model.prototype.getItemById = function(id) {
-        return this._itemIds[id];
+        return this.itemIds[id];
       };
 
       Model.prototype.getItems = function() {
-        return this._items;
+        return this.items;
       };
 
       return Model;
 
     })();
+  });
+
+  angular.module('News').factory('StarredCount', function() {
+    var starredCount;
+    return starredCount = {
+      count: 0
+    };
   });
 
   angular.module('News').factory('Updater', ['$rootScope', '$http', function($rootScope, $http) {}]);
@@ -336,22 +361,25 @@
   ]);
 
   angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews) {
+    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll) {
       var FeedController;
       FeedController = (function(_super) {
 
         __extends(FeedController, _super);
 
-        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence) {
+        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence, starredCount, showAll) {
           var _this = this;
           this.$scope = $scope;
           this.feedModel = feedModel;
           this.folderModel = folderModel;
+          this.feedType = feedType;
           this.activeFeed = activeFeed;
           this.persistence = persistence;
+          this.starredCount = starredCount;
+          this.showAll = showAll;
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
-          this.$scope.feedType = feedType;
+          this.$scope.feedType = this.feedType;
           this.$scope.toggleFolder = function(folderId) {
             var folder;
             folder = _this.folderModel.getItemById(folderId);
@@ -367,66 +395,134 @@
           };
           this.$scope.loadFeed = function(type, id) {
             _this.activeFeed.id = id;
-            return _this.activeFeed.type = type;
+            _this.activeFeed.type = type;
+            return _this.$scope.triggerHideRead();
           };
+          this.$scope.getUnreadCount = function(type, id) {
+            return _this.getUnreadCount(type, id);
+          };
+          this.$scope.triggerHideRead = function() {
+            return _this.triggerHideRead();
+          };
+          this.$scope.$on('triggerHideRead', function() {
+            return _this.triggerHideRead();
+          });
+          this.triggerHideRead();
         }
+
+        FeedController.prototype.triggerHideRead = function() {
+          var feed, folder, _i, _j, _len, _len1, _ref, _ref1, _results;
+          _ref = this.feedModel.getItems();
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            feed = _ref[_i];
+            if (this.showAll.showAll === false && feed.unreadCount === 0) {
+              feed.show = false;
+              console.log('hid feed' + feed.name);
+            } else {
+              feed.show = true;
+            }
+          }
+          _ref1 = this.folderModel.getItems();
+          _results = [];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            folder = _ref1[_j];
+            if (this.showAll.showAll === false && folder.unreadCount === 0) {
+              _results.push(folder.show = false);
+            } else {
+              _results.push(folder.show = true);
+            }
+          }
+          return _results;
+        };
+
+        FeedController.prototype.getUnreadCount = function(type, id) {
+          var counter, feed, _i, _j, _len, _len1, _ref, _ref1;
+          switch (type) {
+            case this.feedType.Feed:
+              return this.feedModel.getItemById(id).unreadCount;
+            case this.feedType.Folder:
+              counter = 0;
+              _ref = this.feedModel.getItems();
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                feed = _ref[_i];
+                if (feed.folder === id) {
+                  counter += feed.unreadCount;
+                }
+              }
+              return counter;
+            case this.feedType.Starred:
+              return this.starredCount.count;
+            case this.feedType.Subscriptions:
+              counter = 0;
+              _ref1 = this.feedModel.getItems();
+              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                feed = _ref1[_j];
+                counter += feed.unreadCount;
+              }
+              return counter;
+          }
+        };
 
         return FeedController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews);
+      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll);
     }
   ]);
 
   angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', function(Controller, $scope, ShowAll) {
+    'Controller', '$scope', 'ShowAll', '$rootScope', function(Controller, $scope, ShowAll, $rootScope) {
       var SettingsController;
       SettingsController = (function(_super) {
 
         __extends(SettingsController, _super);
 
-        function SettingsController($scope, showAll) {
+        function SettingsController($scope, $rootScope, showAll) {
           var _this = this;
           this.$scope = $scope;
+          this.$rootScope = $rootScope;
           this.showAll = showAll;
           this.$scope.getShowAll = function() {
-            return _this.showAll;
+            return _this.showAll.showAll;
           };
           this.$scope.setShowAll = function(value) {
-            return _this.showAll = value;
+            _this.showAll.showAll = value;
+            return _this.$rootScope.$broadcast('triggerHideRead');
           };
         }
 
         return SettingsController;
 
       })(Controller);
-      return new SettingsController($scope, ShowAll);
+      return new SettingsController($scope, $rootScope, ShowAll);
     }
   ]);
 
   angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', function(Controller, $scope, ShowAll) {
+    'Controller', '$scope', 'ShowAll', '$rootScope', function(Controller, $scope, ShowAll, $rootScope) {
       var SettingsController;
       SettingsController = (function(_super) {
 
         __extends(SettingsController, _super);
 
-        function SettingsController($scope, showAll) {
+        function SettingsController($scope, $rootScope, showAll) {
           var _this = this;
           this.$scope = $scope;
+          this.$rootScope = $rootScope;
           this.showAll = showAll;
           this.$scope.getShowAll = function() {
-            return _this.showAll;
+            return _this.showAll.showAll;
           };
           this.$scope.setShowAll = function(value) {
-            return _this.showAll = value;
+            _this.showAll.showAll = value;
+            return _this.$rootScope.$broadcast('triggerHideRead');
           };
         }
 
         return SettingsController;
 
       })(Controller);
-      return new SettingsController($scope, ShowAll);
+      return new SettingsController($scope, $rootScope, ShowAll);
     }
   ]);
 

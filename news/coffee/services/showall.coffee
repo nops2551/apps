@@ -1,2 +1,3 @@
 angular.module('News').factory 'ShowAll', () ->
-	showAll = true
+	showAll = 
+		showAll: true
