@@ -415,9 +415,8 @@
           _ref = this.feedModel.getItems();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             feed = _ref[_i];
-            if (this.showAll.showAll === false && feed.unreadCount === 0) {
+            if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Feed, feed.id) === 0) {
               feed.show = false;
-              console.log('hid feed' + feed.name);
             } else {
               feed.show = true;
             }
@@ -426,7 +425,7 @@
           _results = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             folder = _ref1[_j];
-            if (this.showAll.showAll === false && folder.unreadCount === 0) {
+            if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Folder, folder.id) === 0) {
               _results.push(folder.show = false);
             } else {
               _results.push(folder.show = true);

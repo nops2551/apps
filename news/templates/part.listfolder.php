@@ -4,6 +4,7 @@
 	collapsable: folder.hasChildren	
 }" 
     ng-repeat="folder in folders"
+    ng-show="folder.show"
     class="folder">
     <button class="collapsable_trigger" 
             title="<?php p($l->t('Collapse'));?>"

@@ -45,14 +45,13 @@ StarredCount, ShowAll) ->
 
 		triggerHideRead: () ->
 			for feed in @feedModel.getItems()
-				if @showAll.showAll == false && feed.unreadCount == 0
+				if @showAll.showAll == false && @getUnreadCount(@feedType.Feed, feed.id) == 0
 					feed.show = false
-					console.log 'hid feed' + feed.name
 				else
 					feed.show = true
 
 			for folder in @folderModel.getItems()
-				if @showAll.showAll == false && folder.unreadCount == 0
+				if @showAll.showAll == false && @getUnreadCount(@feedType.Folder, folder.id) == 0
 					folder.show = false
 				else
 					folder.show = true
