@@ -17,6 +17,19 @@ angular.module('News').factory 'PersistenceNews', ['Persistence', '$http', (Pers
 			super('news', $http)
 
 
+		markRead: (itemId, isRead) ->
+			if isRead
+				status = 'read'
+			else
+				status = 'unread'
+
+			data =
+				itemId: itemId
+				status: status
+
+			@post('setitemstatus', data)
+
+
 		collapseFolder: (folderId, value) ->
 			data =
 				folderId: folderId

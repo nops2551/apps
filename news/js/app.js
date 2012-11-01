@@ -13,11 +13,18 @@
 
 
 (function() {
-  var scrolling,
+  var markingRead, scrolling,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module('News', []).run(function() {});
+  angular.module('News', []).config(function($provide) {
+    $provide.value('MarkReadTimeout', 500);
+    return $provide.value('ScrollTimeout', 500);
+  });
+
+  $(document).ready(function() {
+    return $('#feed_items').scrollTop(0);
+  });
 
   /*
   # ownCloud - News app
@@ -33,21 +40,41 @@
 
   scrolling = true;
 
-  angular.module('News').directive('whenScrolled', function() {
-    return function(scope, elm, attr) {
-      var scrollTimeout;
-      scrollTimeout = 500;
-      return elm.bind('scroll', function() {
-        if (scrolling) {
-          scrolling = false;
-          setTimeout(function() {
-            return scrolling = true;
-          }, scrollTimeout);
-          return scope.$apply(attr.whenScrolled);
-        }
-      });
-    };
-  });
+  markingRead = true;
+
+  angular.module('News').directive('whenScrolled', [
+    '$rootScope', 'MarkReadTimeout', 'ScrollTimeout', function($rootScope, MarkReadTimeout, ScrollTimeout) {
+      return function(scope, elm, attr) {
+        return elm.bind('scroll', function() {
+          if (scrolling) {
+            scrolling = false;
+            setTimeout(function() {
+              return scrolling = true;
+            }, ScrollTimeout);
+            if (markingRead) {
+              markingRead = false;
+              setTimeout(function() {
+                markingRead = true;
+                return $(elm).find('.feed_item:not(.read)').each(function() {
+                  var feed, id, offset;
+                  id = parseInt($(this).data('id'), 10);
+                  feed = parseInt($(this).data('feed'), 10);
+                  offset = $(this).position().top;
+                  if (offset <= 0) {
+                    return $rootScope.$broadcast('read', {
+                      id: id,
+                      feed: feed
+                    });
+                  }
+                });
+              }, MarkReadTimeout);
+            }
+            return scope.$apply(attr.whenScrolled);
+          }
+        });
+      };
+    }
+  ]);
 
   /*
   # ownCloud - News app
@@ -223,6 +250,20 @@
           PersistenceNews.__super__.constructor.call(this, 'news', $http);
         }
 
+        PersistenceNews.prototype.markRead = function(itemId, isRead) {
+          var data, status;
+          if (isRead) {
+            status = 'read';
+          } else {
+            status = 'unread';
+          }
+          data = {
+            itemId: itemId,
+            status: status
+          };
+          return this.post('setitemstatus', data);
+        };
+
         PersistenceNews.prototype.collapseFolder = function(folderId, value) {
           var data;
           data = {
@@ -351,6 +392,7 @@
             isImportant: true,
             isRead: false,
             feed: 1,
+            keptUnread: false,
             body: '<p>this is a test</p>'
           });
           this.add({
@@ -359,6 +401,7 @@
             isImportant: true,
             isRead: false,
             feed: 1,
+            keptUnread: false,
             body: '<p>this is a second test</p>'
           });
           this.add({
@@ -367,6 +410,7 @@
             isImportant: true,
             isRead: false,
             feed: 1,
+            keptUnread: false,
             body: '<p>this is a second test</p>'
           });
           this.add({
@@ -375,6 +419,7 @@
             isImportant: true,
             isRead: false,
             feed: 1,
+            keptUnread: false,
             body: '<p>this is a second test</p>'
           });
           this.add({
@@ -383,6 +428,7 @@
             isImportant: true,
             isRead: false,
             feed: 1,
+            keptUnread: false,
             body: '<p>this is a second test</p>'
           });
         }
@@ -590,65 +636,56 @@
 
 
   angular.module('News').controller('ItemController', [
-    'Controller', '$scope', 'ItemModel', 'ActiveFeed', function(Controller, $scope, ItemModel, ActiveFeed) {
+    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel) {
       var ItemController;
       ItemController = (function(_super) {
 
         __extends(ItemController, _super);
 
-        function ItemController($scope, itemModel, activeFeed) {
+        function ItemController($scope, itemModel, activeFeed, persistence, feedModel) {
           var _this = this;
           this.$scope = $scope;
           this.itemModel = itemModel;
           this.activeFeed = activeFeed;
+          this.persistence = persistence;
+          this.feedModel = feedModel;
           this.batchSize = 4;
           this.loaderQueue = 0;
           this.$scope.items = this.itemModel.getItems();
-          this.$scope.loadNext = function() {
-            return console.info('scrolled');
+          this.$scope.scroll = function() {};
+          this.$scope.$on('read', function(scope, params) {
+            return _this.$scope.markRead(params.id, params.feed);
+          });
+          this.$scope.markRead = function(itemId, feedId) {
+            var feed, item;
+            item = _this.itemModel.getItemById(itemId);
+            feed = _this.feedModel.getItemById(feedId);
+            if (!item.keptUnread) {
+              item.isRead = true;
+              feed.unReadCount -= 1;
+              return _this.persistence.markRead(itemId, true);
+            }
+          };
+          this.$scope.keepUnread = function(itemId, feedId) {
+            var feed, item;
+            item = _this.itemModel.getItemById(itemId);
+            feed = _this.feedModel.getItemById(feedId);
+            item.keptUnread = !item.keptUnread;
+            if (item.isRead) {
+              item.isRead = false;
+              feed.unReadCount += 1;
+              return _this.persistence.markRead(itemId, false);
+            }
+          };
+          this.$scope.isKeptUnread = function(itemId) {
+            return _this.itemModel.getItemById(itemId).keptUnread;
           };
         }
-
-        ItemController.prototype.getItemOffset = function() {
-          return this.$scope.items.length;
-        };
-
-        ItemController.prototype.incrementLoaderQueue = function() {
-          console.log(this.loaderQueue);
-          return this.loaderQueue += 1;
-        };
-
-        ItemController.prototype.loaderQueueIsFull = function() {
-          if (this.loaderQueue > this.batchSize) {
-            this.loaderQueue = 0;
-            return true;
-          } else {
-            return false;
-          }
-        };
-
-        ItemController.prototype.pushBatch = function() {
-          var i, item, _i, _ref, _results;
-          _results = [];
-          for (i = _i = 1, _ref = this.batchSize; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
-            console.log('filling');
-            item = {
-              id: i + this.getOffset(),
-              title: 'test ' + i,
-              isImportant: true,
-              isRead: false,
-              feed: 1,
-              body: '<p>this is a second test</p>'
-            };
-            _results.push(this.$scope.items.push(item));
-          }
-          return _results;
-        };
 
         return ItemController;
 
       })(Controller);
-      return new ItemController($scope, ItemModel, ActiveFeed);
+      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel);
     }
   ]);
 

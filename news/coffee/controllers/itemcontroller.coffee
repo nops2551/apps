@@ -10,48 +10,58 @@
 ###
 
 angular.module('News').controller 'ItemController', 
-['Controller', '$scope', 'ItemModel', 'ActiveFeed',
-(Controller, $scope, ItemModel, ActiveFeed) ->
+['Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel'
+(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel) ->
 
 	class ItemController extends Controller
 
-		constructor: (@$scope, @itemModel, @activeFeed) ->
-
+		constructor: (@$scope, @itemModel, @activeFeed, @persistence, @feedModel) ->
 
 			@batchSize = 4
 			@loaderQueue = 0
 			
-
 			@$scope.items = @itemModel.getItems()
 
-			@$scope.loadNext = =>
-				console.info 'scrolled'
+
+			@$scope.scroll = =>
+				#console.log 'scrolling'
 
 
-		getItemOffset: () ->
-			return @$scope.items.length
+			@$scope.$on 'read', (scope, params) =>
+				@$scope.markRead(params.id, params.feed)
 
 
-		incrementLoaderQueue: ->
-			console.log @loaderQueue
-			@loaderQueue += 1
+			@$scope.markRead = (itemId, feedId) =>
+				item = @itemModel.getItemById(itemId)
+				feed = @feedModel.getItemById(feedId)
+				
+				if not item.keptUnread
+					item.isRead = true
+					feed.unReadCount -= 1
+
+					@persistence.markRead(itemId, true)
 
 
-		loaderQueueIsFull: ->
-			if @loaderQueue > @batchSize
-				@loaderQueue = 0
-				return true
-			else
-				return false
+			@$scope.keepUnread = (itemId, feedId) =>
+				item = @itemModel.getItemById(itemId)
+				feed = @feedModel.getItemById(feedId)
+
+				
+				item.keptUnread = !item.keptUnread
+
+				if item.isRead
+					item.isRead = false
+					feed.unReadCount += 1
+
+					@persistence.markRead(itemId, false)
 
 
-		pushBatch: ->
-			for i in [1..@batchSize]
-				console.log 'filling'
-				item = {id: i+@getOffset(), title: 'test ' + i, isImportant: true, isRead: false, feed: 1, body: '<p>this is a second test</p>'}
-				@$scope.items.push(item)
+			@$scope.isKeptUnread = (itemId) =>
+				return @itemModel.getItemById(itemId).keptUnread
 
 
 
-	return new ItemController($scope, ItemModel, ActiveFeed)
+
+	return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews
+								FeedModel)
 ]

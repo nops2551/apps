@@ -1,7 +1,9 @@
 <ul>
 	<li class="feed_item"
 		ng-repeat="item in items"
-		ng-class="{read: item.isRead}">
+		ng-class="{read: item.isRead}"
+		data-id="{{item.id}}"
+    	data-feed="{{item.feed}}">
 		<h2 class="item_date">
 			<time class="timeago" datetime=""></time>
 		</h2>
@@ -16,12 +18,15 @@
 		</div>
 
 		<h1 class="item_title">
-			<a target="_blank" href="{{item.url}}">{{item.title}}</a>
+			<a ng-click="markRead(item.id, item.feed)" 
+				target="_blank" href="{{item.url}}">{{item.title}}</a>
 		</h1>
 
 		<h2 class="item_author">from <a href="#" class="from_feed">{{item.title}}</a> by {{item.author}}</h2>
 
-		<div class="body" ng-bind-html-unsafe="item.body"></div>
+		<div class="body" 
+				ng-click="markRead(item.id, item.feed)" 
+				ng-bind-html-unsafe="item.body"></div>
 
 		<div class="bottom_utils">
 			<ul class="secondary_item_utils">
@@ -33,7 +38,9 @@
 					   <?php p($l->t('Share')) ?>
 		  			</a>
 		  		</li>
-				<li class="keep_unread"><?php p($l->t('Keep unread')); ?><input type="checkbox" /></li>
+				<li ng-click="keepUnread(item.id, item.feed)" class="keep_unread"><?php p($l->t('Keep unread')); ?>
+					<input type="checkbox" ng-checked="isKeptUnread(item.id)"/>
+				</li>
 			</ul>
 		</div>
 	</li>
