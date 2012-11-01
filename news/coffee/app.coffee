@@ -9,4 +9,13 @@
 #
 ###
 
-angular.module('News', [])
+angular.module('News', []).run ->
+
+    # Add padding to the bottom to be able to scroll the last element beyond
+    # the top area
+    #setScro
+    #$itemList = $ '#feed_items'
+    #padding = $itemList.height() - 80;
+    #$('#feed_items').children('ul').css('padding-bottom', padding + 'px');
+
+

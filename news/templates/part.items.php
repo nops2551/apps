@@ -1,4 +1,4 @@
-<ul ng-controller="ItemController">
+<ul>
 	<li class="feed_item"
 		ng-repeat="item in items"
 		ng-class="{read: item.isRead}">

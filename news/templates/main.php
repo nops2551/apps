@@ -82,8 +82,8 @@
 	</div>
 
 	<div id="rightcontent" class="rightcontent">
-		<div id="feed_items">
-			<?php //echo $this->inc("part.shared");
+		<div id="feed_items" ng-controller="ItemController" when-scrolled="loadNext()">
+			<?php
 				print_unescaped($this->inc("part.items"));
 			?>
 		</div>

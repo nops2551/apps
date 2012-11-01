@@ -13,10 +13,11 @@
 
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
+  var scrolling,
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module('News', []);
+  angular.module('News', []).run(function() {});
 
   /*
   # ownCloud - News app
@@ -30,7 +31,23 @@
   */
 
 
-  angular.module('News', []);
+  scrolling = true;
+
+  angular.module('News').directive('whenScrolled', function() {
+    return function(scope, elm, attr) {
+      var scrollTimeout;
+      scrollTimeout = 500;
+      return elm.bind('scroll', function() {
+        if (scrolling) {
+          scrolling = false;
+          setTimeout(function() {
+            return scrolling = true;
+          }, scrollTimeout);
+          return scope.$apply(attr.whenScrolled);
+        }
+      });
+    };
+  });
 
   /*
   # ownCloud - News app
@@ -327,24 +344,52 @@
         __extends(ItemModel, _super);
 
         function ItemModel() {
-          return ItemModel.__super__.constructor.apply(this, arguments);
+          ItemModel.__super__.constructor.call(this);
+          this.add({
+            id: 1,
+            title: 'test1',
+            isImportant: true,
+            isRead: false,
+            feed: 1,
+            body: '<p>this is a test</p>'
+          });
+          this.add({
+            id: 2,
+            title: 'test2',
+            isImportant: true,
+            isRead: false,
+            feed: 1,
+            body: '<p>this is a second test</p>'
+          });
+          this.add({
+            id: 3,
+            title: 'test3',
+            isImportant: true,
+            isRead: false,
+            feed: 1,
+            body: '<p>this is a second test</p>'
+          });
+          this.add({
+            id: 4,
+            title: 'test4',
+            isImportant: true,
+            isRead: false,
+            feed: 1,
+            body: '<p>this is a second test</p>'
+          });
+          this.add({
+            id: 5,
+            title: 'test5',
+            isImportant: true,
+            isRead: false,
+            feed: 1,
+            body: '<p>this is a second test</p>'
+          });
         }
 
         return ItemModel;
 
       })(Model);
-      ({
-        constructor: function() {
-          constructor.__super__.constructor.call(this);
-          return this.add({
-            id: 1,
-            title: 'test',
-            isImportant: true,
-            isRead: false,
-            feed: 1
-          });
-        }
-      });
       return new ItemModel();
     }
   ]);
@@ -509,6 +554,18 @@
 
   angular.module('News').factory('Updater', ['$rootScope', '$http', function($rootScope, $http) {}]);
 
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
   angular.module('News').factory('Controller', function() {
     var Controller;
     return Controller = (function() {
@@ -540,11 +597,53 @@
         __extends(ItemController, _super);
 
         function ItemController($scope, itemModel, activeFeed) {
+          var _this = this;
           this.$scope = $scope;
           this.itemModel = itemModel;
           this.activeFeed = activeFeed;
+          this.batchSize = 4;
+          this.loaderQueue = 0;
           this.$scope.items = this.itemModel.getItems();
+          this.$scope.loadNext = function() {
+            return console.info('scrolled');
+          };
         }
+
+        ItemController.prototype.getItemOffset = function() {
+          return this.$scope.items.length;
+        };
+
+        ItemController.prototype.incrementLoaderQueue = function() {
+          console.log(this.loaderQueue);
+          return this.loaderQueue += 1;
+        };
+
+        ItemController.prototype.loaderQueueIsFull = function() {
+          if (this.loaderQueue > this.batchSize) {
+            this.loaderQueue = 0;
+            return true;
+          } else {
+            return false;
+          }
+        };
+
+        ItemController.prototype.pushBatch = function() {
+          var i, item, _i, _ref, _results;
+          _results = [];
+          for (i = _i = 1, _ref = this.batchSize; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
+            console.log('filling');
+            item = {
+              id: i + this.getOffset(),
+              title: 'test ' + i,
+              isImportant: true,
+              isRead: false,
+              feed: 1,
+              body: '<p>this is a second test</p>'
+            };
+            _results.push(this.$scope.items.push(item));
+          }
+          return _results;
+        };
 
         return ItemController;
 
