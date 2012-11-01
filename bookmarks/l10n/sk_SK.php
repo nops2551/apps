@@ -23,10 +23,10 @@
 "Hide" => "Skyť",
 "Show" => "Zobraziť",
 "Related Tags" => "Podobné značky",
+"Settings" => "Nastavenia",
 "You have no bookmarks" => "Nemáte záložky",
 "Bookmarklet <br />" => "Záložky <br />",
 "Import bookmarks" => "Importovať záložky",
-"Bookmark html file" => "Html súbor záložiek",
 "Import" => "Import",
 "Export bookmarks" => "Export záložiek",
 "Export" => "Export"

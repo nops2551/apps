@@ -45,6 +45,7 @@
 			</div>
 		</div>
 
+
 		<div id="feed_settings" ng-controller="SettingsController">
 			<ul class="controls">
 				<li id="addfeedfolder" title="<?php p($l->t('Add feed or folder')) ?>">
