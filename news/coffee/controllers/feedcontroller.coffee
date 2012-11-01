@@ -1,3 +1,14 @@
+###
+# ownCloud - News app
+#
+# @author Bernhard Posselt
+# Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+#
+# This file is licensed under the Affero General Public License version 3 or later.
+# See the COPYING-README file
+#
+###
+
 angular.module('News').controller 'FeedController', 
 ['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews',
 'StarredCount', 'ShowAll'
@@ -9,14 +20,14 @@ StarredCount, ShowAll) ->
 		constructor: (@$scope, @feedModel, @folderModel, @feedType, @activeFeed, 
 					  @persistence, @starredCount, @showAll) ->
 
-			@$scope.feeds = @feedModel.getItems()
-			@$scope.folders = @folderModel.getItems()
-			@$scope.feedType = @feedType
 			@showSubscriptions = true
 			@showStarred = true
 			@triggerHideRead()
-			
 
+			@$scope.feeds = @feedModel.getItems()
+			@$scope.folders = @folderModel.getItems()
+			@$scope.feedType = @feedType
+			
 			@$scope.toggleFolder = (folderId) =>
 				folder = @folderModel.getItemById(folderId)
 				folder.open = !folder.open
@@ -55,7 +66,6 @@ StarredCount, ShowAll) ->
 
 			# feeds
 			for feed in @feedModel.getItems()
-				# only hide feeds with 0 unread items
 				if @showAll.showAll == false &&	@getUnreadCount(@feedType.Feed, feed.id) == 0
 
 					# we dont hide the selected feed and folder. But we also dont hide
@@ -71,7 +81,7 @@ StarredCount, ShowAll) ->
 			# folders
 			for folder in @folderModel.getItems()
 				if @showAll.showAll == false && @getUnreadCount(@feedType.Folder, folder.id) == 0
-					# prevent hiding when folder
+					# prevent hiding when childfeed is active
 					if (@activeFeed.type == @feedType.Folder && @activeFeed.id == folder.id) ||	preventParentFolder == folder.id
 						folder.show = true
 					else
