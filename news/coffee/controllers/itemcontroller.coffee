@@ -10,12 +10,14 @@
 ###
 
 angular.module('News').controller 'ItemController', 
-['Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel'
-(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel) ->
+['Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel',
+'StarredCount',
+(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount) ->
 
 	class ItemController extends Controller
 
-		constructor: (@$scope, @itemModel, @activeFeed, @persistence, @feedModel) ->
+		constructor: (@$scope, @itemModel, @activeFeed, @persistence, @feedModel,
+						@starredCount) ->
 
 			@batchSize = 4
 			@loaderQueue = 0
@@ -60,8 +62,18 @@ angular.module('News').controller 'ItemController',
 				return @itemModel.getItemById(itemId).keptUnread
 
 
+			@$scope.toggleImportant = (itemId) =>
+				item = @itemModel.getItemById(itemId)
+				
+				item.isImportant = !item.isImportant
+				if item.isImportant
+					@starredCount += 1
+				else
+					@starredCount -= 1
+					
+				@persistence.setImportant(itemId, item.isImportant)
 
 
 	return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews
-								FeedModel)
+								FeedModel, StarredCount)
 ]

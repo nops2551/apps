@@ -30,6 +30,19 @@ angular.module('News').factory 'PersistenceNews', ['Persistence', '$http', (Pers
 			@post('setitemstatus', data)
 
 
+		setImportant: (itemId, isImportant) ->
+			if isImportant
+				status = 'important'
+			else
+				status = 'unimportant'
+
+			data =
+				itemId: itemId
+				status: status
+
+			@post('setitemstatus', data)
+
+
 		collapseFolder: (folderId, value) ->
 			data =
 				folderId: folderId

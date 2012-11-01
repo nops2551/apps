@@ -11,6 +11,7 @@
 		<div class="utils">
 			<ul class="primary_item_utils">
 				<li ng-class="{important: item.isImportant}"
+					ng-click="toggleImportant(item.id)"
 					class="star" 
 					title="{{item.isImportant}}">
 				</li>

@@ -264,6 +264,20 @@
           return this.post('setitemstatus', data);
         };
 
+        PersistenceNews.prototype.setImportant = function(itemId, isImportant) {
+          var data, status;
+          if (isImportant) {
+            status = 'important';
+          } else {
+            status = 'unimportant';
+          }
+          data = {
+            itemId: itemId,
+            status: status
+          };
+          return this.post('setitemstatus', data);
+        };
+
         PersistenceNews.prototype.collapseFolder = function(folderId, value) {
           var data;
           data = {
@@ -636,19 +650,20 @@
 
 
   angular.module('News').controller('ItemController', [
-    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel) {
+    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', 'StarredCount', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount) {
       var ItemController;
       ItemController = (function(_super) {
 
         __extends(ItemController, _super);
 
-        function ItemController($scope, itemModel, activeFeed, persistence, feedModel) {
+        function ItemController($scope, itemModel, activeFeed, persistence, feedModel, starredCount) {
           var _this = this;
           this.$scope = $scope;
           this.itemModel = itemModel;
           this.activeFeed = activeFeed;
           this.persistence = persistence;
           this.feedModel = feedModel;
+          this.starredCount = starredCount;
           this.batchSize = 4;
           this.loaderQueue = 0;
           this.$scope.items = this.itemModel.getItems();
@@ -680,12 +695,23 @@
           this.$scope.isKeptUnread = function(itemId) {
             return _this.itemModel.getItemById(itemId).keptUnread;
           };
+          this.$scope.toggleImportant = function(itemId) {
+            var item;
+            item = _this.itemModel.getItemById(itemId);
+            item.isImportant = !item.isImportant;
+            if (item.isImportant) {
+              _this.starredCount += 1;
+            } else {
+              _this.starredCount -= 1;
+            }
+            return _this.persistence.setImportant(itemId, item.isImportant);
+          };
         }
 
         return ItemController;
 
       })(Controller);
-      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel);
+      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount);
     }
   ]);
 
