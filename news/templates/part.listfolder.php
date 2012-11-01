@@ -1,7 +1,8 @@
 <li ng-class="{
 	active: isFeedActive(feedType.Folder, folder.id), 
 	open: folder.open,
-	collapsable: folder.hasChildren	
+	collapsable: folder.hasChildren,
+	all_read: getUnreadCount(feedType.Folder, folder.id)==0
 }" 
     ng-repeat="folder in folders"
     ng-show="folder.show"

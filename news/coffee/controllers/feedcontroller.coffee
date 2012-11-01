@@ -12,6 +12,10 @@ StarredCount, ShowAll) ->
 			@$scope.feeds = @feedModel.getItems()
 			@$scope.folders = @folderModel.getItems()
 			@$scope.feedType = @feedType
+			@showSubscriptions = true
+			@showStarred = true
+			@triggerHideRead()
+			
 
 			@$scope.toggleFolder = (folderId) =>
 				folder = @folderModel.getItemById(folderId)
@@ -36,25 +40,62 @@ StarredCount, ShowAll) ->
 			@$scope.triggerHideRead = =>
 				@triggerHideRead()
 
+			@$scope.isShown = (type, id) =>
+				switch type
+					when @feedType.Subscriptions then return @showSubscriptions
+					when @feedType.Starred then return @showStarred
+
 			@$scope.$on 'triggerHideRead', =>
 				@triggerHideRead()
 
-			# init functions
-			@triggerHideRead()			
 
 
 		triggerHideRead: () ->
+			preventParentFolder = 0
+
+			# feeds
 			for feed in @feedModel.getItems()
-				if @showAll.showAll == false && @getUnreadCount(@feedType.Feed, feed.id) == 0
-					feed.show = false
+				# only hide feeds with 0 unread items
+				if @showAll.showAll == false &&	@getUnreadCount(@feedType.Feed, feed.id) == 0
+
+					# we dont hide the selected feed and folder. But we also dont hide
+					# the parent folder of the selcted feed
+					if @activeFeed.type == @feedType.Feed && @activeFeed.id == feed.id
+						feed.show = true
+						preventParentFolder = feed.folder
+					else
+						feed.show = false
 				else
 					feed.show = true
 
+			# folders
 			for folder in @folderModel.getItems()
 				if @showAll.showAll == false && @getUnreadCount(@feedType.Folder, folder.id) == 0
-					folder.show = false
+					# prevent hiding when folder
+					if (@activeFeed.type == @feedType.Folder && @activeFeed.id == folder.id) ||	preventParentFolder == folder.id
+						folder.show = true
+					else
+						folder.show = false
 				else
 					folder.show = true
+
+			# subscriptions
+			if @showAll.showAll == false && @getUnreadCount(@feedType.Subscriptions, 0) == 0
+				if @activeFeed.type == @feedType.Subscriptions
+					@showSubscriptions = true
+				else
+					@showSubscriptions = false
+			else
+				@showSubscriptions = true
+
+			# starred
+			if @showAll.showAll == false && @getUnreadCount(@feedType.Starred, 0) == 0
+				if @activeFeed.type == @feedType.Starred
+					@showStarred = true
+				else
+					@showStarred = false
+			else
+				@showStarred = true
 
 
 		getUnreadCount: (type, id) ->

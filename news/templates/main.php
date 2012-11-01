@@ -3,8 +3,12 @@
 		<div id="feed_wrapper">
 			<div id="feeds" ng-controller="FeedController">
 				<ul>
-					<li ng-class="{active: isFeedActive(feedType.Subscriptions, 0)}" 
-					    class="subscriptions">
+					<li ng-class="{
+							active: isFeedActive(feedType.Subscriptions, 0),
+							all_read: getUnreadCount(feedType.Subscriptions, 0)==0
+						}" 
+					    class="subscriptions"
+					    ng-show="isShown(feedType.Subscriptions, 0)">
 						<a class="title" 
 						   href="#" 
 						   ng-click="loadFeed(feedType.Subscriptions, 0)">
@@ -18,11 +22,15 @@
 					    	        title="<?php p($l->t('Mark all read')) ?>"></button>
 					    </span>
 					</li>
-					<li ng-class="{active: isFeedActive(feedType.Starred, 0)}" 
+					<li ng-class="{
+							active: isFeedActive(feedType.Starred, 0),
+							all_read: getUnreadCount(feedType.Starred, 0)==0
+						}" 
 					    class="starred">
 						<a class="title" 
 						   href="#"
-						   ng-click="loadFeed(feedType.Starred, 0)">
+						   ng-click="loadFeed(feedType.Starred, 0)"
+						   ng-show="isShown(feedType.Starred, 0)">
 						   <?php p($l->t('Starred')) ?>
 						</a>
 						<span class="unread_items_counter">

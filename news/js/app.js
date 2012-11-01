@@ -89,7 +89,7 @@
           this.add({
             id: 2,
             name: 'sub',
-            unreadCount: 7,
+            unreadCount: 0,
             folder: 1,
             show: true,
             icon: 'url(http://feeds.feedburner.com/favicon.ico)'
@@ -380,6 +380,9 @@
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = this.feedType;
+          this.showSubscriptions = true;
+          this.showStarred = true;
+          this.triggerHideRead();
           this.$scope.toggleFolder = function(folderId) {
             var folder;
             folder = _this.folderModel.getItemById(folderId);
@@ -404,34 +407,67 @@
           this.$scope.triggerHideRead = function() {
             return _this.triggerHideRead();
           };
+          this.$scope.isShown = function(type, id) {
+            switch (type) {
+              case _this.feedType.Subscriptions:
+                return _this.showSubscriptions;
+              case _this.feedType.Starred:
+                return _this.showStarred;
+            }
+          };
           this.$scope.$on('triggerHideRead', function() {
             return _this.triggerHideRead();
           });
-          this.triggerHideRead();
         }
 
         FeedController.prototype.triggerHideRead = function() {
-          var feed, folder, _i, _j, _len, _len1, _ref, _ref1, _results;
+          var feed, folder, preventParentFolder, _i, _j, _len, _len1, _ref, _ref1;
+          preventParentFolder = 0;
           _ref = this.feedModel.getItems();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             feed = _ref[_i];
             if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Feed, feed.id) === 0) {
-              feed.show = false;
+              if (this.activeFeed.type === this.feedType.Feed && this.activeFeed.id === feed.id) {
+                feed.show = true;
+                preventParentFolder = feed.folder;
+              } else {
+                feed.show = false;
+              }
             } else {
               feed.show = true;
             }
           }
           _ref1 = this.folderModel.getItems();
-          _results = [];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             folder = _ref1[_j];
             if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Folder, folder.id) === 0) {
-              _results.push(folder.show = false);
+              if ((this.activeFeed.type === this.feedType.Folder && this.activeFeed.id === folder.id) || preventParentFolder === folder.id) {
+                folder.show = true;
+              } else {
+                folder.show = false;
+              }
             } else {
-              _results.push(folder.show = true);
+              folder.show = true;
             }
           }
-          return _results;
+          if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Subscriptions, 0) === 0) {
+            if (this.activeFeed.type === this.feedType.Subscriptions) {
+              this.showSubscriptions = true;
+            } else {
+              this.showSubscriptions = false;
+            }
+          } else {
+            this.showSubscriptions = true;
+          }
+          if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Starred, 0) === 0) {
+            if (this.activeFeed.type === this.feedType.Starred) {
+              return this.showStarred = true;
+            } else {
+              return this.showStarred = false;
+            }
+          } else {
+            return this.showStarred = true;
+          }
         };
 
         FeedController.prototype.getUnreadCount = function(type, id) {
