@@ -1,4 +1,65 @@
+<ul ng-controller="ItemController">
+	<li class="feed_item"
+		ng-repeat="item in items"
+		ng-class="{read: item.isRead}">
+		<h2 class="item_date">
+			<time class="timeago" datetime=""></time>
+		</h2>
+		
+		<div class="utils">
+			<ul class="primary_item_utils">
+				<li ng-class="{important: item.isImportant}"
+					class="star" 
+					title="{{item.isImportant}}">
+				</li>
+			</ul>
+		</div>
+
+		<h1 class="item_title">
+			<a target="_blank" href="{{item.url}}">{{item.title}}</a>
+		</h1>
+
+		<h2 class="item_author">from <a href="#" class="from_feed">{{item.title}}</a> by {{item.author}}</h2>
+
+		<div class="body" ng-bind-html-unsafe="item.body"></div>
+
+		<div class="bottom_utils">
+			<ul class="secondary_item_utils">
+				<li class="share_link">
+					<a class="share" data-item-type="news_item" 
+					   data-item="{{item.id}}" title="<?php echo $l->t('Share') ?>" 
+					   data-possible-permissions="<?php echo (OCP\Share::PERMISSION_READ | OCP\Share::PERMISSION_SHARE) ?>" 
+					   href="#">
+					   <?php echo $l->t('Share') ?>
+		  			</a>
+		  		</li>
+				<li class="keep_unread"><?php echo $l->t('Keep unread'); ?><input type="checkbox" /></li>
+			</ul>
+		</div>
+	</li>
+</ul>
+
+
+<!--echo '<h2 class="item_date"><time class="timeago" datetime="' .
+			date('c', $item->getDate()) . '">' . date('F j, Y, g:i a', $item->getDate()) .  '</time>' . '</h2>';-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <?php
+/*
 
 $items = isset($_['items']) ? $_['items'] : '';
 $lastViewedFeedType = isset($_['lastViewedFeedType']) ? $_['lastViewedFeedType'] : '';
@@ -17,7 +78,7 @@ foreach($items as $item) {
 		$startTitle = $l->t('Mark as unimportant');
 	} else {
 		$starClass = '';
-		$startTitle = $l->t('Mark as important');
+		$startTitle = ;
 	}
 
 	echo '<li class="feed_item ' . $newsItemClass .'" data-id="' . $item->getId() . '" data-feedid="' . $item->getFeedId() . '">';
@@ -64,3 +125,4 @@ foreach($items as $item) {
 
 	}
 echo '</ul>';
+*/

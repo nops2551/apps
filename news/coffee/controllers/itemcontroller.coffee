@@ -1,10 +1,13 @@
 angular.module('News').controller 'ItemController', 
-['Controller', '$scope', (Controller, $scope) ->
+['Controller', '$scope', 'ItemModel', 'ActiveFeed',
+(Controller, $scope, ItemModel, ActiveFeed) ->
 
-    class ItemController extends Controller
+	class ItemController extends Controller
 
-        constructor: (@$scope) ->
+		constructor: (@$scope, @itemModel, @activeFeed) ->
+			
+			@$scope.items = @itemModel.getItems()
 
 
-    return new ItemController($scope)
+	return new ItemController($scope, ItemModel, ActiveFeed)
 ]

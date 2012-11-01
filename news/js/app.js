@@ -21,6 +21,54 @@
     };
   });
 
+  angular.module('News').filter('itemInFeed', [
+    'FeedType', 'FeedModel', function(FeedType, FeedModel) {
+      return function(items, typeAndId) {
+        var feed, feedId, item, result, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
+        result = [];
+        if (typeAndId.type === FeedType.Subscriptions) {
+          return items;
+        }
+        if (typeAndId.type === FeedType.Starred) {
+          for (_i = 0, _len = items.length; _i < _len; _i++) {
+            item = items[_i];
+            if (item.isImportant) {
+              result.push(item);
+            }
+          }
+        }
+        if (typeAndId.type === FeedType.Shared) {
+          return result;
+        }
+        if (typeAndId.type === FeedType.Folder) {
+          for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
+            item = items[_j];
+            feedId = 0;
+            _ref = FeedModel.getItems();
+            for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+              feed = _ref[_k];
+              if (feed.folder = typeAndId.id) {
+                feedId = feed.id;
+              }
+            }
+            if (item.feed === feedId) {
+              result.push(item);
+            }
+          }
+        }
+        if (typeAndId.type === FeedType.Feed) {
+          for (_l = 0, _len3 = items.length; _l < _len3; _l++) {
+            item = items[_l];
+            if (item.feed === typeAndId.id) {
+              result.push(item);
+            }
+          }
+        }
+        return result;
+      };
+    }
+  ]);
+
   angular.module('News').factory('FeedModel', [
     'Model', function(Model) {
       var FeedModel;
@@ -34,13 +82,15 @@
             id: 1,
             name: 'test',
             unreadCount: 5,
-            folder: 0
+            folder: 0,
+            icon: 'url(http://feeds.feedburner.com/favicon.ico);'
           });
           this.add({
             id: 2,
             name: 'sub',
             unreadCount: 5,
-            folder: 1
+            folder: 1,
+            icon: 'url(http://feeds.feedburner.com/favicon.ico);'
           });
         }
 
@@ -50,6 +100,11 @@
       return new FeedModel();
     }
   ]);
+
+  angular.module('News').factory('ShowAll', function() {
+    var showAll;
+    return showAll = true;
+  });
 
   angular.module('News').factory('FeedType', function() {
     var feedType;
@@ -70,21 +125,36 @@
         __extends(FolderModel, _super);
 
         function FolderModel() {
-          FolderModel.__super__.constructor.call(this);
-          this.add({
-            id: 1,
-            type: 1,
-            name: 'test',
-            unreadCount: 5
-          });
+          return FolderModel.__super__.constructor.apply(this, arguments);
         }
 
         return FolderModel;
 
       })(Model);
+      ({
+        constructor: function() {
+          constructor.__super__.constructor.call(this);
+          return this.add({
+            id: 1,
+            type: 1,
+            name: 'test',
+            unreadCount: 5,
+            open: true,
+            hasChildren: true
+          });
+        }
+      });
       return new FolderModel();
     }
   ]);
+
+  angular.module('News').factory('ActiveFeed', function() {
+    var activeFeed;
+    return activeFeed = {
+      id: 0,
+      type: 3
+    };
+  });
 
   angular.module('News').factory('ItemModel', [
     'Model', function(Model) {
@@ -100,6 +170,17 @@
         return ItemModel;
 
       })(Model);
+      ({
+        constructor: function() {
+          constructor.__super__.constructor.call(this);
+          return this.add({
+            id: 1,
+            title: 'test',
+            isImportant: true,
+            isRead: false
+          });
+        }
+      });
       return new ItemModel();
     }
   ]);
@@ -165,92 +246,116 @@
   });
 
   angular.module('News').controller('ItemController', [
-    'Controller', '$scope', function(Controller, $scope) {
+    'Controller', '$scope', 'ItemModel', 'ActiveFeed', function(Controller, $scope, ItemModel, ActiveFeed) {
       var ItemController;
       ItemController = (function(_super) {
 
         __extends(ItemController, _super);
 
-        function ItemController($scope) {
+        function ItemController($scope, itemModel, activeFeed) {
           this.$scope = $scope;
+          this.itemModel = itemModel;
+          this.activeFeed = activeFeed;
+          this.$scope.items = this.itemModel.getItems();
         }
 
         return ItemController;
 
       })(Controller);
-      return new ItemController($scope);
+      return new ItemController($scope, ItemModel, ActiveFeed);
     }
   ]);
 
   angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', function(Controller, $scope, FeedModel, FeedType, FolderModel) {
+    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed) {
       var FeedController;
       FeedController = (function(_super) {
 
         __extends(FeedController, _super);
 
-        function FeedController($scope, feedModel, folderModel, feedType) {
+        function FeedController($scope, feedModel, folderModel, feedType, activeFeed) {
           var _this = this;
           this.$scope = $scope;
           this.feedModel = feedModel;
           this.folderModel = folderModel;
-          this.activeFeed = {
-            id: 3,
-            type: 0
-          };
+          this.activeFeed = activeFeed;
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = feedType;
+          this.$scope.toggleFolder = function(folderId) {
+            var folder;
+            folder = _this.folderModel.getItemById(folderId);
+            return folder.open = !folder.open;
+          };
           this.$scope.isFeedActive = function(type, id) {
             if (type === _this.activeFeed.type && id === _this.activeFeed.id) {
-              console.log("type " + type + "is active");
               return true;
             } else {
               return false;
             }
+          };
+          this.$scope.loadFeed = function(type, id) {
+            _this.activeFeed.id = id;
+            return _this.activeFeed.type = type;
           };
         }
 
         return FeedController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType);
+      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed);
     }
   ]);
 
-  angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', function(Controller, $scope, FeedModel, FeedType, FolderModel) {
-      var FeedController;
-      FeedController = (function(_super) {
+  angular.module('News').controller('SettingsController', [
+    'Controller', '$scope', 'ShowAll', function(Controller, $scope, ShowAll) {
+      var SettingsController;
+      SettingsController = (function(_super) {
 
-        __extends(FeedController, _super);
+        __extends(SettingsController, _super);
 
-        function FeedController($scope, feedModel, folderModel, feedType) {
+        function SettingsController($scope, showAll) {
           var _this = this;
           this.$scope = $scope;
-          this.feedModel = feedModel;
-          this.folderModel = folderModel;
-          this.activeFeed = {
-            id: 3,
-            type: 0
+          this.showAll = showAll;
+          this.$scope.getShowAll = function() {
+            return _this.showAll;
           };
-          this.$scope.feeds = this.feedModel.getItems();
-          this.$scope.folders = this.folderModel.getItems();
-          this.$scope.feedType = feedType;
-          this.$scope.isFeedActive = function(type, id) {
-            if (type === _this.activeFeed.type && id === _this.activeFeed.id) {
-              console.log("type " + type + "is active");
-              return true;
-            } else {
-              return false;
-            }
+          this.$scope.setShowAll = function(value) {
+            return _this.showAll = value;
           };
         }
 
-        return FeedController;
+        return SettingsController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType);
+      return new SettingsController($scope, ShowAll);
+    }
+  ]);
+
+  angular.module('News').controller('SettingsController', [
+    'Controller', '$scope', 'ShowAll', function(Controller, $scope, ShowAll) {
+      var SettingsController;
+      SettingsController = (function(_super) {
+
+        __extends(SettingsController, _super);
+
+        function SettingsController($scope, showAll) {
+          var _this = this;
+          this.$scope = $scope;
+          this.showAll = showAll;
+          this.$scope.getShowAll = function() {
+            return _this.showAll;
+          };
+          this.$scope.setShowAll = function(value) {
+            return _this.showAll = value;
+          };
+        }
+
+        return SettingsController;
+
+      })(Controller);
+      return new SettingsController($scope, ShowAll);
     }
   ]);
 

@@ -24,6 +24,8 @@ div.add_parentfolder {
     height:0;
 }
 
+.content_wrapper { height: 100%; width: 100%; }
+
 /* feed/folder list */
 #leftcontent_news {
     width: 20em;
@@ -36,7 +38,6 @@ div.add_parentfolder {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
 }
-
 
 #feed_wrapper {
     background-color: #f8f8f8;
@@ -346,18 +347,18 @@ div.add_parentfolder {
         margin-right: .3em;
     }
 
-    #feed_settings #view button {
+    #feed_settings .view button {
         padding-top: .2em;
         background-size: 80%;
         background-position: center center;
         background-repeat: no-repeat;
     }
 
-    #feed_settings #view.show_all button {
+    #feed_settings .view.show_all button {
         background-image: url('%appswebroot%/news/img/eye_all.png');
     }
 
-    #feed_settings #view.show_unread button {
+    #feed_settings .view.show_unread button {
         background-image: url('%appswebroot%/news/img/eye_unread.png');
     }
 

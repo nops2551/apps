@@ -1,4 +1,3 @@
 angular.module('News').factory 'Controller', ->
-    class Controller
-
-        constructor: () ->
+	class Controller
+		constructor: () ->
