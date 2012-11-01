@@ -27,7 +27,6 @@ if($_POST['opened'] === 'false'){
 $folderMapper = new OCA\News\FolderMapper();
 $folder = $folderMapper->find($folderId);
 $folder->setOpened($opened);
-echo $folder->getOpened();
 $success = $folderMapper->update($folder);
 
 $l = OC_L10N::get('news');
