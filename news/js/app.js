@@ -94,7 +94,7 @@
       result = [];
       for (_i = 0, _len = feeds.length; _i < _len; _i++) {
         feed = feeds[_i];
-        if (feed.folder === folderId) {
+        if (feed.folderId === folderId) {
           result.push(feed);
         }
       }
@@ -117,45 +117,44 @@
   angular.module('News').filter('itemInFeed', [
     'FeedType', 'FeedModel', function(FeedType, FeedModel) {
       return function(items, typeAndId) {
-        var feed, feedId, item, result, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
+        var feed, feedId, id, item, result, type, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
         result = [];
-        if (typeAndId.type === FeedType.Subscriptions) {
-          return items;
-        }
-        if (typeAndId.type === FeedType.Starred) {
-          for (_i = 0, _len = items.length; _i < _len; _i++) {
-            item = items[_i];
-            if (item.isImportant) {
-              result.push(item);
-            }
-          }
-        }
-        if (typeAndId.type === FeedType.Shared) {
-          return result;
-        }
-        if (typeAndId.type === FeedType.Folder) {
-          for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
-            item = items[_j];
-            feedId = 0;
-            _ref = FeedModel.getItems();
-            for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
-              feed = _ref[_k];
-              if (feed.folder = typeAndId.id) {
-                feedId = feed.id;
+        type = typeAndId.type;
+        id = typeAndId.id;
+        switch (type) {
+          case FeedType.Subscriptions:
+            return items;
+          case FeedType.Starred:
+            for (_i = 0, _len = items.length; _i < _len; _i++) {
+              item = items[_i];
+              if (item.isImportant) {
+                result.push(item);
               }
             }
-            if (item.feed === feedId) {
-              result.push(item);
+            break;
+          case FeedType.Folder:
+            for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
+              item = items[_j];
+              feedId = 0;
+              _ref = FeedModel.getItems();
+              for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+                feed = _ref[_k];
+                if (feed.folderId === id) {
+                  feedId = feed.id;
+                }
+              }
+              if (item.feedId === feedId) {
+                result.push(item);
+              }
             }
-          }
-        }
-        if (typeAndId.type === FeedType.Feed) {
-          for (_l = 0, _len3 = items.length; _l < _len3; _l++) {
-            item = items[_l];
-            if (item.feed === typeAndId.id) {
-              result.push(item);
+            break;
+          case FeedType.Feed:
+            for (_l = 0, _len3 = items.length; _l < _len3; _l++) {
+              item = items[_l];
+              if (item.feedId === id) {
+                result.push(item);
+              }
             }
-          }
         }
         return result;
       };
@@ -187,7 +186,7 @@
             id: 1,
             name: 'test',
             unreadCount: 0,
-            folder: 0,
+            folderId: 0,
             show: true,
             icon: 'url(http://feeds.feedburner.com/favicon.ico)'
           });
@@ -195,7 +194,7 @@
             id: 2,
             name: 'sub',
             unreadCount: 0,
-            folder: 1,
+            folderId: 1,
             show: true,
             icon: 'url(http://feeds.feedburner.com/favicon.ico)'
           });
@@ -341,12 +340,14 @@
           this.add({
             id: 1,
             name: 'folder',
+            show: true,
             open: true,
             hasChildren: true
           });
           this.add({
             id: 2,
             name: 'testfolder',
+            show: true,
             open: true,
             hasChildren: false
           });
@@ -404,9 +405,10 @@
             id: 1,
             title: 'test1',
             isImportant: true,
-            isRead: false,
-            feed: 1,
+            isRead: true,
+            feedId: 1,
             keptUnread: false,
+            isShown: false,
             body: '<p>this is a test</p>'
           });
           this.add({
@@ -414,8 +416,9 @@
             title: 'test2',
             isImportant: true,
             isRead: false,
-            feed: 1,
+            feedId: 1,
             keptUnread: false,
+            isShown: true,
             body: '<p>this is a second test</p>'
           });
           this.add({
@@ -423,8 +426,9 @@
             title: 'test3',
             isImportant: true,
             isRead: false,
-            feed: 1,
+            feedId: 1,
             keptUnread: false,
+            isShown: true,
             body: '<p>this is a second test</p>'
           });
           this.add({
@@ -432,8 +436,9 @@
             title: 'test4',
             isImportant: true,
             isRead: false,
-            feed: 1,
+            feedId: 1,
             keptUnread: false,
+            isShown: true,
             body: '<p>this is a second test</p>'
           });
           this.add({
@@ -441,8 +446,9 @@
             title: 'test5',
             isImportant: true,
             isRead: false,
-            feed: 1,
+            feedId: 1,
             keptUnread: false,
+            isShown: false,
             body: '<p>this is a second test</p>'
           });
         }
@@ -668,6 +674,7 @@
           this.loaderQueue = 0;
           this.$scope.items = this.itemModel.getItems();
           this.$scope.scroll = function() {};
+          this.$scope.activeFeed = this.activeFeed;
           this.$scope.$on('read', function(scope, params) {
             return _this.$scope.markRead(params.id, params.feed);
           });
@@ -700,9 +707,9 @@
             item = _this.itemModel.getItemById(itemId);
             item.isImportant = !item.isImportant;
             if (item.isImportant) {
-              _this.starredCount += 1;
+              _this.starredCount.count += 1;
             } else {
-              _this.starredCount -= 1;
+              _this.starredCount.count -= 1;
             }
             return _this.persistence.setImportant(itemId, item.isImportant);
           };
@@ -728,13 +735,13 @@
 
 
   angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll) {
+    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', 'ItemModel', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel) {
       var FeedController;
       FeedController = (function(_super) {
 
         __extends(FeedController, _super);
 
-        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence, starredCount, showAll) {
+        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence, starredCount, showAll, itemModel) {
           var _this = this;
           this.$scope = $scope;
           this.feedModel = feedModel;
@@ -744,9 +751,9 @@
           this.persistence = persistence;
           this.starredCount = starredCount;
           this.showAll = showAll;
+          this.itemModel = itemModel;
           this.showSubscriptions = true;
           this.showStarred = true;
-          this.triggerHideRead();
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = this.feedType;
@@ -765,8 +772,7 @@
           };
           this.$scope.loadFeed = function(type, id) {
             _this.activeFeed.id = id;
-            _this.activeFeed.type = type;
-            return _this.$scope.triggerHideRead();
+            return _this.activeFeed.type = type;
           };
           this.$scope.getUnreadCount = function(type, id) {
             return _this.getUnreadCount(type, id);
@@ -788,7 +794,7 @@
         }
 
         FeedController.prototype.triggerHideRead = function() {
-          var feed, folder, preventParentFolder, _i, _j, _len, _len1, _ref, _ref1;
+          var feed, folder, item, preventParentFolder, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
           preventParentFolder = 0;
           _ref = this.feedModel.getItems();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -796,7 +802,7 @@
             if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Feed, feed.id) === 0) {
               if (this.activeFeed.type === this.feedType.Feed && this.activeFeed.id === feed.id) {
                 feed.show = true;
-                preventParentFolder = feed.folder;
+                preventParentFolder = feed.folderId;
               } else {
                 feed.show = false;
               }
@@ -828,13 +834,24 @@
           }
           if (this.showAll.showAll === false && this.getUnreadCount(this.feedType.Starred, 0) === 0) {
             if (this.activeFeed.type === this.feedType.Starred) {
-              return this.showStarred = true;
+              this.showStarred = true;
             } else {
-              return this.showStarred = false;
+              this.showStarred = false;
             }
           } else {
-            return this.showStarred = true;
+            this.showStarred = true;
           }
+          _ref2 = this.itemModel.getItems();
+          _results = [];
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            item = _ref2[_k];
+            if (this.showAll.showAll === false && item.isRead) {
+              _results.push(item.isShown = false);
+            } else {
+              _results.push(item.isShown = true);
+            }
+          }
+          return _results;
         };
 
         FeedController.prototype.getUnreadCount = function(type, id) {
@@ -847,7 +864,7 @@
               _ref = this.feedModel.getItems();
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                 feed = _ref[_i];
-                if (feed.folder === id) {
+                if (feed.folderId === id) {
                   counter += feed.unreadCount;
                 }
               }
@@ -868,7 +885,7 @@
         return FeedController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll);
+      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel);
     }
   ]);
 

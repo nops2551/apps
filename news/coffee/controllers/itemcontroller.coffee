@@ -28,6 +28,7 @@ angular.module('News').controller 'ItemController',
 			@$scope.scroll = =>
 				#console.log 'scrolling'
 
+			@$scope.activeFeed = @activeFeed
 
 			@$scope.$on 'read', (scope, params) =>
 				@$scope.markRead(params.id, params.feed)
@@ -67,10 +68,10 @@ angular.module('News').controller 'ItemController',
 				
 				item.isImportant = !item.isImportant
 				if item.isImportant
-					@starredCount += 1
+					@starredCount.count += 1
 				else
-					@starredCount -= 1
-					
+					@starredCount.count -= 1
+
 				@persistence.setImportant(itemId, item.isImportant)
 
 

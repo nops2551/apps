@@ -1,9 +1,10 @@
 <ul>
 	<li class="feed_item"
-		ng-repeat="item in items"
+		ng-repeat="item in items|itemInFeed:{type: activeFeed.type, id: activeFeed.id} "
 		ng-class="{read: item.isRead}"
+		ng-show="item.isShown"
 		data-id="{{item.id}}"
-    	data-feed="{{item.feed}}">
+    	data-feed="{{item.feedId}}">
 		<h2 class="item_date">
 			<time class="timeago" datetime=""></time>
 		</h2>
@@ -19,14 +20,14 @@
 		</div>
 
 		<h1 class="item_title">
-			<a ng-click="markRead(item.id, item.feed)" 
+			<a ng-click="markRead(item.id, item.feedId)" 
 				target="_blank" href="{{item.url}}">{{item.title}}</a>
 		</h1>
 
 		<h2 class="item_author">from <a href="#" class="from_feed">{{item.title}}</a> by {{item.author}}</h2>
 
 		<div class="body" 
-				ng-click="markRead(item.id, item.feed)" 
+				ng-click="markRead(item.id, item.feedId)" 
 				ng-bind-html-unsafe="item.body"></div>
 
 		<div class="bottom_utils">
@@ -39,7 +40,7 @@
 					   <?php p($l->t('Share')) ?>
 		  			</a>
 		  		</li>
-				<li ng-click="keepUnread(item.id, item.feed)" class="keep_unread"><?php p($l->t('Keep unread')); ?>
+				<li ng-click="keepUnread(item.id, item.feedId)" class="keep_unread"><?php p($l->t('Keep unread')); ?>
 					<input type="checkbox" ng-checked="isKeptUnread(item.id)"/>
 				</li>
 			</ul>

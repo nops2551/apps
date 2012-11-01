@@ -11,18 +11,18 @@
 
 angular.module('News').controller 'FeedController', 
 ['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews',
-'StarredCount', 'ShowAll'
+'StarredCount', 'ShowAll', 'ItemModel',
 (Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews
-StarredCount, ShowAll) ->
+StarredCount, ShowAll, ItemModel) ->
 
 	class FeedController extends Controller
 
 		constructor: (@$scope, @feedModel, @folderModel, @feedType, @activeFeed, 
-					  @persistence, @starredCount, @showAll) ->
+					  @persistence, @starredCount, @showAll, @itemModel) ->
 
 			@showSubscriptions = true
 			@showStarred = true
-			@triggerHideRead()
+			#@triggerHideRead()
 
 			@$scope.feeds = @feedModel.getItems()
 			@$scope.folders = @folderModel.getItems()
@@ -42,7 +42,7 @@ StarredCount, ShowAll) ->
 			@$scope.loadFeed = (type, id) =>
 				@activeFeed.id = id
 				@activeFeed.type = type
-				@$scope.triggerHideRead()
+				#@$scope.triggerHideRead()
 				# TODO: send load command to server
 
 			@$scope.getUnreadCount = (type, id) =>
@@ -72,7 +72,7 @@ StarredCount, ShowAll) ->
 					# the parent folder of the selcted feed
 					if @activeFeed.type == @feedType.Feed && @activeFeed.id == feed.id
 						feed.show = true
-						preventParentFolder = feed.folder
+						preventParentFolder = feed.folderId
 					else
 						feed.show = false
 				else
@@ -107,6 +107,13 @@ StarredCount, ShowAll) ->
 			else
 				@showStarred = true
 
+			# items
+			for item in @itemModel.getItems()
+				if @showAll.showAll == false && item.isRead
+					item.isShown = false
+				else
+					item.isShown = true
+
 
 		getUnreadCount: (type, id) ->
 			switch type
@@ -116,7 +123,7 @@ StarredCount, ShowAll) ->
 				when @feedType.Folder
 					counter = 0
 					for feed in @feedModel.getItems()
-						if feed.folder == id
+						if feed.folderId == id
 							counter += feed.unreadCount
 					return counter
 
@@ -131,5 +138,6 @@ StarredCount, ShowAll) ->
 
 
 	return new FeedController($scope, FeedModel, FolderModel, FeedType, 
-								ActiveFeed, PersistenceNews, StarredCount, ShowAll)
+								ActiveFeed, PersistenceNews, StarredCount, ShowAll,
+								ItemModel)
 ]
