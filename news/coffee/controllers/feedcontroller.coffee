@@ -11,17 +11,20 @@
 
 angular.module('News').controller 'FeedController', 
 ['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews',
-'StarredCount', 'ShowAll', 'ItemModel',
+'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry',
 (Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews
-StarredCount, ShowAll, ItemModel) ->
+StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
 
 	class FeedController extends Controller
 
 		constructor: (@$scope, @feedModel, @folderModel, @feedType, @activeFeed, 
-					  @persistence, @starredCount, @showAll, @itemModel) ->
+					  @persistence, @starredCount, @showAll, @itemModel,
+					  @garbageRegistry) ->
 
 			@showSubscriptions = true
 			@showStarred = true
+
+			@clearCallbacks = {}
 			@triggerHideRead()
 
 			@$scope.feeds = @feedModel.getItems()
@@ -107,18 +110,8 @@ StarredCount, ShowAll, ItemModel) ->
 			else
 				@showStarred = true
 
-			@clearReadItems()
+			@garbageRegistry.clear()
 
-
-		clearReadItems: () ->
-			# delete read items for performance reasons when showAll == false
-			if @showAll.showAll == false
-				removeIds = []
-				for item in @itemModel.getItems()
-					if item.isRead
-						removeIds.push(item.id)
-				for id in removeIds
-					@itemModel.removeById(id)
 
 
 		getUnreadCount: (type, id) ->
@@ -145,5 +138,5 @@ StarredCount, ShowAll, ItemModel) ->
 
 	return new FeedController($scope, FeedModel, FolderModel, FeedType, 
 								ActiveFeed, PersistenceNews, StarredCount, ShowAll,
-								ItemModel)
+								ItemModel, GarbageRegistry)
 ]

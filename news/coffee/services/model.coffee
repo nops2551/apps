@@ -36,12 +36,17 @@ angular.module('News').factory 'Model', ->
 
 		removeById: (id) ->
 			removeItemIndex = null
-			for item, counter in @items
+			counter = 0
+			for item in @items
 				if item.id == id
 					removeItemIndex = counter
+					break
+				counter += 1
+
 			if removeItemIndex != null
 				@items.splice(removeItemIndex, 1)
 				delete @itemIds[id]
+
 
 
 		removeByIds: (ids) ->

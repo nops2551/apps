@@ -11,13 +11,14 @@
 
 angular.module('News').controller 'ItemController', 
 ['Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel',
-'StarredCount',
-(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount) ->
+'StarredCount', 'GarbageRegistry', 'ShowAll',
+(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, 
+StarredCount, GarbageRegistry, ShowAll) ->
 
 	class ItemController extends Controller
 
 		constructor: (@$scope, @itemModel, @activeFeed, @persistence, @feedModel,
-						@starredCount) ->
+						@starredCount, @garbageRegistry, @showAll) ->
 
 			@batchSize = 4
 			@loaderQueue = 0
@@ -38,9 +39,13 @@ angular.module('News').controller 'ItemController',
 				item = @itemModel.getItemById(itemId)
 				feed = @feedModel.getItemById(feedId)
 				
-				if not item.keptUnread
+				if not item.keptUnread && !item.isRead
 					item.isRead = true
 					feed.unReadCount -= 1
+
+					# this item will be completely deleted if showAll is false
+					if not @showAll.showAll
+						@garbageRegistry.register(item.id)
 
 					@persistence.markRead(itemId, true)
 
@@ -55,6 +60,11 @@ angular.module('News').controller 'ItemController',
 				if item.isRead
 					item.isRead = false
 					feed.unReadCount += 1
+
+					# if we marked it as to be deleted, unregister it from being
+					# deleted
+					if not @showAll.showAll
+						@garbageRegistry.unregister(item.id)
 
 					@persistence.markRead(itemId, false)
 
@@ -76,5 +86,6 @@ angular.module('News').controller 'ItemController',
 
 
 	return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews
-								FeedModel, StarredCount)
+								FeedModel, StarredCount, GarbageRegistry, 
+								ShowAll)
 ]

@@ -246,6 +246,53 @@
   */
 
 
+  angular.module('News').factory('GarbageRegistry', [
+    'ItemModel', function(ItemModel) {
+      var garbageRegistry;
+      garbageRegistry = (function() {
+
+        function garbageRegistry(itemModel) {
+          this.itemModel = itemModel;
+          this.registeredItemIds = {};
+        }
+
+        garbageRegistry.prototype.register = function(itemId) {
+          return this.registeredItemIds[itemId] = true;
+        };
+
+        garbageRegistry.prototype.unregister = function(itemId) {
+          return delete this.registeredItemIds[itemId];
+        };
+
+        garbageRegistry.prototype.clear = function() {
+          var id, useless, _ref;
+          _ref = this.registeredItemIds;
+          for (id in _ref) {
+            useless = _ref[id];
+            this.itemModel.removeById(parseInt(id, 10));
+          }
+          return this.registeredItemIds = {};
+        };
+
+        return garbageRegistry;
+
+      })();
+      return new garbageRegistry(ItemModel);
+    }
+  ]);
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
   angular.module('News').factory('ShowAll', function() {
     var showAll;
     return showAll = {
@@ -429,7 +476,6 @@
         function ItemModel() {
           var i, item, _i;
           ItemModel.__super__.constructor.call(this);
-          this.feedCache = {};
           for (i = _i = 1; _i <= 100; i = _i += 1) {
             item = {
               id: i,
@@ -439,7 +485,6 @@
               isRead: false,
               feedId: (i % 5) + 1,
               keptUnread: false,
-              iso8601Date: '2008-07-17T09:24:17Z',
               body: '<p>this is a test' + i + '</p>'
             };
             this.add(item);
@@ -447,10 +492,7 @@
         }
 
         ItemModel.prototype.add = function(item) {
-          var _base, _name;
           item = this.bindHelperFunctions(item);
-          (_base = this.feedCache)[_name = item.feedId] || (_base[_name] = []);
-          this.feedCache[item.feedId].push(item);
           return ItemModel.__super__.add.call(this, item);
         };
 
@@ -569,12 +611,15 @@
       Model.prototype.removeById = function(id) {
         var counter, item, removeItemIndex, _i, _len, _ref;
         removeItemIndex = null;
+        counter = 0;
         _ref = this.items;
-        for (counter = _i = 0, _len = _ref.length; _i < _len; counter = ++_i) {
-          item = _ref[counter];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
           if (item.id === id) {
             removeItemIndex = counter;
+            break;
           }
+          counter += 1;
         }
         if (removeItemIndex !== null) {
           this.items.splice(removeItemIndex, 1);
@@ -680,13 +725,13 @@
 
 
   angular.module('News').controller('ItemController', [
-    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', 'StarredCount', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount) {
+    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', 'StarredCount', 'GarbageRegistry', 'ShowAll', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll) {
       var ItemController;
       ItemController = (function(_super) {
 
         __extends(ItemController, _super);
 
-        function ItemController($scope, itemModel, activeFeed, persistence, feedModel, starredCount) {
+        function ItemController($scope, itemModel, activeFeed, persistence, feedModel, starredCount, garbageRegistry, showAll) {
           var _this = this;
           this.$scope = $scope;
           this.itemModel = itemModel;
@@ -694,6 +739,8 @@
           this.persistence = persistence;
           this.feedModel = feedModel;
           this.starredCount = starredCount;
+          this.garbageRegistry = garbageRegistry;
+          this.showAll = showAll;
           this.batchSize = 4;
           this.loaderQueue = 0;
           this.$scope.items = this.itemModel.getItems();
@@ -706,9 +753,12 @@
             var feed, item;
             item = _this.itemModel.getItemById(itemId);
             feed = _this.feedModel.getItemById(feedId);
-            if (!item.keptUnread) {
+            if (!item.keptUnread && !item.isRead) {
               item.isRead = true;
               feed.unReadCount -= 1;
+              if (!_this.showAll.showAll) {
+                _this.garbageRegistry.register(item.id);
+              }
               return _this.persistence.markRead(itemId, true);
             }
           };
@@ -720,6 +770,9 @@
             if (item.isRead) {
               item.isRead = false;
               feed.unReadCount += 1;
+              if (!_this.showAll.showAll) {
+                _this.garbageRegistry.unregister(item.id);
+              }
               return _this.persistence.markRead(itemId, false);
             }
           };
@@ -742,7 +795,7 @@
         return ItemController;
 
       })(Controller);
-      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount);
+      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll);
     }
   ]);
 
@@ -759,13 +812,13 @@
 
 
   angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', 'ItemModel', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel) {
+    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry) {
       var FeedController;
       FeedController = (function(_super) {
 
         __extends(FeedController, _super);
 
-        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence, starredCount, showAll, itemModel) {
+        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence, starredCount, showAll, itemModel, garbageRegistry) {
           var _this = this;
           this.$scope = $scope;
           this.feedModel = feedModel;
@@ -776,8 +829,10 @@
           this.starredCount = starredCount;
           this.showAll = showAll;
           this.itemModel = itemModel;
+          this.garbageRegistry = garbageRegistry;
           this.showSubscriptions = true;
           this.showStarred = true;
+          this.clearCallbacks = {};
           this.triggerHideRead();
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
@@ -867,27 +922,7 @@
           } else {
             this.showStarred = true;
           }
-          return this.clearReadItems();
-        };
-
-        FeedController.prototype.clearReadItems = function() {
-          var id, item, removeIds, _i, _j, _len, _len1, _ref, _results;
-          if (this.showAll.showAll === false) {
-            removeIds = [];
-            _ref = this.itemModel.getItems();
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              item = _ref[_i];
-              if (item.isRead) {
-                removeIds.push(item.id);
-              }
-            }
-            _results = [];
-            for (_j = 0, _len1 = removeIds.length; _j < _len1; _j++) {
-              id = removeIds[_j];
-              _results.push(this.itemModel.removeById(id));
-            }
-            return _results;
-          }
+          return this.garbageRegistry.clear();
         };
 
         FeedController.prototype.getUnreadCount = function(type, id) {
@@ -921,7 +956,7 @@
         return FeedController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel);
+      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry);
     }
   ]);
 
