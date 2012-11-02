@@ -9,12 +9,19 @@
 #
 ###
 
-angular.module('News').factory 'PersistenceNews', ['Persistence', '$http', (Persistence, $http) ->
+angular.module('News').factory 'PersistenceNews', 
+['Persistence', '$http', '$rootScope', 
+(Persistence, $http, $rootScope) ->
 
 	class PersistenceNews extends Persistence
 
-		constructor: ($http) ->
+		constructor: ($http, $rootScope) ->
 			super('news', $http)
+
+
+		loadInitial: () ->
+			@post 'init', {}, (json) ->
+				console.log json
 
 
 		markRead: (itemId, isRead) ->
@@ -27,7 +34,7 @@ angular.module('News').factory 'PersistenceNews', ['Persistence', '$http', (Pers
 				itemId: itemId
 				status: status
 
-			@post('setitemstatus', data)
+			@post 'setitemstatus', data
 
 
 		setImportant: (itemId, isImportant) ->
@@ -40,15 +47,15 @@ angular.module('News').factory 'PersistenceNews', ['Persistence', '$http', (Pers
 				itemId: itemId
 				status: status
 
-			@post('setitemstatus', data)
+			@post 'setitemstatus', data
 
 
 		collapseFolder: (folderId, value) ->
 			data =
 				folderId: folderId
 				opened: value
-			@post('collapsefolder', data)
+			@post 'collapsefolder', data
 
 
-	return new PersistenceNews($http)
+	return new PersistenceNews($http, $rootScope)
 ]

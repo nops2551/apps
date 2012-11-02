@@ -66,8 +66,9 @@ class FeedMapper {
 			$folderid = $row['folder_id'];
 			$userid = $row['user_id'];
 			$title = $row['title'];
+			$favicon = $row['favicon_link'];
 			$feeds[] = array("url" => $url, "id" => $id, "folderid" => $folderid, 
-				'userid' => $userid, 'title' => $title );
+				'userid' => $userid, 'title' => $title, 'favicon' => $favicon );
 		}
 
 		return $feeds;

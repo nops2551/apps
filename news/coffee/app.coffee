@@ -10,10 +10,13 @@
 ###
 
 angular.module('News', []).
-	config ($provide) ->
+	config($provide) ->
 		# enter your config values in here
 		$provide.value('MarkReadTimeout', 500)
 		$provide.value('ScrollTimeout', 500)
+	.run ['PersistenceNews', (PersistenceNews) ->
+		console.log 'hi'
+	]
 
 
 $(document).ready ->
