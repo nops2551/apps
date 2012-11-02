@@ -273,12 +273,20 @@
   */
 
 
-  angular.module('News').factory('ShowAll', function() {
-    var showAll;
-    return showAll = {
-      showAll: true
-    };
-  });
+  angular.module('News').factory('ShowAll', [
+    '$rootScope', function($rootScope) {
+      var showAll;
+      showAll = {
+        showAll: false
+      };
+      $rootScope.$on('update', function(scope, data) {
+        if (data['showAll'] !== void 0) {
+          return showAll.showAll = data['showAll'];
+        }
+      });
+      return showAll;
+    }
+  ]);
 
   /*
   # ownCloud - News app
@@ -567,13 +575,12 @@
           callback = function() {};
         }
         url = OC.filePath(this.appName, 'ajax', file + '.php');
+        data = $.param(data);
         headers = {
-          requesttoken: OC.Request.Token
+          requesttoken: OC.Request.Token,
+          'Content-Type': 'application/x-www-form-urlencoded'
         };
-        return this.$http({
-          method: 'POST',
-          url: url,
-          data: data,
+        return this.$http.post(url, data, {
           headers: headers
         }).success(function(data, status, headers, config) {
           return callback(data);
@@ -695,12 +702,20 @@
   */
 
 
-  angular.module('News').factory('StarredCount', function() {
-    var starredCount;
-    return starredCount = {
-      count: 0
-    };
-  });
+  angular.module('News').factory('StarredCount', [
+    '$rootScope', function($rootScope) {
+      var starredCount;
+      starredCount = {
+        count: 0
+      };
+      $rootScope.$on('update', function(scope, data) {
+        if (data['starredCount'] !== void 0) {
+          return starredCount.count = data['starredCount'];
+        }
+      });
+      return starredCount;
+    }
+  ]);
 
   /*
   # ownCloud - News app
@@ -860,7 +875,6 @@
           this.itemModel = itemModel;
           this.garbageRegistry = garbageRegistry;
           this.showSubscriptions = true;
-          this.showStarred = true;
           this.clearCallbacks = {};
           this.triggerHideRead();
           this.$scope.feeds = this.feedModel.getItems();
@@ -895,7 +909,7 @@
               case _this.feedType.Subscriptions:
                 return _this.showSubscriptions;
               case _this.feedType.Starred:
-                return _this.showStarred;
+                return _this.starredCount.count > 0;
             }
           };
           this.$scope.$on('triggerHideRead', function() {

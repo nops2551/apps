@@ -32,7 +32,7 @@ foreach($folders as $folder){
 		 array_push($foldersArray, array(
 			'id' => (int)$folder->getId(),
 			'name' => $folder->getName(),
-			'open' => $folder->getOpened()=="1",
+			'open' => $folder->getOpened()==="1",
 			'hasChildren' => count($folder->getChildren()) > 0,
 			'show' => true
 			)
@@ -65,12 +65,16 @@ $activeFeed = array();
 $activeFeed['id'] = (int)OCP\Config::getUserValue($userId, 'news', 'lastViewedFeed');
 $activeFeed['type'] = (int)OCP\Config::getUserValue($userId, 'news', 'lastViewedFeedType');
 
-$showAll = OCP\Config::getUserValue($userId, 'news', 'showAll');
+$showAll = OCP\Config::getUserValue($userId, 'news', 'showAll') === "1";
+
+$starredCount = (int)$itemMapper->countEveryItemByStatus(OCA\News\StatusFlag::IMPORTANT);
+
 
 OCP\JSON::success(array('data' => array(
 	'folders' => $foldersArray,
 	'feeds' => $feedsArray,
 	'activeFeed' => $activeFeed,
 	'showAll' => $showAll,
-	'userId' => $userId
+	'userId' => $userId,
+	'starredCount' => $starredCount
 )));

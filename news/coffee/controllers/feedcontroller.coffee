@@ -22,7 +22,6 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
 					  @garbageRegistry) ->
 
 			@showSubscriptions = true
-			@showStarred = true
 
 			@clearCallbacks = {}
 			@triggerHideRead()
@@ -57,7 +56,7 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
 			@$scope.isShown = (type, id) =>
 				switch type
 					when @feedType.Subscriptions then return @showSubscriptions
-					when @feedType.Starred then return @showStarred
+					when @feedType.Starred then return @starredCount.count > 0
 
 			@$scope.$on 'triggerHideRead', =>
 				@triggerHideRead()

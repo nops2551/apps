@@ -9,6 +9,14 @@
 #
 ###
 
-angular.module('News').factory 'ShowAll', () ->
+angular.module('News').factory 'ShowAll', ['$rootScope', ($rootScope) ->
+	
 	showAll = 
-		showAll: true
+		showAll: false
+
+	$rootScope.$on 'update', (scope, data) ->
+		if data['showAll'] != undefined
+			showAll.showAll = data['showAll']
+
+	return showAll
+]

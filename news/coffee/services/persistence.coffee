@@ -22,11 +22,14 @@ angular.module('News').factory 'Persistence', () ->
 
 			url = OC.filePath(@appName, 'ajax', file + '.php')
 
+			data = $.param(data)
+
 			# csrf token
 			headers =
 				requesttoken: OC.Request.Token
+				'Content-Type': 'application/x-www-form-urlencoded'
 			
-			@$http({method: 'POST', url: url, data: data, headers: headers}).
+			@$http.post(url, data, {headers: headers}).
 			success((data, status, headers, config) ->
 				callback(data)
 			).
