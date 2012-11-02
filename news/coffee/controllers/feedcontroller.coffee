@@ -107,12 +107,18 @@ StarredCount, ShowAll, ItemModel) ->
 			else
 				@showStarred = true
 
-			# items
-			for item in @itemModel.getItems()
-				if @showAll.showAll == false && item.isRead
-					item.isShown = false
-				else
-					item.isShown = true
+			@clearReadItems()
+
+
+		clearReadItems: () ->
+			# delete read items for performance reasons when showAll == false
+			if @showAll.showAll == false
+				removeIds = []
+				for item in @itemModel.getItems()
+					if item.isRead
+						removeIds.push(item.id)
+				for id in removeIds
+					@itemModel.removeById(id)
 
 
 		getUnreadCount: (type, id) ->

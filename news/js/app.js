@@ -163,7 +163,7 @@
         }
 
         FeedController.prototype.triggerHideRead = function() {
-          var feed, folder, item, preventParentFolder, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+          var feed, folder, preventParentFolder, _i, _j, _len, _len1, _ref, _ref1;
           preventParentFolder = 0;
           _ref = this.feedModel.getItems();
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -210,17 +210,27 @@
           } else {
             this.showStarred = true;
           }
-          _ref2 = this.itemModel.getItems();
-          _results = [];
-          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-            item = _ref2[_k];
-            if (this.showAll.showAll === false && item.isRead) {
-              _results.push(item.isShown = false);
-            } else {
-              _results.push(item.isShown = true);
+          return this.clearReadItems();
+        };
+
+        FeedController.prototype.clearReadItems = function() {
+          var id, item, removeIds, _i, _j, _len, _len1, _ref, _results;
+          if (this.showAll.showAll === false) {
+            removeIds = [];
+            _ref = this.itemModel.getItems();
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              item = _ref[_i];
+              if (item.isRead) {
+                removeIds.push(item.id);
+              }
             }
+            _results = [];
+            for (_j = 0, _len1 = removeIds.length; _j < _len1; _j++) {
+              id = removeIds[_j];
+              _results.push(this.itemModel.removeById(id));
+            }
+            return _results;
           }
-          return _results;
         };
 
         FeedController.prototype.getUnreadCount = function(type, id) {
@@ -522,7 +532,6 @@
               isRead: false,
               feedId: (i % 5) + 1,
               keptUnread: false,
-              isShown: true,
               body: '<p>this is a test' + i + '</p>'
             });
           }
@@ -775,9 +784,25 @@
           }
         }
         if (removeItemIndex !== null) {
-          this.items.splice(removeItemId, 1);
+          this.items.splice(removeItemIndex, 1);
           return delete this.itemIds[id];
         }
+      };
+
+      Model.prototype.removeByIds = function(ids) {
+        var item, newItemIds, newItems, _i, _len, _ref;
+        newItems = [];
+        newItemIds = {};
+        _ref = this.items;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          if (!ids[item.id]) {
+            newItems.push(item);
+            newItemIds[item.id] = item;
+          }
+        }
+        this.items = newItems;
+        return this.itemIds = newItemIds;
       };
 
       Model.prototype.getItemById = function(id) {
