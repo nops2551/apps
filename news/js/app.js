@@ -523,7 +523,7 @@
         function ItemModel() {
           var i, _i;
           ItemModel.__super__.constructor.call(this);
-          for (i = _i = 1; _i <= 100; i = _i += 1) {
+          for (i = _i = 1; _i <= 1000; i = _i += 1) {
             this.add({
               id: i,
               title: 'test1',
