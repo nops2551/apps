@@ -41,8 +41,7 @@ class NewsController extends Controller {
 
     public function feedPage(){
         $this->add3rdPartyScript('angular-1.0.2/angular');
-
-        $this->add3rdPartyScript('jquery.timeago');
+        $this->add3rdPartyScript('moment.min');
         $this->addScript('app');
 
         $this->addStyle('news');

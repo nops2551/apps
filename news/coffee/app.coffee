@@ -17,6 +17,10 @@ angular.module('News', []).
 
 
 $(document).ready ->
+	$('#feeds li').click ->
+		$('#feed_items').scrollTop(0)
+
 	$('#feed_items').scrollTop(0)
+
 
 
