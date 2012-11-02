@@ -15,7 +15,7 @@ angular.module('News').factory 'ItemModel', ['Model', (Model) ->
 
 		constructor: () ->
 			super()
-			for i in [1..1000] by 1
+			for i in [1..100] by 1
 				@add({id: i, title: 'test1', isImportant: false, date:12*i, isRead: false, feedId: (i%5)+1, keptUnread: false, isShown: true, body: '<p>this is a test' + i + '</p>'})
 			
 	return new ItemModel()

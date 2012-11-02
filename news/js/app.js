@@ -121,6 +121,7 @@
           this.itemModel = itemModel;
           this.showSubscriptions = true;
           this.showStarred = true;
+          this.triggerHideRead();
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = this.feedType;
@@ -139,7 +140,8 @@
           };
           this.$scope.loadFeed = function(type, id) {
             _this.activeFeed.id = id;
-            return _this.activeFeed.type = type;
+            _this.activeFeed.type = type;
+            return _this.$scope.triggerHideRead();
           };
           this.$scope.getUnreadCount = function(type, id) {
             return _this.getUnreadCount(type, id);
@@ -400,7 +402,7 @@
   angular.module('News').filter('itemInFeed', [
     'FeedType', 'FeedModel', function(FeedType, FeedModel) {
       return function(items, typeAndId) {
-        var feed, feedId, id, item, result, type, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
+        var feed, feedIds, id, item, result, type, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
         result = [];
         type = typeAndId.type;
         id = typeAndId.id;
@@ -418,15 +420,15 @@
           case FeedType.Folder:
             for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
               item = items[_j];
-              feedId = 0;
+              feedIds = {};
               _ref = FeedModel.getItems();
               for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
                 feed = _ref[_k];
                 if (feed.folderId === id) {
-                  feedId = feed.id;
+                  feedIds[feed.id] = true;
                 }
               }
-              if (item.feedId === feedId) {
+              if (feedIds[item.feedId]) {
                 result.push(item);
               }
             }
@@ -511,7 +513,7 @@
         function ItemModel() {
           var i, _i;
           ItemModel.__super__.constructor.call(this);
-          for (i = _i = 1; _i <= 1000; i = _i += 1) {
+          for (i = _i = 1; _i <= 100; i = _i += 1) {
             this.add({
               id: i,
               title: 'test1',

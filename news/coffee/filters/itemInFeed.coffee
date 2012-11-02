@@ -24,11 +24,11 @@ angular.module('News').filter 'itemInFeed', ['FeedType', 'FeedModel', (FeedType,
 
 			when FeedType.Folder
 				for item in items
-					feedId = 0
+					feedIds = {}
 					for feed in FeedModel.getItems()
 						if feed.folderId == id
-							feedId = feed.id
-					if item.feedId == feedId
+							feedIds[feed.id] = true
+					if feedIds[item.feedId]
 						result.push(item)
 
 			when FeedType.Feed

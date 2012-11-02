@@ -22,7 +22,7 @@ StarredCount, ShowAll, ItemModel) ->
 
 			@showSubscriptions = true
 			@showStarred = true
-			#@triggerHideRead()
+			@triggerHideRead()
 
 			@$scope.feeds = @feedModel.getItems()
 			@$scope.folders = @folderModel.getItems()
@@ -42,7 +42,7 @@ StarredCount, ShowAll, ItemModel) ->
 			@$scope.loadFeed = (type, id) =>
 				@activeFeed.id = id
 				@activeFeed.type = type
-				#@$scope.triggerHideRead()
+				@$scope.triggerHideRead()
 				# TODO: send load command to server
 
 			@$scope.getUnreadCount = (type, id) =>
