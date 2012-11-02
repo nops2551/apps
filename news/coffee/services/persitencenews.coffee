@@ -20,8 +20,9 @@ angular.module('News').factory 'PersistenceNews',
 
 
 		loadInitial: () ->
+			@loading.loading += 1
 			@post 'init', {}, (json) =>
-				@loading.loading = false
+				@loading.loading -= 1
 				@$rootScope.$broadcast('update', json.data)
 
 

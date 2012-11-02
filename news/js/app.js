@@ -307,8 +307,9 @@
 
         PersistenceNews.prototype.loadInitial = function() {
           var _this = this;
+          this.loading.loading += 1;
           return this.post('init', {}, function(json) {
-            _this.loading.loading = false;
+            _this.loading.loading -= 1;
             return _this.$rootScope.$broadcast('update', json.data);
           });
         };
@@ -380,7 +381,7 @@
   angular.module('News').factory('Loading', function() {
     var loading;
     return loading = {
-      loading: true
+      loading: 0
     };
   });
 

@@ -11,4 +11,4 @@
 
 angular.module('News').factory 'Loading', () ->
 	loading = 
-		loading: true
+		loading: 0
