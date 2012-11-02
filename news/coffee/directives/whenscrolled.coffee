@@ -39,7 +39,7 @@ angular.module('News').directive 'whenScrolled',
 							feed = parseInt($(this).data('feed'), 10)
 							
 							offset = $(this).position().top
-							if offset <= 0
+							if offset <= -50
 								$rootScope.$broadcast('read', {id: id, feed: feed})
 
 					, MarkReadTimeout
