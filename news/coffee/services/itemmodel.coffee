@@ -9,25 +9,19 @@
 #
 ###
 
-angular.module('News').factory 'ItemModel', ['Model', (Model) ->
+angular.module('News').factory 'ItemModel', 
+['Model', '$rootScope', 
+(Model, $rootScope) ->
 
 	class ItemModel extends Model
 
-		constructor: () ->
+		constructor: (@$rootScope) ->
 			super()
+			@$rootScope.$on 'update', (scope, data) =>
+				if data['items']
+					for item in data['items']
+						@add(item)
 
-			for i in [1..100] by 1
-				item = 
-					id: i 
-					title: 'test1'
-					isImportant: false, 
-					date:12*i, 
-					isRead: false, 
-					feedId: (i%5)+1, 
-					keptUnread: false, 
-					body: '<p>this is a test' + i + '</p>'
-				@add(item)
-			
 
 		add: (item) ->
 			item = @bindHelperFunctions(item)
@@ -39,5 +33,5 @@ angular.module('News').factory 'ItemModel', ['Model', (Model) ->
 				return moment.unix(this.date).fromNow();
 			return item
 
-	return new ItemModel()
+	return new ItemModel($rootScope)
 ]

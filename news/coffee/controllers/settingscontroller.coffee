@@ -10,21 +10,22 @@
 ###
 
 angular.module('News').controller 'SettingsController', 
-['Controller', '$scope', 'ShowAll', '$rootScope',
-(Controller, $scope, ShowAll, $rootScope) ->
+['Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews',
+(Controller, $scope, ShowAll, $rootScope, PersistenceNews) ->
 
 	class SettingsController extends Controller
 
-		constructor: (@$scope, @$rootScope, @showAll) ->
+		constructor: (@$scope, @$rootScope, @showAll, @persistence) ->
 			
 			@$scope.getShowAll = =>
 				return @showAll.showAll
 
 			@$scope.setShowAll = (value) =>
 				@showAll.showAll = value
+				@persistence.showAll(value)
 				@$rootScope.$broadcast('triggerHideRead')
 
 
 
-	return new SettingsController($scope, $rootScope, ShowAll)
+	return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews)
 ]

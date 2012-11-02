@@ -83,7 +83,9 @@
 	</div>
 
 	<div id="rightcontent" class="rightcontent">
-		<div id="feed_items" ng-controller="ItemController" when-scrolled="scroll()">
+		<div id="feed_items" 
+				ng-class="{loading: loading.loading}"
+				ng-controller="ItemController" when-scrolled="scroll()">
 			<?php
 				print_unescaped($this->inc("part.items"));
 			?>

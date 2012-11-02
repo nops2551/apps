@@ -9,15 +9,14 @@
 #
 ###
 
-angular.module('News', []).
-	config($provide) ->
-		# enter your config values in here
-		$provide.value('MarkReadTimeout', 500)
-		$provide.value('ScrollTimeout', 500)
-	.run ['PersistenceNews', (PersistenceNews) ->
-		console.log 'hi'
-	]
+app = angular.module('News', []).config ($provide) ->
+	# enter your config values in here
+	$provide.value('MarkReadTimeout', 500)
+	$provide.value('ScrollTimeout', 500)
 
+app.run ['PersistenceNews', (PersistenceNews) ->
+	PersistenceNews.loadInitial()
+]
 
 $(document).ready ->
 	$('#feeds li').click ->

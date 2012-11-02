@@ -17,11 +17,11 @@
 
 \OCP\JSON::checkLoggedIn();
 \OCP\JSON::checkAppEnabled('news');
-//\OCP\JSON::callCheck();
+\OCP\JSON::callCheck();
 session_write_close();
 
 
-$userid = \OCP\USER::getUser();
+$userId = \OCP\USER::getUser();
 
 $folderMapper = new OCA\News\FolderMapper($userId);
 $folders = $folderMapper->childrenOfWithFeeds(0);
@@ -32,17 +32,20 @@ foreach($folders as $folder){
 		 array_push($foldersArray, array(
 			'id' => (int)$folder->getId(),
 			'name' => $folder->getName(),
-			'opened' => $folder->getOpened(),
-			'hasChildren' => count($folder->getChildren()) > 0
+			'open' => $folder->getOpened()=="1",
+			'hasChildren' => count($folder->getChildren()) > 0,
+			'show' => true
 			)
 		);
 	}
 }
 
+$itemMapper = new OCA\News\ItemMapper($userId);
+$items = 
+
+
 $feedMapper = new OCA\News\FeedMapper($userId);
 $feeds = $feedMapper->findAll();
-
-$itemMapper = new OCA\News\ItemMapper($userId);
 
 $feedsArray = array();
 foreach($feeds as $feed){
@@ -52,21 +55,22 @@ foreach($feeds as $feed){
 		'unreadCount' => (int)$itemMapper->countAllStatus($feed['id'], OCA\News\StatusFlag::UNREAD),
 		'folderId' => (int)$feed['folderid'],
 		'show' => true,
-		'icon' => $feed['favicon'],
+		'icon' => 'url(' . $feed['favicon'] .')',
 		'url' => $feed['url']
 		)
 	);
 }
 
 $activeFeed = array();
-$activeFeed['id'] = OCP\Config::getUserValue($userId, 'news', 'lastViewedFeed');
-$activeFeed['type'] = OCP\Config::getUserValue($userId, 'news', 'lastViewedFeedType');
+$activeFeed['id'] = (int)OCP\Config::getUserValue($userId, 'news', 'lastViewedFeed');
+$activeFeed['type'] = (int)OCP\Config::getUserValue($userId, 'news', 'lastViewedFeedType');
 
-$showAll = (bool)OCP\Config::getUserValue($userId, 'news', 'showAll');
+$showAll = OCP\Config::getUserValue($userId, 'news', 'showAll');
 
-OCP\JSON::success(array(
+OCP\JSON::success(array('data' => array(
 	'folders' => $foldersArray,
 	'feeds' => $feedsArray,
 	'activeFeed' => $activeFeed,
-	'showAll' => $showAll
-));
+	'showAll' => $showAll,
+	'userId' => $userId
+)));

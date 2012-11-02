@@ -9,13 +9,19 @@
 #
 ###
 
-angular.module('News').factory 'FeedModel', ['Model', (Model) ->
+angular.module('News').factory 'FeedModel', 
+['Model', '$rootScope', 
+(Model, $rootScope) ->
 
 	class FeedModel extends Model
 
-		constructor: () ->
+		constructor: (@$rootScope) ->
 			super()
+			@$rootScope.$on 'update', (scope, data) =>
+				if data['feeds']
+					for feed in data['feeds']
+						@add(feed)
 
 
-	return new FeedModel()
+	return new FeedModel($rootScope)
 ]

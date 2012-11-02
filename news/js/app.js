@@ -13,14 +13,20 @@
 
 
 (function() {
-  var markingRead, scrolling,
+  var app, markingRead, scrolling,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module('News', []).config(function($provide) {
+  app = angular.module('News', []).config(function($provide) {
     $provide.value('MarkReadTimeout', 500);
     return $provide.value('ScrollTimeout', 500);
   });
+
+  app.run([
+    'PersistenceNews', function(PersistenceNews) {
+      return PersistenceNews.loadInitial();
+    }
+  ]);
 
   $(document).ready(function() {
     $('#feeds li').click(function() {
@@ -177,60 +183,34 @@
 
 
   angular.module('News').factory('FeedModel', [
-    'Model', function(Model) {
+    'Model', '$rootScope', function(Model, $rootScope) {
       var FeedModel;
       FeedModel = (function(_super) {
 
         __extends(FeedModel, _super);
 
-        function FeedModel() {
+        function FeedModel($rootScope) {
+          var _this = this;
+          this.$rootScope = $rootScope;
           FeedModel.__super__.constructor.call(this);
-          this.add({
-            id: 1,
-            name: 'test',
-            unreadCount: 0,
-            folderId: 0,
-            show: true,
-            icon: 'url(http://feeds.feedburner.com/favicon.ico)'
-          });
-          this.add({
-            id: 2,
-            name: 'sub',
-            unreadCount: 0,
-            folderId: 1,
-            show: true,
-            icon: 'url(http://feeds.feedburner.com/favicon.ico)'
-          });
-          this.add({
-            id: 3,
-            name: 'sub3',
-            unreadCount: 0,
-            folderId: 1,
-            show: true,
-            icon: 'url(http://feeds.feedburner.com/favicon.ico)'
-          });
-          this.add({
-            id: 4,
-            name: 'sub4',
-            unreadCount: 0,
-            folderId: 1,
-            show: true,
-            icon: 'url(http://feeds.feedburner.com/favicon.ico)'
-          });
-          this.add({
-            id: 5,
-            name: 'sub5',
-            unreadCount: 0,
-            folderId: 1,
-            show: true,
-            icon: 'url(http://feeds.feedburner.com/favicon.ico)'
+          this.$rootScope.$on('update', function(scope, data) {
+            var feed, _i, _len, _ref, _results;
+            if (data['feeds']) {
+              _ref = data['feeds'];
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                feed = _ref[_i];
+                _results.push(_this.add(feed));
+              }
+              return _results;
+            }
           });
         }
 
         return FeedModel;
 
       })(Model);
-      return new FeedModel();
+      return new FeedModel($rootScope);
     }
   ]);
 
@@ -313,15 +293,33 @@
 
 
   angular.module('News').factory('PersistenceNews', [
-    'Persistence', '$http', function(Persistence, $http) {
+    'Persistence', '$http', '$rootScope', 'Loading', function(Persistence, $http, $rootScope, Loading) {
       var PersistenceNews;
       PersistenceNews = (function(_super) {
 
         __extends(PersistenceNews, _super);
 
-        function PersistenceNews($http) {
+        function PersistenceNews($http, $rootScope, loading) {
+          this.$rootScope = $rootScope;
+          this.loading = loading;
           PersistenceNews.__super__.constructor.call(this, 'news', $http);
         }
+
+        PersistenceNews.prototype.loadInitial = function() {
+          var _this = this;
+          return this.post('init', {}, function(json) {
+            _this.loading.loading = false;
+            return _this.$rootScope.$broadcast('update', json.data);
+          });
+        };
+
+        PersistenceNews.prototype.showAll = function(isShowAll) {
+          var data;
+          data = {
+            showAll: isShowAll
+          };
+          return this.post('usersettings', data);
+        };
 
         PersistenceNews.prototype.markRead = function(itemId, isRead) {
           var data, status;
@@ -363,9 +361,28 @@
         return PersistenceNews;
 
       })(Persistence);
-      return new PersistenceNews($http);
+      return new PersistenceNews($http, $rootScope, Loading);
     }
   ]);
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
+  angular.module('News').factory('Loading', function() {
+    var loading;
+    return loading = {
+      loading: true
+    };
+  });
 
   /*
   # ownCloud - News app
@@ -403,34 +420,34 @@
 
 
   angular.module('News').factory('FolderModel', [
-    'Model', function(Model) {
+    'Model', '$rootScope', function(Model, $rootScope) {
       var FolderModel;
       FolderModel = (function(_super) {
 
         __extends(FolderModel, _super);
 
-        function FolderModel() {
+        function FolderModel($rootScope) {
+          var _this = this;
+          this.$rootScope = $rootScope;
           FolderModel.__super__.constructor.call(this);
-          this.add({
-            id: 1,
-            name: 'folder',
-            show: true,
-            open: true,
-            hasChildren: true
-          });
-          this.add({
-            id: 2,
-            name: 'testfolder',
-            show: true,
-            open: true,
-            hasChildren: false
+          this.$rootScope.$on('update', function(scope, data) {
+            var folder, _i, _len, _ref, _results;
+            if (data['folders']) {
+              _ref = data['folders'];
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                folder = _ref[_i];
+                _results.push(_this.add(folder));
+              }
+              return _results;
+            }
           });
         }
 
         return FolderModel;
 
       })(Model);
-      return new FolderModel();
+      return new FolderModel($rootScope);
     }
   ]);
 
@@ -446,13 +463,22 @@
   */
 
 
-  angular.module('News').factory('ActiveFeed', function() {
-    var activeFeed;
-    return activeFeed = {
-      id: 0,
-      type: 3
-    };
-  });
+  angular.module('News').factory('ActiveFeed', [
+    '$rootScope', function($rootScope) {
+      var activeFeed;
+      activeFeed = {
+        id: 0,
+        type: 3
+      };
+      $rootScope.$on('update', function(scope, data) {
+        if (data['activeFeed']) {
+          activeFeed.id = data['activeFeed'].id;
+          return activeFeed.type = data['activeFeed'].type;
+        }
+      });
+      return activeFeed;
+    }
+  ]);
 
   /*
   # ownCloud - News app
@@ -467,28 +493,28 @@
 
 
   angular.module('News').factory('ItemModel', [
-    'Model', function(Model) {
+    'Model', '$rootScope', function(Model, $rootScope) {
       var ItemModel;
       ItemModel = (function(_super) {
 
         __extends(ItemModel, _super);
 
-        function ItemModel() {
-          var i, item, _i;
+        function ItemModel($rootScope) {
+          var _this = this;
+          this.$rootScope = $rootScope;
           ItemModel.__super__.constructor.call(this);
-          for (i = _i = 1; _i <= 100; i = _i += 1) {
-            item = {
-              id: i,
-              title: 'test1',
-              isImportant: false,
-              date: 12 * i,
-              isRead: false,
-              feedId: (i % 5) + 1,
-              keptUnread: false,
-              body: '<p>this is a test' + i + '</p>'
-            };
-            this.add(item);
-          }
+          this.$rootScope.$on('update', function(scope, data) {
+            var item, _i, _len, _ref, _results;
+            if (data['items']) {
+              _ref = data['items'];
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                item = _ref[_i];
+                _results.push(_this.add(item));
+              }
+              return _results;
+            }
+          });
         }
 
         ItemModel.prototype.add = function(item) {
@@ -506,7 +532,7 @@
         return ItemModel;
 
       })(Model);
-      return new ItemModel();
+      return new ItemModel($rootScope);
     }
   ]);
 
@@ -725,13 +751,13 @@
 
 
   angular.module('News').controller('ItemController', [
-    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', 'StarredCount', 'GarbageRegistry', 'ShowAll', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll) {
+    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', 'StarredCount', 'GarbageRegistry', 'ShowAll', 'Loading', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll, Loading) {
       var ItemController;
       ItemController = (function(_super) {
 
         __extends(ItemController, _super);
 
-        function ItemController($scope, itemModel, activeFeed, persistence, feedModel, starredCount, garbageRegistry, showAll) {
+        function ItemController($scope, itemModel, activeFeed, persistence, feedModel, starredCount, garbageRegistry, showAll, loading) {
           var _this = this;
           this.$scope = $scope;
           this.itemModel = itemModel;
@@ -741,9 +767,11 @@
           this.starredCount = starredCount;
           this.garbageRegistry = garbageRegistry;
           this.showAll = showAll;
+          this.loading = loading;
           this.batchSize = 4;
           this.loaderQueue = 0;
           this.$scope.items = this.itemModel.getItems();
+          this.$scope.loading = this.loading;
           this.$scope.scroll = function() {};
           this.$scope.activeFeed = this.activeFeed;
           this.$scope.$on('read', function(scope, params) {
@@ -795,7 +823,7 @@
         return ItemController;
 
       })(Controller);
-      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll);
+      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll, Loading);
     }
   ]);
 
@@ -973,22 +1001,24 @@
 
 
   angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', '$rootScope', function(Controller, $scope, ShowAll, $rootScope) {
+    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews) {
       var SettingsController;
       SettingsController = (function(_super) {
 
         __extends(SettingsController, _super);
 
-        function SettingsController($scope, $rootScope, showAll) {
+        function SettingsController($scope, $rootScope, showAll, persistence) {
           var _this = this;
           this.$scope = $scope;
           this.$rootScope = $rootScope;
           this.showAll = showAll;
+          this.persistence = persistence;
           this.$scope.getShowAll = function() {
             return _this.showAll.showAll;
           };
           this.$scope.setShowAll = function(value) {
             _this.showAll.showAll = value;
+            _this.persistence.showAll(value);
             return _this.$rootScope.$broadcast('triggerHideRead');
           };
         }
@@ -996,7 +1026,7 @@
         return SettingsController;
 
       })(Controller);
-      return new SettingsController($scope, $rootScope, ShowAll);
+      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews);
     }
   ]);
 
@@ -1013,22 +1043,24 @@
 
 
   angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', '$rootScope', function(Controller, $scope, ShowAll, $rootScope) {
+    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews) {
       var SettingsController;
       SettingsController = (function(_super) {
 
         __extends(SettingsController, _super);
 
-        function SettingsController($scope, $rootScope, showAll) {
+        function SettingsController($scope, $rootScope, showAll, persistence) {
           var _this = this;
           this.$scope = $scope;
           this.$rootScope = $rootScope;
           this.showAll = showAll;
+          this.persistence = persistence;
           this.$scope.getShowAll = function() {
             return _this.showAll.showAll;
           };
           this.$scope.setShowAll = function(value) {
             _this.showAll.showAll = value;
+            _this.persistence.showAll(value);
             return _this.$rootScope.$broadcast('triggerHideRead');
           };
         }
@@ -1036,7 +1068,7 @@
         return SettingsController;
 
       })(Controller);
-      return new SettingsController($scope, $rootScope, ShowAll);
+      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews);
     }
   ]);
 

@@ -25,4 +25,4 @@ if(isset($_POST['showAll'])) {
     OCP\Config::setUserValue(OCP\USER::getUser(), 'news', 'showAll', $showAll);
 }
 
-OCP\JSON::success();
+OCP\JSON::success(array('showAll' => $_POST['showAll']));

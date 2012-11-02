@@ -11,19 +11,20 @@
 
 angular.module('News').controller 'ItemController', 
 ['Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel',
-'StarredCount', 'GarbageRegistry', 'ShowAll',
+'StarredCount', 'GarbageRegistry', 'ShowAll', 'Loading',
 (Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, 
-StarredCount, GarbageRegistry, ShowAll) ->
+StarredCount, GarbageRegistry, ShowAll, Loading) ->
 
 	class ItemController extends Controller
 
 		constructor: (@$scope, @itemModel, @activeFeed, @persistence, @feedModel,
-						@starredCount, @garbageRegistry, @showAll) ->
+						@starredCount, @garbageRegistry, @showAll, @loading) ->
 
 			@batchSize = 4
 			@loaderQueue = 0
 			
 			@$scope.items = @itemModel.getItems()
+			@$scope.loading = @loading
 
 
 			@$scope.scroll = =>
@@ -87,5 +88,5 @@ StarredCount, GarbageRegistry, ShowAll) ->
 
 	return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews
 								FeedModel, StarredCount, GarbageRegistry, 
-								ShowAll)
+								ShowAll, Loading)
 ]

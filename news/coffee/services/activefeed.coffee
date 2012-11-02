@@ -9,7 +9,16 @@
 #
 ###
 
-angular.module('News').factory 'ActiveFeed', ->
+angular.module('News').factory 'ActiveFeed',['$rootScope', ($rootScope) ->
+
 	activeFeed = 
 		id: 0
 		type: 3
+
+	$rootScope.$on 'update', (scope, data) ->
+		if data['activeFeed']
+			activeFeed.id = data['activeFeed'].id
+			activeFeed.type = data['activeFeed'].type
+
+	return activeFeed
+]

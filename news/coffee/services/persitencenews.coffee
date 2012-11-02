@@ -10,18 +10,26 @@
 ###
 
 angular.module('News').factory 'PersistenceNews', 
-['Persistence', '$http', '$rootScope', 
-(Persistence, $http, $rootScope) ->
+['Persistence', '$http', '$rootScope', 'Loading',
+(Persistence, $http, $rootScope, Loading) ->
 
 	class PersistenceNews extends Persistence
 
-		constructor: ($http, $rootScope) ->
+		constructor: ($http, @$rootScope, @loading) ->
 			super('news', $http)
 
 
 		loadInitial: () ->
-			@post 'init', {}, (json) ->
-				console.log json
+			@post 'init', {}, (json) =>
+				@loading.loading = false
+				@$rootScope.$broadcast('update', json.data)
+
+
+		showAll: (isShowAll) ->
+			data = 
+				showAll: isShowAll
+
+			@post 'usersettings', data
 
 
 		markRead: (itemId, isRead) ->
@@ -57,5 +65,5 @@ angular.module('News').factory 'PersistenceNews',
 			@post 'collapsefolder', data
 
 
-	return new PersistenceNews($http, $rootScope)
+	return new PersistenceNews($http, $rootScope, Loading)
 ]
