@@ -24,6 +24,7 @@ angular.module('News').factory 'PersistenceNews',
 			@post 'init', {}, (json) =>
 				@loading.loading -= 1
 				@$rootScope.$broadcast('update', json.data)
+				@$rootScope.$broadcast('triggerHideRead')
 
 
 		showAll: (isShowAll) ->

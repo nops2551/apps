@@ -23,9 +23,6 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
 
 			@showSubscriptions = true
 
-			@clearCallbacks = {}
-			@triggerHideRead()
-
 			@$scope.feeds = @feedModel.getItems()
 			@$scope.folders = @folderModel.getItems()
 			@$scope.feedType = @feedType

@@ -23,17 +23,11 @@
   });
 
   app.run([
-    'PersistenceNews', function(PersistenceNews) {
-      return PersistenceNews.loadInitial();
+    '$rootScope', 'PersistenceNews', function($rootScope, PersistenceNews) {
+      PersistenceNews.loadInitial();
+      return $rootScope.$broadcast('scrollTop');
     }
   ]);
-
-  $(document).ready(function() {
-    $('#feeds li').click(function() {
-      return $('#feed_items').scrollTop(0);
-    });
-    return $('#feed_items').scrollTop(0);
-  });
 
   /*
   # ownCloud - News app
@@ -84,6 +78,26 @@
       };
     }
   ]);
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
+  angular.module('News').directive('scrollTop', function() {
+    return function(scope, elm, attr) {
+      return scope.$on('scrollTop', function() {
+        return $(elem).scrollTop(0);
+      });
+    };
+  });
 
   /*
   # ownCloud - News app
@@ -318,7 +332,8 @@
           this.loading.loading += 1;
           return this.post('init', {}, function(json) {
             _this.loading.loading -= 1;
-            return _this.$rootScope.$broadcast('update', json.data);
+            _this.$rootScope.$broadcast('update', json.data);
+            return _this.$rootScope.$broadcast('triggerHideRead');
           });
         };
 
@@ -875,8 +890,6 @@
           this.itemModel = itemModel;
           this.garbageRegistry = garbageRegistry;
           this.showSubscriptions = true;
-          this.clearCallbacks = {};
-          this.triggerHideRead();
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
           this.$scope.feedType = this.feedType;

@@ -85,7 +85,7 @@
 	<div id="rightcontent" class="rightcontent">
 		<div id="feed_items" 
 				ng-class="{loading: loading.loading>0}"
-				ng-controller="ItemController" when-scrolled="scroll()">
+				ng-controller="ItemController" when-scrolled="scroll()" scroll-top>
 			<?php
 				print_unescaped($this->inc("part.items"));
 			?>

@@ -14,15 +14,11 @@ app = angular.module('News', []).config ($provide) ->
 	$provide.value('MarkReadTimeout', 500)
 	$provide.value('ScrollTimeout', 500)
 
-app.run ['PersistenceNews', (PersistenceNews) ->
+app.run ['$rootScope', 'PersistenceNews', ($rootScope, PersistenceNews) ->
 	PersistenceNews.loadInitial()
+	$rootScope.$broadcast('scrollTop')
 ]
 
-$(document).ready ->
-	$('#feeds li').click ->
-		$('#feed_items').scrollTop(0)
-
-	$('#feed_items').scrollTop(0)
 
 
 
