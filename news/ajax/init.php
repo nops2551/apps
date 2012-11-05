@@ -10,70 +10,11 @@
 *
 */
 
-/**
- * This file is being called when the app starts and all feeds
- * and folders are requested
- */
 
-\OCP\JSON::checkLoggedIn();
-\OCP\JSON::checkAppEnabled('news');
-\OCP\JSON::callCheck();
-session_write_close();
+namespace OCA\News;
 
+require_once \OC_App::getAppPath('news') . '/controllers/news.ajax.controller.php';
 
-$userId = \OCP\USER::getUser();
+$controller = new NewsAjaxController();
+$controller->init();
 
-$folderMapper = new OCA\News\FolderMapper($userId);
-$folders = $folderMapper->childrenOfWithFeeds(0);
-
-$foldersArray = array();
-foreach($folders as $folder){
-	if($folder instanceof OCA\News\Folder){
-		 array_push($foldersArray, array(
-			'id' => (int)$folder->getId(),
-			'name' => $folder->getName(),
-			'open' => $folder->getOpened()==="1",
-			'hasChildren' => count($folder->getChildren()) > 0,
-			'show' => true
-			)
-		);
-	}
-}
-
-$itemMapper = new OCA\News\ItemMapper($userId);
-
-
-$feedMapper = new OCA\News\FeedMapper($userId);
-$feeds = $feedMapper->findAll();
-
-$feedsArray = array();
-foreach($feeds as $feed){
-	 array_push($feedsArray, array(
-		'id' => (int)$feed['id'],
-		'name' => $feed['title'],
-		'unreadCount' => (int)$itemMapper->countAllStatus($feed['id'], OCA\News\StatusFlag::UNREAD),
-		'folderId' => (int)$feed['folderid'],
-		'show' => true,
-		'icon' => 'url(' . $feed['favicon'] .')',
-		'url' => $feed['url']
-		)
-	);
-}
-
-$activeFeed = array();
-$activeFeed['id'] = (int)OCP\Config::getUserValue($userId, 'news', 'lastViewedFeed');
-$activeFeed['type'] = (int)OCP\Config::getUserValue($userId, 'news', 'lastViewedFeedType');
-
-$showAll = OCP\Config::getUserValue($userId, 'news', 'showAll') === "1";
-
-$starredCount = (int)$itemMapper->countEveryItemByStatus(OCA\News\StatusFlag::IMPORTANT);
-
-
-OCP\JSON::success(array('data' => array(
-	'folders' => $foldersArray,
-	'feeds' => $feedsArray,
-	'activeFeed' => $activeFeed,
-	'showAll' => $showAll,
-	'userId' => $userId,
-	'starredCount' => $starredCount
-)));

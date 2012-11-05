@@ -310,7 +310,7 @@ class ItemMapper {
 				break;
 		}
 
-		return $unreadCount;
+		return (int)$unreadCount;
 	}
 
 
