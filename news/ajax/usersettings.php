@@ -10,19 +10,9 @@
 *
 */
 
-// Check if we are a user
-OCP\JSON::checkLoggedIn();
-OCP\JSON::checkAppEnabled('news');
-OCP\JSON::callCheck();
-session_write_close();
+namespace OCA\News;
 
-if(isset($_POST['showAll'])) {
-    if($_POST['showAll'] === 'false') {
-        $showAll = false;
-    } else {
-        $showAll = true;
-    }
-    OCP\Config::setUserValue(OCP\USER::getUser(), 'news', 'showAll', $showAll);
-}
+require_once \OC_App::getAppPath('news') . '/controllers/news.ajax.controller.php';
 
-OCP\JSON::success();
+$controller = new NewsAjaxController();
+$controller->userSettings($_POST['showAll']);

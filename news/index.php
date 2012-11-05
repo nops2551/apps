@@ -11,14 +11,11 @@
 *
 */
 
-require_once OC_App::getAppPath('news') . '/controllers/controller.php';
-require_once OC_App::getAppPath('news') . '/controllers/news.controller.php';
+namespace OCA\News;
 
-OCP\User::checkLoggedIn();
-OCP\App::checkAppEnabled('news');
-OCP\App::setActiveNavigationEntry('news');
+require_once \OC_App::getAppPath('news') . '/controllers/news.controller.php';
 
-$controller = new OCA\News\NewsController();
+$controller = new NewsController();
 
 // routes
 if(isset($_GET['jstest'])){

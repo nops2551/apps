@@ -278,4 +278,88 @@ class ItemMapper {
 
 		return $result;
 	}
+
+	/**
+	 * Returns the unread count
+	 * @param $feedType the type of the feed
+	 * @param $feedId the id of the feed or folder
+	 * @return the unread count
+	 */
+	public function getUnreadCount($feedType, $feedId){
+		$unreadCount = 0;
+
+		switch ($feedType) {
+			case FeedType::STARRED:
+				$unreadCount = $this->countEveryItemByStatus(StatusFlag::IMPORTANT);
+				break;
+
+			case FeedType::SUBSCRIPTIONS:
+				$unreadCount = $this->countEveryItemByStatus(StatusFlag::UNREAD);
+				break;
+
+			case FeedType::FOLDER:
+				$feedMapper = new FeedMapper($this->userId);
+				$feeds = $feedMapper->findByFolderId($feedId);
+				foreach($feeds as $feed){
+					$unreadCount += $this->countAllStatus($feed->getId(), StatusFlag::UNREAD);
+				}
+				break;
+
+			case FeedType::FEED:
+				$unreadCount = $this->countAllStatus($feedId, StatusFlag::UNREAD);
+				break;
+		}
+
+		return $unreadCount;
+	}
+
+
+	/**
+	 * Returns all items
+	 * @param $feedType the type of the feed
+	 * @param $feedId the id of the feed or folder
+	 * @param $showAll if true, it will also include unread items
+	 * @return an array with all items
+	 */
+	public function getItems($feedType, $feedId, $showAll){
+		$items = array();
+
+		// starred or subscriptions
+		if ($feedType === FeedType::STARRED || $feedType === FeedType::SUBSCRIPTIONS) {
+
+			if($feedType === FeedType::STARRED){
+				$statusFlag = StatusFlag::IMPORTANT;
+			}
+
+			if($feedType === FeedType::SUBSCRIPTIONS){
+				$statusFlag = StatusFlag::UNREAD;
+			}
+
+			$items = $this->findEveryItemByStatus($statusFlag);
+
+		// feed
+		} elseif ($feedType === FeedType::FEED){
+
+			if($showAll) {
+				$items = $this->findByFeedId($feedId);
+			} else {
+				$items = $this->findAllStatus($feedId, StatusFlag::UNREAD);
+			}
+
+		// folder
+		} elseif ($feedType === FeedType::FOLDER){
+			$feedMapper = new FeedMapper($this->userId);
+			$feeds = $feedMapper->findByFolderId($feedId);
+
+			foreach($feeds as $feed){
+				if($showAll) {
+					$items = array_merge($items, $this->findByFeedId($feed->getId()));
+				} else {
+					$items = array_merge($items,
+						$this->findAllStatus($feed->getId(), StatusFlag::UNREAD));
+				}
+			}
+		}
+		return $items;
+	}
 }
