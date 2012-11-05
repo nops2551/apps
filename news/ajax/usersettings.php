@@ -15,4 +15,4 @@ namespace OCA\News;
 require_once \OC_App::getAppPath('news') . '/controllers/news.ajax.controller.php';
 
 $controller = new NewsAjaxController();
-$controller->userSettings($_POST['showAll']);
+$controller->setShowAll($_POST['showAll']);

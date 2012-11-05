@@ -41,7 +41,6 @@ foreach($folders as $folder){
 }
 
 $itemMapper = new OCA\News\ItemMapper($userId);
-$items = 
 
 
 $feedMapper = new OCA\News\FeedMapper($userId);

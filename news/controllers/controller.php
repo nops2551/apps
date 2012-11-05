@@ -100,7 +100,7 @@ class Controller {
 	 * @brief renders a json success
 	 * @param array $params an array which will be converted to JSON
 	 */
-	private function renderJSON($params){
+	private function renderJSON($params=array()){
 		\OCP\JSON::success($params);	
 	}
 
