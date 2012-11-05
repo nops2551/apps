@@ -18,6 +18,10 @@ require_once \OC_App::getAppPath('news') . '/controllers/controller.php';
 class NewsController extends Controller {
 
 
+	/**
+	 * Does all the security checks
+	 * @param bool $csrfCheck pass false to disable the csrf check. true by default
+	 */
 	public function __construct($csrfCheck=true){
 		parent::__construct($csrfCheck);
 		\OCP\App::setActiveNavigationEntry('news');

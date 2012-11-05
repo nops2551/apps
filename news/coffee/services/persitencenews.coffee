@@ -25,13 +25,30 @@ angular.module('News').factory 'PersistenceNews',
 				@loading.loading -= 1
 				@$rootScope.$broadcast('update', json.data)
 				@$rootScope.$broadcast('triggerHideRead')
+				@loadFeed(json.data.activeFeed.type, json.data.activeFeed.id,
+							0, 0)
+
+
+
+		loadFeed: (type, id, latestFeedId, latestTimestamp, limit=20) ->
+			data = 
+				type: type
+				id: id
+				latestFeedId: latestFeedId
+				latestTimestamp: latestTimestamp
+				limit: limit
+
+			@loading.loading += 1
+			@post 'loadfeed', data, (json) =>
+				@loading.loading -= 1
+				@$rootScope.$broadcast('update', json.data)
 
 
 		showAll: (isShowAll) ->
 			data = 
 				showAll: isShowAll
 
-			@post 'usersettings', data
+			@post 'showall', data
 
 
 		markRead: (itemId, isRead) ->

@@ -80,7 +80,8 @@ class NewsAjaxController extends Controller {
 			 array_push($feedsArray, array(
 				'id' => (int)$feed['id'],
 				'name' => $feed['title'],
-				'unreadCount' => $itemMapper->getUnreadCount(\OCA\News\FeedType::FEED, $feed['id']),
+				'unreadCount' => $itemMapper->getUnreadCount(\OCA\News\FeedType::FEED, 
+																$feed['id']),
 				'folderId' => (int)$feed['folderid'],
 				'show' => true,
 				'icon' => 'url(' . $feed['favicon'] .')',
@@ -89,6 +90,34 @@ class NewsAjaxController extends Controller {
 			);
 		}
 		return $feedsArray;
+	}
+
+
+	/**
+	 * This turns an items result into an array which can be sent to the client
+	 * as JSON
+	 * @param array $items the database query result for items
+	 * @return an array ready for sending as JSON
+	 */
+	private function itemsToArray($items){
+		$itemsArray = array();
+		foreach($items as $item){
+
+			 array_push($itemsArray, array(
+				'id' => (int)$item->getId(),
+				'title' => $item->getTitle(),
+				'isRead' => (bool)$item->isRead(),
+				'isImportant' => (bool)$item->isImportant(),
+				'feedId' => (int)$item->getFeedId(),
+				'feedTitle' => $item->getFeedTitle(),
+				'date' => (int)$item->getDate(),
+				'body' => $item->getBody(),
+				'author' => $item->getAuthor(),
+				'url' => $item->getUrl()
+				)
+			);
+		}
+		return $itemsArray;
 	}
 
 
@@ -114,16 +143,47 @@ class NewsAjaxController extends Controller {
 		$itemMapper = new \OCA\News\ItemMapper($this->userId);
 		$starredCount = $itemMapper->getUnreadCount(\OCA\News\FeedType::STARRED, 0);
 
-		$result = array('data' => array(
+		$result = array(
 			'folders' => $foldersArray,
 			'feeds' => $feedsArray,
 			'activeFeed' => $activeFeed,
 			'showAll' => $showAll,
 			'userId' => $this->userId,
 			'starredCount' => $starredCount
-		));
+		);
 
 		$this->renderJSON($result);
+	}
+
+
+	/**
+	 * loads the next X feeds from the server
+	 * @param int $feedType the type of the feed
+	 * @param int $feedId the id of the feed
+	 * @param int $latestFeedId the it of the latest feed that the client has for
+	 *                          this type
+	 * @param int $latestTimestamp the timestamp of the latest feed that the 
+	 *                             client for this type client has
+	 * @param int $limit the amount of items that should be loaded, defaults to 20
+	 */
+	public function loadFeed($feedType, $feedId, $latestFeedId, $latestTimestamp,
+								$limit=20){
+		// FIXME: integrate latestFeedId, latestTimestamp and limit
+		$this->setUserValue('lastViewedFeed', $feedId);
+		$this->setUserValue('lastViewedFeedType', $feedType);
+
+		$showAll = $this->getUserValue('showAll');
+
+		$itemMapper = new \OCA\News\ItemMapper($this->userId);
+		$items = $itemMapper->getItems($feedType, $feedId, $showAll);
+		$unreadCount = $itemMapper->getUnreadCount($feedType, $feedId);
+
+		$itemsArray = $this->itemsToArray($items);
+
+		$result = array('items' => $itemsArray);
+
+		$this->renderJSON($result);
+
 	}
 
 

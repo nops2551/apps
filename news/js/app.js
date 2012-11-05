@@ -250,20 +250,26 @@
           this.registeredItemIds = {};
         }
 
-        garbageRegistry.prototype.register = function(itemId) {
-          return this.registeredItemIds[itemId] = true;
+        garbageRegistry.prototype.register = function(item) {
+          var itemId;
+          itemId = item.id;
+          return this.registeredItemIds[itemId] = item;
         };
 
-        garbageRegistry.prototype.unregister = function(itemId) {
+        garbageRegistry.prototype.unregister = function(item) {
+          var itemId;
+          itemId = item.id;
           return delete this.registeredItemIds[itemId];
         };
 
         garbageRegistry.prototype.clear = function() {
-          var id, useless, _ref;
+          var id, item, _ref;
           _ref = this.registeredItemIds;
           for (id in _ref) {
-            useless = _ref[id];
-            this.itemModel.removeById(parseInt(id, 10));
+            item = _ref[id];
+            if (!item.isImportant) {
+              this.itemModel.removeById(parseInt(id, 10));
+            }
           }
           return this.registeredItemIds = {};
         };
@@ -333,7 +339,28 @@
           return this.post('init', {}, function(json) {
             _this.loading.loading -= 1;
             _this.$rootScope.$broadcast('update', json.data);
-            return _this.$rootScope.$broadcast('triggerHideRead');
+            _this.$rootScope.$broadcast('triggerHideRead');
+            return _this.loadFeed(json.data.activeFeed.type, json.data.activeFeed.id, 0, 0);
+          });
+        };
+
+        PersistenceNews.prototype.loadFeed = function(type, id, latestFeedId, latestTimestamp, limit) {
+          var data,
+            _this = this;
+          if (limit == null) {
+            limit = 20;
+          }
+          data = {
+            type: type,
+            id: id,
+            latestFeedId: latestFeedId,
+            latestTimestamp: latestTimestamp,
+            limit: limit
+          };
+          this.loading.loading += 1;
+          return this.post('loadfeed', data, function(json) {
+            _this.loading.loading -= 1;
+            return _this.$rootScope.$broadcast('update', json.data);
           });
         };
 
@@ -342,7 +369,7 @@
           data = {
             showAll: isShowAll
           };
-          return this.post('usersettings', data);
+          return this.post('showall', data);
         };
 
         PersistenceNews.prototype.markRead = function(itemId, isRead) {
@@ -816,7 +843,7 @@
               item.isRead = true;
               feed.unReadCount -= 1;
               if (!_this.showAll.showAll) {
-                _this.garbageRegistry.register(item.id);
+                _this.garbageRegistry.register(item);
               }
               return _this.persistence.markRead(itemId, true);
             }
@@ -830,7 +857,7 @@
               item.isRead = false;
               feed.unReadCount += 1;
               if (!_this.showAll.showAll) {
-                _this.garbageRegistry.unregister(item.id);
+                _this.garbageRegistry.unregister(item);
               }
               return _this.persistence.markRead(itemId, false);
             }

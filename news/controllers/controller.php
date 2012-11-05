@@ -112,7 +112,8 @@ class Controller {
 	 * @param array $params an array which will be converted to JSON
 	 */
 	protected function renderJSON($params=array()){
-		\OCP\JSON::success($params);	
+		$data = array('data' => $params);
+		\OCP\JSON::success($data);	
 	}
 
 

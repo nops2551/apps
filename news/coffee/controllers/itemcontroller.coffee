@@ -46,7 +46,7 @@ StarredCount, GarbageRegistry, ShowAll, Loading) ->
 
 					# this item will be completely deleted if showAll is false
 					if not @showAll.showAll
-						@garbageRegistry.register(item.id)
+						@garbageRegistry.register(item)
 
 					@persistence.markRead(itemId, true)
 
@@ -65,7 +65,7 @@ StarredCount, GarbageRegistry, ShowAll, Loading) ->
 					# if we marked it as to be deleted, unregister it from being
 					# deleted
 					if not @showAll.showAll
-						@garbageRegistry.unregister(item.id)
+						@garbageRegistry.unregister(item)
 
 					@persistence.markRead(itemId, false)
 

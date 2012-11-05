@@ -15,18 +15,21 @@ angular.module('News').factory 'GarbageRegistry', ['ItemModel', (ItemModel)->
 		constructor: (@itemModel) ->
 			@registeredItemIds = {}
 
-		register: (itemId) ->
-			@registeredItemIds[itemId] = true
+		register: (item) ->
+			itemId = item.id
+			@registeredItemIds[itemId] = item
 
 
-		unregister: (itemId) ->
+		unregister: (item) ->
+			itemId = item.id
 			delete @registeredItemIds[itemId]
 
 
 		clear: () ->
 			# delete read items for performance reasons when showAll == false
-			for id, useless of @registeredItemIds
-				@itemModel.removeById(parseInt(id, 10))
+			for id, item of @registeredItemIds
+				if not item.isImportant
+					@itemModel.removeById(parseInt(id, 10))
 			@registeredItemIds = {}
 
 
