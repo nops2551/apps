@@ -15,7 +15,7 @@ namespace OCA\News;
 
 require_once \OC_App::getAppPath('news') . '/controllers/news.controller.php';
 
-$controller = new NewsController();
+$controller = new NewsController(false);
 
 // routes
 if(isset($_GET['jstest'])){

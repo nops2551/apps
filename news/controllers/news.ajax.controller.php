@@ -23,13 +23,7 @@ class NewsAjaxController extends Controller {
 	 * @param bool $csrfCheck pass false to disable the csrf check. true by default
 	 */
 	public function __construct($csrfCheck=true){
-		parent::__construct();
-		\OCP\JSON::checkAppEnabled('news');
-		\OCP\JSON::checkLoggedIn();
-		if($csrfCheck){
-			\OCP\JSON::callCheck();	
-		}
-		session_write_close();
+		parent::__construct($csrfCheck);
 	}
 
 

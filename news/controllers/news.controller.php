@@ -18,10 +18,8 @@ require_once \OC_App::getAppPath('news') . '/controllers/controller.php';
 class NewsController extends Controller {
 
 
-	public function __construct(){
-		parent::__construct();
-		\OCP\User::checkLoggedIn();
-		\OCP\App::checkAppEnabled('news');
+	public function __construct($csrfCheck=true){
+		parent::__construct($csrfCheck);
 		\OCP\App::setActiveNavigationEntry('news');
 	}
 

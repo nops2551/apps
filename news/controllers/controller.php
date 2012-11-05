@@ -18,7 +18,18 @@ class Controller {
 	protected $trans;
 
 
-	public function __construct(){
+	public function __construct($csrfCheck=true, $closeSession=true){
+		\OCP\JSON::checkAppEnabled('news');
+		\OCP\JSON::checkLoggedIn();
+		
+		if($csrfCheck){
+			\OCP\JSON::callCheck();	
+		}
+
+		if($closeSession){
+			session_write_close();
+		}
+
 		$this->userId = \OCP\USER::getUser();
 		$this->trans = \OC_L10N::get('news');
 		$this->safeParams = array();
@@ -100,7 +111,7 @@ class Controller {
 	 * @brief renders a json success
 	 * @param array $params an array which will be converted to JSON
 	 */
-	private function renderJSON($params=array()){
+	protected function renderJSON($params=array()){
 		\OCP\JSON::success($params);	
 	}
 
