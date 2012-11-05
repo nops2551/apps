@@ -10,31 +10,10 @@
 *
 */
 
-// Check if we are a user
-OCP\JSON::checkLoggedIn();
-OCP\JSON::checkAppEnabled('news');
-OCP\JSON::callCheck();
-session_write_close();
+namespace OCA\News;
 
-$folderId = (int)$_POST['folderId'];
-if($_POST['opened'] === 'false'){
-    $opened = false;
-} else {
-    $opened = true;
-}
+require_once \OC_App::getAppPath('news') . '/controllers/news.ajax.controller.php';
 
-
-$folderMapper = new OCA\News\FolderMapper();
-$folder = $folderMapper->find($folderId);
-$folder->setOpened($opened);
-$success = $folderMapper->update($folder);
-
-$l = OC_L10N::get('news');
-
-if(!$success) {
-    OCP\JSON::error(array('data' => array('message' => $l->t('Error collapsing folder.'))));
-    OCP\Util::writeLog('news','ajax/setallitemsread.php: Error collapsing folder with id '. $folderId, OCP\Util::ERROR);
-    exit();
-}
-
-OCP\JSON::success();
+$controller = new NewsAjaxController();
+$controller->collapseFolder((int)$_POST['folderId'], 
+								$controller->postParamToBool($_POST['opened']));

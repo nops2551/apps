@@ -33,7 +33,7 @@ class NewsAjaxController extends Controller {
 	 * @param string $param the post parameter that should be turned into a bool
 	 * @return a PHP boolean
 	 */
-	private function postParamToBool($param){
+	public function postParamToBool($param){
 		if($param === 'false') {
 			return false;
 		} else {
@@ -189,14 +189,27 @@ class NewsAjaxController extends Controller {
 
 	/**
 	 * Used for setting the showAll value from a post request
-	 * @param string $showAll a string with either "true" or "false" sets the showAll
+	 * @param bool $showAll sets the value
 	 */
-	public function setShowAll($showAll){
-		$showAll = $this->postParamToBool($showAll);
+	public function setShowAll($showAll){		
 		$this->setUserValue('showAll', $showAll);
 		$this->renderJSON();
 	}
 
+
+	/**
+	 * Used for setting the showAll value from a post request
+	 * @param int $folderId the id of the folder that we want to open or collapse
+	 * @param bool $opened sets the folder opened or collapsed
+	 */
+	public function collapseFolder($folderId, $opened){
+		$folderMapper = new \OCA\News\FolderMapper($this->userId);
+		$folder = $folderMapper->find($folderId);
+		$folder->setOpened($opened);
+		$success = $folderMapper->update($folder);
+
+		$this->renderJSON();
+	}
 
 
 }
