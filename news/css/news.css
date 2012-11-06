@@ -542,6 +542,7 @@ div.add_parentfolder {
 				font-size: 1.5em;
 				margin: 0 13em 0 2.1em;
 				font-weight: bold;
+				word-break: break-all;
 			}
 
 				.feed_item h1.item_title a {
