@@ -26,7 +26,7 @@
 		<h2 class="item_author">from 
 			<a href="#" 
 				ng-click="loadFeed(item.feedId)"
-				class="from_feed">{{item.feedTitle}}</a> by {{item.author}}
+				class="from_feed">{{item.feedTitle}}</a> {{item.getAuthorLine()}}
 		</h2>
 
 		<div class="body" 

@@ -29,8 +29,12 @@
   ]);
 
   $(document).ready(function() {
-    $('#feed_items').children('ul').hide();
-    return $('#feed_items').children('ul').show();
+    return $(this).keyup(function(e) {
+      if ((e.which === 116) || (e.which === 82 && e.ctrlKey)) {
+        document.location.reload(true);
+        return false;
+      }
+    });
   });
 
   /*
@@ -80,39 +84,6 @@
           }
         });
       };
-    }
-  ]);
-
-  /*
-  # ownCloud - News app
-  #
-  # @author Bernhard Posselt
-  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
-  #
-  # This file is licensed under the Affero General Public License version 3 or later.
-  # See the COPYING-README file
-  #
-  */
-
-
-  angular.module('News').directive('scrollTop', [
-    'Loading', function(Loading) {
-      var scrollToTop, scrollTopDirective;
-      scrollToTop = function(elem) {
-        var $elem, scroll;
-        if (!Loading.loadAdditional) {
-          $elem = $(elem);
-          scroll = $elem.parent().parent();
-          return scroll.scrollTop(0);
-        }
-      };
-      scrollTopDirective = {
-        restrict: 'A',
-        link: function(scope, elm, attr) {
-          return scrollToTop(elm);
-        }
-      };
-      return scrollTopDirective;
     }
   ]);
 
@@ -449,8 +420,7 @@
   angular.module('News').factory('Loading', function() {
     var loading;
     return loading = {
-      loading: 0,
-      loadAdditional: void 0
+      loading: 0
     };
   });
 
@@ -595,6 +565,13 @@
         ItemModel.prototype.bindAdditional = function(item) {
           item.getRelativeDate = function() {
             return moment.unix(this.date).fromNow();
+          };
+          item.getAuthorLine = function() {
+            if (this.author !== null && this.author !== "") {
+              return "by " + this.author;
+            } else {
+              return "";
+            }
           };
           return item;
         };
@@ -851,9 +828,7 @@
           this.loaderQueue = 0;
           this.$scope.items = this.itemModel.getItems();
           this.$scope.loading = this.loading;
-          this.$scope.scroll = function() {
-            return _this.loading.loadAdditional = true;
-          };
+          this.$scope.scroll = function() {};
           this.$scope.activeFeed = this.activeFeed;
           this.$scope.$on('read', function(scope, params) {
             return _this.$scope.markRead(params.id, params.feed);
@@ -967,7 +942,6 @@
             _this.activeFeed.id = id;
             _this.activeFeed.type = type;
             _this.$scope.triggerHideRead();
-            _this.loading.loadAdditional = false;
             return _this.persistence.loadFeed(type, id, 0, 0, 20);
           };
           this.$scope.getUnreadCount = function(type, id) {

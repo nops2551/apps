@@ -42,7 +42,6 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 				@activeFeed.id = id
 				@activeFeed.type = type
 				@$scope.triggerHideRead()
-				@loading.loadAdditional = false
 				# TODO: set limit, latestFeedId and latestTimestamp
 				@persistence.loadFeed(type, id, 0, 0, 20)
 
