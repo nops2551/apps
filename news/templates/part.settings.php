@@ -47,10 +47,7 @@
 	<div class="open_settings" ng-show="settingsAreShown()">
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Subscribelet')); ?></strong></legend>
-			<p><?php
-				require_once OC_App::getAppPath('news') .'/templates/subscribelet.php';
-				createSubscribelet();
-			?>
+			<p><?php print_unescaped($this->inc('part.subscribelet'));?>
 			</p>
 		</fieldset>
 		<fieldset class="personalblock">
