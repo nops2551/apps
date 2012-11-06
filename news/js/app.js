@@ -209,6 +209,17 @@
           });
         }
 
+        FeedModel.prototype.add = function(item) {
+          return FeedModel.__super__.add.call(this, this.bindAdditional(item));
+        };
+
+        FeedModel.prototype.bindAdditional = function(item) {
+          if (item.icon === "url()") {
+            item.icon = 'url(' + OC.imagePath('news', 'rss.svg') + ')';
+          }
+          return item;
+        };
+
         return FeedModel;
 
       })(Model);
@@ -567,7 +578,7 @@
             return moment.unix(this.date).fromNow();
           };
           item.getAuthorLine = function() {
-            if (this.author !== null && this.author !== "") {
+            if (this.author !== null && this.author.trim() !== "") {
               return "by " + this.author;
             } else {
               return "";

@@ -22,6 +22,13 @@ angular.module('News').factory 'FeedModel',
 					for feed in data['feeds']
 						@add(feed)
 
+		add: (item) ->
+			super(@bindAdditional(item))
+
+		bindAdditional: (item) ->
+			if item.icon == "url()"
+				item.icon = 'url(' + OC.imagePath('news', 'rss.svg') + ')'
+			return item
 
 	return new FeedModel($rootScope)
 ]

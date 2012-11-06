@@ -1,4 +1,4 @@
-<ul ng-hide="loading.loading > 0">
+<ul>
 	<li class="feed_item"
 		ng-repeat="item in items|itemInFeed:{type: activeFeed.type, id: activeFeed.id} | orderBy:date "
 		ng-class="{read: item.isRead}"

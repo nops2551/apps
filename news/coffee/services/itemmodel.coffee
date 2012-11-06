@@ -31,8 +31,9 @@ angular.module('News').factory 'ItemModel',
 		bindAdditional: (item) ->
 			item.getRelativeDate = ->
 				return moment.unix(this.date).fromNow();
+			
 			item.getAuthorLine = ->
-				if this.author != null and this.author != ""
+				if this.author != null and this.author.trim() != ""
 					return "by " + this.author
 				else
 					return ""

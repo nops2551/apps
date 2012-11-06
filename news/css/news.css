@@ -441,7 +441,6 @@ div.add_parentfolder {
             background-image: url('%webroot%/core/img/loading.gif');
             background-position: center;
             background-repeat: no-repeat;
-            background-size:
         }
 
         #rightcontent #feed_items.loading > ul {
