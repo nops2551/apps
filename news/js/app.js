@@ -626,7 +626,7 @@
         url = OC.filePath(this.appName, 'ajax', file + '.php');
         data = $.param(data);
         headers = {
-          requesttoken: OC.Request.Token,
+          requesttoken: oc_requesttoken,
           'Content-Type': 'application/x-www-form-urlencoded'
         };
         return this.$http.post(url, data, {

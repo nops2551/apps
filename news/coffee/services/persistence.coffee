@@ -26,7 +26,7 @@ angular.module('News').factory 'Persistence', () ->
 
 			# csrf token
 			headers =
-				requesttoken: OC.Request.Token
+				requesttoken: oc_requesttoken
 				'Content-Type': 'application/x-www-form-urlencoded'
 			
 			@$http.post(url, data, {headers: headers}).
