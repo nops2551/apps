@@ -20,7 +20,7 @@ angular.module('News').factory 'Model', ->
 
 		add: (item) ->
 			# check if we need to update or create the item
-			if item.id of @itemIds
+			if @itemIds[item.id] != undefined
 				@update(item)
 			else
 				@items.push(item)
@@ -28,7 +28,7 @@ angular.module('News').factory 'Model', ->
 
 
 		update: (item) ->
-			updatedItem = @items[item.id]
+			updatedItem = @itemIds[item.id]
 			for key, value of item
 				if key != 'id'
 					updatedItem[key] = value

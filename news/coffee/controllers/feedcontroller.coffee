@@ -11,15 +11,15 @@
 
 angular.module('News').controller 'FeedController', 
 ['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews',
-'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry',
+'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', '$rootScope', 'Loading',
 (Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews
-StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
+StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 
 	class FeedController extends Controller
 
 		constructor: (@$scope, @feedModel, @folderModel, @feedType, @activeFeed, 
 					  @persistence, @starredCount, @showAll, @itemModel,
-					  @garbageRegistry) ->
+					  @garbageRegistry, @$rootScope, @loading) ->
 
 			@showSubscriptions = true
 
@@ -42,7 +42,10 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
 				@activeFeed.id = id
 				@activeFeed.type = type
 				@$scope.triggerHideRead()
-				# TODO: send load command to server
+				@loading.loadAdditional = false
+				# TODO: set limit, latestFeedId and latestTimestamp
+				@persistence.loadFeed(type, id, 0, 0, 20)
+
 
 			@$scope.getUnreadCount = (type, id) =>
 				@getUnreadCount(type, id)
@@ -57,6 +60,9 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
 
 			@$scope.$on 'triggerHideRead', =>
 				@triggerHideRead()
+
+			@$scope.$on 'loadFeed', (scope, params) =>
+				@$scope.loadFeed(params.type, params.id)
 
 
 
@@ -134,5 +140,5 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry) ->
 
 	return new FeedController($scope, FeedModel, FolderModel, FeedType, 
 								ActiveFeed, PersistenceNews, StarredCount, ShowAll,
-								ItemModel, GarbageRegistry)
+								ItemModel, GarbageRegistry, $rootScope, Loading)
 ]

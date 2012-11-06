@@ -1,4 +1,4 @@
-<ul>
+<ul ng-hide="loading.loading > 0">
 	<li class="feed_item"
 		ng-repeat="item in items|itemInFeed:{type: activeFeed.type, id: activeFeed.id} | orderBy:date "
 		ng-class="{read: item.isRead}"
@@ -23,7 +23,11 @@
 				target="_blank" href="{{item.url}}">{{item.title}}</a>
 		</h1>
 
-		<h2 class="item_author">from <a href="#" class="from_feed">{{item.title}}</a> by {{item.author}}</h2>
+		<h2 class="item_author">from 
+			<a href="#" 
+				ng-click="loadFeed(item.feedId)"
+				class="from_feed">{{item.feedTitle}}</a> by {{item.author}}
+		</h2>
 
 		<div class="body" 
 				ng-click="markRead(item.id, item.feedId)" 

@@ -11,14 +11,15 @@
 
 angular.module('News').controller 'ItemController', 
 ['Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel',
-'StarredCount', 'GarbageRegistry', 'ShowAll', 'Loading',
+'StarredCount', 'GarbageRegistry', 'ShowAll', 'Loading', '$rootScope', 'FeedType',
 (Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, 
-StarredCount, GarbageRegistry, ShowAll, Loading) ->
+StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType) ->
 
 	class ItemController extends Controller
 
 		constructor: (@$scope, @itemModel, @activeFeed, @persistence, @feedModel,
-						@starredCount, @garbageRegistry, @showAll, @loading) ->
+						@starredCount, @garbageRegistry, @showAll, @loading
+						@$rootScope, @feedType) ->
 
 			@batchSize = 4
 			@loaderQueue = 0
@@ -28,12 +29,18 @@ StarredCount, GarbageRegistry, ShowAll, Loading) ->
 
 
 			@$scope.scroll = =>
-				#console.log 'scrolling'
 
 			@$scope.activeFeed = @activeFeed
 
 			@$scope.$on 'read', (scope, params) =>
 				@$scope.markRead(params.id, params.feed)
+
+
+			@$scope.loadFeed = (feedId) =>
+				params =
+					id: feedId
+					type: @feedType.Feed
+				@$rootScope.$broadcast 'loadFeed', params
 
 
 			@$scope.markRead = (itemId, feedId) =>
@@ -42,7 +49,7 @@ StarredCount, GarbageRegistry, ShowAll, Loading) ->
 				
 				if not item.keptUnread && !item.isRead
 					item.isRead = true
-					feed.unReadCount -= 1
+					feed.unreadCount -= 1
 
 					# this item will be completely deleted if showAll is false
 					if not @showAll.showAll
@@ -60,12 +67,7 @@ StarredCount, GarbageRegistry, ShowAll, Loading) ->
 
 				if item.isRead
 					item.isRead = false
-					feed.unReadCount += 1
-
-					# if we marked it as to be deleted, unregister it from being
-					# deleted
-					if not @showAll.showAll
-						@garbageRegistry.unregister(item)
+					feed.unreadCount += 1
 
 					@persistence.markRead(itemId, false)
 
@@ -88,5 +90,5 @@ StarredCount, GarbageRegistry, ShowAll, Loading) ->
 
 	return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews
 								FeedModel, StarredCount, GarbageRegistry, 
-								ShowAll, Loading)
+								ShowAll, Loading, $rootScope, FeedType)
 ]

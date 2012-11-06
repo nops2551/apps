@@ -24,13 +24,14 @@ angular.module('News').factory 'ItemModel',
 
 
 		add: (item) ->
-			item = @bindHelperFunctions(item)
+			item = @bindAdditional(item)
 			super(item)
 
 
-		bindHelperFunctions: (item) ->
+		bindAdditional: (item) ->
 			item.getRelativeDate = ->
 				return moment.unix(this.date).fromNow();
+
 			return item
 
 	return new ItemModel($rootScope)

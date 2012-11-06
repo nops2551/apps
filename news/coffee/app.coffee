@@ -14,11 +14,15 @@ app = angular.module('News', []).config ($provide) ->
 	$provide.value('MarkReadTimeout', 500)
 	$provide.value('ScrollTimeout', 500)
 
-app.run ['$rootScope', 'PersistenceNews', ($rootScope, PersistenceNews) ->
+app.run ['PersistenceNews', (PersistenceNews) ->
 	PersistenceNews.loadInitial()
-	$rootScope.$broadcast('scrollTop')
 ]
 
-
-
+$(document).ready ->
+	# this is used to forces browser to reload content after refreshing
+	# and thus clearing the scroll cache
+	$(this).keyup (e) ->
+		if (e.which == 116) || (e.which == 82 && e.ctrlKey)
+			document.location.reload(true);
+			return false
 

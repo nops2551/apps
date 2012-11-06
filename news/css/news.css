@@ -444,6 +444,10 @@ div.add_parentfolder {
             background-size:
         }
 
+        #rightcontent #feed_items.loading > ul {
+            display: none;
+        }
+
         #rightcontent #feed_items li:active {
             background: none;
         }
