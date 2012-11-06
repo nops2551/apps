@@ -17,6 +17,9 @@ angular.module('News').controller 'SettingsController',
 
 		constructor: (@$scope, @$rootScope, @showAll, @persistence) ->
 			
+			@add = false
+			@settings = false
+
 			@$scope.getShowAll = =>
 				return @showAll.showAll
 
@@ -25,6 +28,32 @@ angular.module('News').controller 'SettingsController',
 				@persistence.showAll(value)
 				@$rootScope.$broadcast('triggerHideRead')
 
+			@$scope.toggleSettings = =>
+				if @add
+					@add = false
+				@settings = !@settings
+
+			@$scope.toggleAdd = =>
+				if @settings
+					@settings = false
+				@add = !@add
+
+			@$scope.isExpanded = =>
+				return  @settings || @add
+
+			@$scope.addIsShown = =>
+				return @add
+
+			@$scope.settingsAreShown = =>
+				return @settings
+
+			@$scope.addFeed = (url) =>
+				console.log url
+				$scope.feedUrl = ""
+
+			@$scope.addFolder = (name) =>
+				console.log name
+				$scope.folderName = ""
 
 
 	return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews)

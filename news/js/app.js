@@ -1088,6 +1088,8 @@
           this.$rootScope = $rootScope;
           this.showAll = showAll;
           this.persistence = persistence;
+          this.add = false;
+          this.settings = false;
           this.$scope.getShowAll = function() {
             return _this.showAll.showAll;
           };
@@ -1095,6 +1097,35 @@
             _this.showAll.showAll = value;
             _this.persistence.showAll(value);
             return _this.$rootScope.$broadcast('triggerHideRead');
+          };
+          this.$scope.toggleSettings = function() {
+            if (_this.add) {
+              _this.add = false;
+            }
+            return _this.settings = !_this.settings;
+          };
+          this.$scope.toggleAdd = function() {
+            if (_this.settings) {
+              _this.settings = false;
+            }
+            return _this.add = !_this.add;
+          };
+          this.$scope.isExpanded = function() {
+            return _this.settings || _this.add;
+          };
+          this.$scope.addIsShown = function() {
+            return _this.add;
+          };
+          this.$scope.settingsAreShown = function() {
+            return _this.settings;
+          };
+          this.$scope.addFeed = function(url) {
+            console.log(url);
+            return $scope.feedUrl = "";
+          };
+          this.$scope.addFolder = function(name) {
+            console.log(name);
+            return $scope.folderName = "";
           };
         }
 
@@ -1130,6 +1161,8 @@
           this.$rootScope = $rootScope;
           this.showAll = showAll;
           this.persistence = persistence;
+          this.add = false;
+          this.settings = false;
           this.$scope.getShowAll = function() {
             return _this.showAll.showAll;
           };
@@ -1137,6 +1170,35 @@
             _this.showAll.showAll = value;
             _this.persistence.showAll(value);
             return _this.$rootScope.$broadcast('triggerHideRead');
+          };
+          this.$scope.toggleSettings = function() {
+            if (_this.add) {
+              _this.add = false;
+            }
+            return _this.settings = !_this.settings;
+          };
+          this.$scope.toggleAdd = function() {
+            if (_this.settings) {
+              _this.settings = false;
+            }
+            return _this.add = !_this.add;
+          };
+          this.$scope.isExpanded = function() {
+            return _this.settings || _this.add;
+          };
+          this.$scope.addIsShown = function() {
+            return _this.add;
+          };
+          this.$scope.settingsAreShown = function() {
+            return _this.settings;
+          };
+          this.$scope.addFeed = function(url) {
+            console.log(url);
+            return $scope.feedUrl = "";
+          };
+          this.$scope.addFolder = function(name) {
+            console.log(name);
+            return $scope.folderName = "";
           };
         }
 
