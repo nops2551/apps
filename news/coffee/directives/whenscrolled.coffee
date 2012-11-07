@@ -33,14 +33,16 @@ angular.module('News').directive 'whenScrolled',
 						markingRead = true
 						# only broadcast elements that are not already read
 						# and that are beyond the top border
-						$(elm).find('.feed_item:not(.read)').each ->
-							
-							id = parseInt($(this).data('id'), 10)
-							feed = parseInt($(this).data('feed'), 10)
-							
-							offset = $(this).position().top
+						$elems = $(elm).find('.feed_item:not(.read)')
+
+						for feedItem in $elems
+							offset = $(feedItem).position().top
 							if offset <= -50
+								id = parseInt($(feedItem).data('id'), 10)
+								feed = parseInt($(feedItem).data('feed'), 10)
 								$rootScope.$broadcast('read', {id: id, feed: feed})
+							else
+								break
 
 					, MarkReadTimeout
 
