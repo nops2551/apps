@@ -962,7 +962,13 @@
             return _this.persistence.loadFeed(type, id, 0, 0, 20);
           };
           this.$scope.getUnreadCount = function(type, id) {
-            return _this.getUnreadCount(type, id);
+            var count;
+            count = _this.getUnreadCount(type, id);
+            if (count > 999) {
+              return ">999";
+            } else {
+              return count;
+            }
           };
           this.$scope.triggerHideRead = function() {
             return _this.triggerHideRead();
@@ -1066,6 +1072,79 @@
 
       })(Controller);
       return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading);
+    }
+  ]);
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
+  angular.module('News').controller('SettingsController', [
+    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews) {
+      var SettingsController;
+      SettingsController = (function(_super) {
+
+        __extends(SettingsController, _super);
+
+        function SettingsController($scope, $rootScope, showAll, persistence) {
+          var _this = this;
+          this.$scope = $scope;
+          this.$rootScope = $rootScope;
+          this.showAll = showAll;
+          this.persistence = persistence;
+          this.add = false;
+          this.settings = false;
+          this.$scope.getShowAll = function() {
+            return _this.showAll.showAll;
+          };
+          this.$scope.setShowAll = function(value) {
+            _this.showAll.showAll = value;
+            _this.persistence.showAll(value);
+            return _this.$rootScope.$broadcast('triggerHideRead');
+          };
+          this.$scope.toggleSettings = function() {
+            if (_this.add) {
+              _this.add = false;
+            }
+            return _this.settings = !_this.settings;
+          };
+          this.$scope.toggleAdd = function() {
+            if (_this.settings) {
+              _this.settings = false;
+            }
+            return _this.add = !_this.add;
+          };
+          this.$scope.isExpanded = function() {
+            return _this.settings || _this.add;
+          };
+          this.$scope.addIsShown = function() {
+            return _this.add;
+          };
+          this.$scope.settingsAreShown = function() {
+            return _this.settings;
+          };
+          this.$scope.addFeed = function(url) {
+            console.log(url);
+            return $scope.feedUrl = "";
+          };
+          this.$scope.addFolder = function(name) {
+            console.log(name);
+            return $scope.folderName = "";
+          };
+        }
+
+        return SettingsController;
+
+      })(Controller);
+      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews);
     }
   ]);
 

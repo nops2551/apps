@@ -47,7 +47,11 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 
 
 			@$scope.getUnreadCount = (type, id) =>
-				@getUnreadCount(type, id)
+				count = @getUnreadCount(type, id)
+				if count > 999
+					return ">999"
+				else 
+					return count
 
 			@$scope.triggerHideRead = =>
 				@triggerHideRead()
