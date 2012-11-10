@@ -10085,9 +10085,9 @@ function limitToFilter(){
  */
 orderByFilter.$inject = ['$parse'];
 function orderByFilter($parse){
-  return function(array, sortPredicate, reverseOrder) {
-    if (!(array instanceof Array)) return array;
-    if (!sortPredicate) return array;
+  return function(input, sortPredicate, reverseOrder) {
+    if (!(input instanceof Array) && !(input instanceof Object)) return input;
+    if (!sortPredicate) return input;
     sortPredicate = isArray(sortPredicate) ? sortPredicate: [sortPredicate];
     sortPredicate = map(sortPredicate, function(predicate){
       var descending = false, get = predicate || identity;
@@ -10102,9 +10102,14 @@ function orderByFilter($parse){
         return compare(get(a),get(b));
       }, descending);
     });
-    var arrayCopy = [];
-    for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
-    return arrayCopy.sort(reverseComparator(comparator, reverseOrder));
+    var inputCopy = [];
+    if(input instanceof Array) {
+    for ( var i = 0; i < input.length; i++) { inputCopy.push(input[i]); }
+    }
+    else if(input instanceof Object) {
+    for ( var i in input) { inputCopy.push(input[i]); }
+    }
+    return inputCopy.sort(reverseComparator(comparator, reverseOrder));
 
     function comparator(o1, o2){
       for ( var i = 0; i < sortPredicate.length; i++) {
