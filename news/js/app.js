@@ -131,65 +131,6 @@
   */
 
 
-  angular.module('News').filter('itemInFeed', [
-    'FeedType', 'FeedModel', function(FeedType, FeedModel) {
-      return function(items, typeAndId) {
-        var feed, feedIds, id, item, result, type, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref;
-        result = [];
-        type = typeAndId.type;
-        id = typeAndId.id;
-        switch (type) {
-          case FeedType.Subscriptions:
-            return items;
-          case FeedType.Starred:
-            for (_i = 0, _len = items.length; _i < _len; _i++) {
-              item = items[_i];
-              if (item.isImportant) {
-                result.push(item);
-              }
-            }
-            break;
-          case FeedType.Folder:
-            for (_j = 0, _len1 = items.length; _j < _len1; _j++) {
-              item = items[_j];
-              feedIds = {};
-              _ref = FeedModel.getItems();
-              for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
-                feed = _ref[_k];
-                if (feed.folderId === id) {
-                  feedIds[feed.id] = true;
-                }
-              }
-              if (feedIds[item.feedId]) {
-                result.push(item);
-              }
-            }
-            break;
-          case FeedType.Feed:
-            for (_l = 0, _len3 = items.length; _l < _len3; _l++) {
-              item = items[_l];
-              if (item.feedId === id) {
-                result.push(item);
-              }
-            }
-        }
-        return result;
-      };
-    }
-  ]);
-
-  /*
-  # ownCloud - News app
-  #
-  # @author Bernhard Posselt
-  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
-  #
-  # This file is licensed under the Affero General Public License version 3 or later.
-  # See the COPYING-README file
-  #
-  */
-
-
   angular.module('News').factory('FeedModel', [
     'Model', '$rootScope', function(Model, $rootScope) {
       var FeedModel;
@@ -1045,7 +986,7 @@
             var count;
             count = _this.getUnreadCount(type, id);
             if (count > 999) {
-              return ">999";
+              return "999+";
             } else {
               return count;
             }
