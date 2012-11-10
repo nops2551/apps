@@ -13,10 +13,15 @@ angular.module('News').factory 'Model', ->
 
 	class Model
 
-		constructor: () ->
+		constructor: (@reactOn, @$rootScope) ->
 			@items = []
 			@itemIds = {}
 			@markAccessed()
+			
+			@$rootScope.$on 'update', (scope, data) =>
+				if data[@reactOn]
+					for item in data[@reactOn]
+						@add(item)
 
 
 		markAccessed: () ->

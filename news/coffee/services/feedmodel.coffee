@@ -15,12 +15,8 @@ angular.module('News').factory 'FeedModel',
 
 	class FeedModel extends Model
 
-		constructor: (@$rootScope) ->
-			super()
-			@$rootScope.$on 'update', (scope, data) =>
-				if data['feeds']
-					for feed in data['feeds']
-						@add(feed)
+		constructor: ($rootScope) ->
+			super('feeds', $rootScope)
 
 		add: (item) ->
 			super(@bindAdditional(item))

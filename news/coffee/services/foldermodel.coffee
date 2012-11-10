@@ -15,12 +15,8 @@ angular.module('News').factory 'FolderModel',
 
 	class FolderModel extends Model
 
-		constructor: (@$rootScope) ->
-			super()
-			@$rootScope.$on 'update', (scope, data) =>
-				if data['folders']
-					for folder in data['folders']
-						@add(folder)
+		constructor: ($rootScope) ->
+			super('folders', $rootScope)
 
 	return new FolderModel($rootScope)
 ]

@@ -139,21 +139,7 @@
         __extends(FeedModel, _super);
 
         function FeedModel($rootScope) {
-          var _this = this;
-          this.$rootScope = $rootScope;
-          FeedModel.__super__.constructor.call(this);
-          this.$rootScope.$on('update', function(scope, data) {
-            var feed, _i, _len, _ref, _results;
-            if (data['feeds']) {
-              _ref = data['feeds'];
-              _results = [];
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                feed = _ref[_i];
-                _results.push(_this.add(feed));
-              }
-              return _results;
-            }
-          });
+          FeedModel.__super__.constructor.call(this, 'feeds', $rootScope);
         }
 
         FeedModel.prototype.add = function(item) {
@@ -425,21 +411,7 @@
         __extends(FolderModel, _super);
 
         function FolderModel($rootScope) {
-          var _this = this;
-          this.$rootScope = $rootScope;
-          FolderModel.__super__.constructor.call(this);
-          this.$rootScope.$on('update', function(scope, data) {
-            var folder, _i, _len, _ref, _results;
-            if (data['folders']) {
-              _ref = data['folders'];
-              _results = [];
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                folder = _ref[_i];
-                _results.push(_this.add(folder));
-              }
-              return _results;
-            }
-          });
+          FolderModel.__super__.constructor.call(this, 'folders', $rootScope);
         }
 
         return FolderModel;
@@ -498,28 +470,14 @@
         __extends(ItemModel, _super);
 
         function ItemModel($rootScope, feedType, feedModel, folderModel) {
-          var _this = this;
-          this.$rootScope = $rootScope;
           this.feedType = feedType;
           this.feedModel = feedModel;
           this.folderModel = folderModel;
-          ItemModel.__super__.constructor.call(this);
+          ItemModel.__super__.constructor.call(this, 'items', $rootScope);
           this.feedCache = {};
           this.folderCache = {};
           this.folderCacheLastModified = 0;
           this.importantCache = {};
-          this.$rootScope.$on('update', function(scope, data) {
-            var item, _i, _len, _ref, _results;
-            if (data['items']) {
-              _ref = data['items'];
-              _results = [];
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                item = _ref[_i];
-                _results.push(_this.add(item));
-              }
-              return _results;
-            }
-          });
         }
 
         ItemModel.prototype.add = function(item) {
@@ -694,10 +652,25 @@
     var Model;
     return Model = (function() {
 
-      function Model() {
+      function Model(reactOn, $rootScope) {
+        var _this = this;
+        this.reactOn = reactOn;
+        this.$rootScope = $rootScope;
         this.items = [];
         this.itemIds = {};
         this.markAccessed();
+        this.$rootScope.$on('update', function(scope, data) {
+          var item, _i, _len, _ref, _results;
+          if (data[_this.reactOn]) {
+            _ref = data[_this.reactOn];
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              item = _ref[_i];
+              _results.push(_this.add(item));
+            }
+            return _results;
+          }
+        });
       }
 
       Model.prototype.markAccessed = function() {

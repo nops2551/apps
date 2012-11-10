@@ -15,17 +15,12 @@ angular.module('News').factory 'ItemModel',
 
 	class ItemModel extends Model
 
-		constructor: (@$rootScope, @feedType, @feedModel, @folderModel) ->
-			super()
+		constructor: ($rootScope, @feedType, @feedModel, @folderModel) ->
+			super('items', $rootScope)			
 			@feedCache = {}
 			@folderCache = {}
 			@folderCacheLastModified = 0
 			@importantCache = {}
-
-			@$rootScope.$on 'update', (scope, data) =>
-				if data['items']
-					for item in data['items']
-						@add(item)
 
 
 		add: (item) ->
