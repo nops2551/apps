@@ -10,13 +10,18 @@
 ###
 
 angular.module('News').factory 'ItemModel', 
-['Model', '$rootScope', 
-(Model, $rootScope) ->
+['Model', '$rootScope', 'FeedType', 'FeedModel', 'FolderModel',
+(Model, $rootScope, FeedType, FeedModel, FolderModel) ->
 
 	class ItemModel extends Model
 
-		constructor: (@$rootScope) ->
+		constructor: (@$rootScope, @feedType, @feedModel, @folderModel) ->
 			super()
+			@feedCache = {}
+			@folderCache = {}
+			@folderCacheLastModified = 0
+			@importantCache = {}
+
 			@$rootScope.$on 'update', (scope, data) =>
 				if data['items']
 					for item in data['items']
@@ -24,8 +29,77 @@ angular.module('News').factory 'ItemModel',
 
 
 		add: (item) ->
+			# cache for feed access
+			if not @feedCache[item.feedId]
+				@feedCache[item.feedId] = {}
+			
+			@feedCache[item.feedId][item.id] = item
 			item = @bindAdditional(item)
 			super(item)
+
+
+		removeById: (itemId) ->
+			# clear caches
+			item = @getItemById(itemId)
+			delete @feedCache[item.feedId][itemId]
+			delete @importantCache[itemId]
+			super(itemId)
+
+
+		_objectToArray: (passedObject) ->
+			objectArray = []
+			for key, value of passedObject
+				objectArray.push(value)
+			return objectArray
+
+
+		getItemsByTypeAndId: (type, id) ->
+			switch type
+				when @feedType.Feed
+					items = @feedCache[id] || {}
+					console.log items
+					return items
+
+				when @feedType.Subscriptions
+					return @getItems()
+
+				when @feedType.Folder
+					# invalidate the foldercache if the last modified date is
+					# not the currently used one
+					if @folderCacheLastModified != @feedModel.getLastModified()
+						@folderCache = {}
+						@folderCacheLastModified = @feedModel.getLastModified()
+
+					# if the folderarray does not yet exist, build it
+					# otherwise use the last generated one
+					if @folderCache[id] == undefined
+						@folderCache[id] = []
+						for feed in @feedModel.getItems()
+							if feed.folderId == id
+								@folderCache[id].push(feed.id)
+					
+					items = {}
+					for feedId in @folderCache[id]
+						# merge objects
+						$.extend(items, @feedCache[feedId])
+
+					return items
+				
+				when @feedType.Starred
+					items = []
+					for itemId in @importantCache
+						items.push(@getItemById(itemId))
+
+					return items
+
+
+		markImportant: (itemId, isImportant) ->
+			if isImportant
+				@importantCache[itemId] = true
+				@getItemById(itemId).isImportant = true
+			else
+				delete @importantCache[itemId]
+				@getItemById(itemId).isImportant = false
 
 
 		bindAdditional: (item) ->
@@ -39,5 +113,5 @@ angular.module('News').factory 'ItemModel',
 					return ""
 			return item
 
-	return new ItemModel($rootScope)
+	return new ItemModel($rootScope, FeedType, FeedModel, FolderModel)
 ]

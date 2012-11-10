@@ -31,7 +31,10 @@ angular.module('News').factory 'Persistence', () ->
 			
 			@$http.post(url, data, {headers: headers}).
 			success((data, status, headers, config) ->
-				callback(data)
+				if data.status == "error"
+					alert data.data.message
+				else
+					callback(data)
 			).
 			error (data, status, headers, config) ->
 				console.warn('Error occured: ')

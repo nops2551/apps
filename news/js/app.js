@@ -550,16 +550,23 @@
 
 
   angular.module('News').factory('ItemModel', [
-    'Model', '$rootScope', function(Model, $rootScope) {
+    'Model', '$rootScope', 'FeedType', 'FeedModel', 'FolderModel', function(Model, $rootScope, FeedType, FeedModel, FolderModel) {
       var ItemModel;
       ItemModel = (function(_super) {
 
         __extends(ItemModel, _super);
 
-        function ItemModel($rootScope) {
+        function ItemModel($rootScope, feedType, feedModel, folderModel) {
           var _this = this;
           this.$rootScope = $rootScope;
+          this.feedType = feedType;
+          this.feedModel = feedModel;
+          this.folderModel = folderModel;
           ItemModel.__super__.constructor.call(this);
+          this.feedCache = {};
+          this.folderCache = {};
+          this.folderCacheLastModified = 0;
+          this.importantCache = {};
           this.$rootScope.$on('update', function(scope, data) {
             var item, _i, _len, _ref, _results;
             if (data['items']) {
@@ -575,8 +582,82 @@
         }
 
         ItemModel.prototype.add = function(item) {
+          if (!this.feedCache[item.feedId]) {
+            this.feedCache[item.feedId] = {};
+          }
+          this.feedCache[item.feedId][item.id] = item;
           item = this.bindAdditional(item);
           return ItemModel.__super__.add.call(this, item);
+        };
+
+        ItemModel.prototype.removeById = function(itemId) {
+          var item;
+          item = this.getItemById(itemId);
+          delete this.feedCache[item.feedId][itemId];
+          delete this.importantCache[itemId];
+          return ItemModel.__super__.removeById.call(this, itemId);
+        };
+
+        ItemModel.prototype._objectToArray = function(passedObject) {
+          var key, objectArray, value;
+          objectArray = [];
+          for (key in passedObject) {
+            value = passedObject[key];
+            objectArray.push(value);
+          }
+          return objectArray;
+        };
+
+        ItemModel.prototype.getItemsByTypeAndId = function(type, id) {
+          var feed, feedId, itemId, items, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+          switch (type) {
+            case this.feedType.Feed:
+              items = this.feedCache[id] || {};
+              console.log(items);
+              return items;
+            case this.feedType.Subscriptions:
+              return this.getItems();
+            case this.feedType.Folder:
+              if (this.folderCacheLastModified !== this.feedModel.getLastModified()) {
+                this.folderCache = {};
+                this.folderCacheLastModified = this.feedModel.getLastModified();
+              }
+              if (this.folderCache[id] === void 0) {
+                this.folderCache[id] = [];
+                _ref = this.feedModel.getItems();
+                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                  feed = _ref[_i];
+                  if (feed.folderId === id) {
+                    this.folderCache[id].push(feed.id);
+                  }
+                }
+              }
+              items = {};
+              _ref1 = this.folderCache[id];
+              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                feedId = _ref1[_j];
+                $.extend(items, this.feedCache[feedId]);
+              }
+              return items;
+            case this.feedType.Starred:
+              items = [];
+              _ref2 = this.importantCache;
+              for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+                itemId = _ref2[_k];
+                items.push(this.getItemById(itemId));
+              }
+              return items;
+          }
+        };
+
+        ItemModel.prototype.markImportant = function(itemId, isImportant) {
+          if (isImportant) {
+            this.importantCache[itemId] = true;
+            return this.getItemById(itemId).isImportant = true;
+          } else {
+            delete this.importantCache[itemId];
+            return this.getItemById(itemId).isImportant = false;
+          }
         };
 
         ItemModel.prototype.bindAdditional = function(item) {
@@ -596,7 +677,7 @@
         return ItemModel;
 
       })(Model);
-      return new ItemModel($rootScope);
+      return new ItemModel($rootScope, FeedType, FeedModel, FolderModel);
     }
   ]);
 
@@ -638,7 +719,11 @@
         return this.$http.post(url, data, {
           headers: headers
         }).success(function(data, status, headers, config) {
-          return callback(data);
+          if (data.status === "error") {
+            return alert(data.data.message);
+          } else {
+            return callback(data);
+          }
         }).error(function(data, status, headers, config) {
           console.warn('Error occured: ');
           console.warn(status);
@@ -671,30 +756,37 @@
       function Model() {
         this.items = [];
         this.itemIds = {};
+        this.markAccessed();
       }
+
+      Model.prototype.markAccessed = function() {
+        return this.lastAccessed = new Date().getTime();
+      };
+
+      Model.prototype.getLastModified = function() {
+        return this.lastAccessed;
+      };
 
       Model.prototype.add = function(item) {
         if (this.itemIds[item.id] !== void 0) {
           return this.update(item);
         } else {
           this.items.push(item);
-          return this.itemIds[item.id] = item;
+          this.itemIds[item.id] = item;
+          return this.markAccessed();
         }
       };
 
       Model.prototype.update = function(item) {
-        var key, updatedItem, value, _results;
+        var key, updatedItem, value;
         updatedItem = this.itemIds[item.id];
-        _results = [];
         for (key in item) {
           value = item[key];
           if (key !== 'id') {
-            _results.push(updatedItem[key] = value);
-          } else {
-            _results.push(void 0);
+            updatedItem[key] = value;
           }
         }
-        return _results;
+        return this.markAccessed();
       };
 
       Model.prototype.removeById = function(id) {
@@ -712,24 +804,9 @@
         }
         if (removeItemIndex !== null) {
           this.items.splice(removeItemIndex, 1);
-          return delete this.itemIds[id];
+          delete this.itemIds[id];
         }
-      };
-
-      Model.prototype.removeByIds = function(ids) {
-        var item, newItemIds, newItems, _i, _len, _ref;
-        newItems = [];
-        newItemIds = {};
-        _ref = this.items;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          item = _ref[_i];
-          if (!ids[item.id]) {
-            newItems.push(item);
-            newItemIds[item.id] = item;
-          }
-        }
-        this.items = newItems;
-        return this.itemIds = newItemIds;
+        return this.markAccessed();
       };
 
       Model.prototype.getItemById = function(id) {
@@ -843,6 +920,9 @@
           this.feedType = feedType;
           this.batchSize = 4;
           this.loaderQueue = 0;
+          this.$scope.getItems = function(type, id) {
+            return _this.itemModel.getItemsByTypeAndId(type, id);
+          };
           this.$scope.items = this.itemModel.getItems();
           this.$scope.loading = this.loading;
           this.$scope.scroll = function() {};
@@ -888,7 +968,7 @@
           this.$scope.toggleImportant = function(itemId) {
             var item;
             item = _this.itemModel.getItemById(itemId);
-            item.isImportant = !item.isImportant;
+            _this.itemModel.setImportant(itemId, !item.isImportant);
             if (item.isImportant) {
               _this.starredCount.count += 1;
             } else {

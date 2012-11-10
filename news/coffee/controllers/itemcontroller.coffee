@@ -24,6 +24,9 @@ StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType) ->
 			@batchSize = 4
 			@loaderQueue = 0
 			
+			@$scope.getItems = (type, id) =>
+				return @itemModel.getItemsByTypeAndId(type, id)
+
 			@$scope.items = @itemModel.getItems()
 			@$scope.loading = @loading
 
@@ -79,7 +82,9 @@ StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType) ->
 			@$scope.toggleImportant = (itemId) =>
 				item = @itemModel.getItemById(itemId)
 				
-				item.isImportant = !item.isImportant
+				# cache
+				@itemModel.setImportant(itemId, !item.isImportant)
+
 				if item.isImportant
 					@starredCount.count += 1
 				else

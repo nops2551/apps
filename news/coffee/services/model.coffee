@@ -16,6 +16,15 @@ angular.module('News').factory 'Model', ->
 		constructor: () ->
 			@items = []
 			@itemIds = {}
+			@markAccessed()
+
+
+		markAccessed: () ->
+			@lastAccessed = new Date().getTime()
+
+
+		getLastModified: () ->
+			return @lastAccessed
 
 
 		add: (item) ->
@@ -25,6 +34,7 @@ angular.module('News').factory 'Model', ->
 			else
 				@items.push(item)
 				@itemIds[item.id] = item
+				@markAccessed()
 
 
 		update: (item) ->
@@ -32,6 +42,7 @@ angular.module('News').factory 'Model', ->
 			for key, value of item
 				if key != 'id'
 					updatedItem[key] = value
+			@markAccessed()
 
 
 		removeById: (id) ->
@@ -46,18 +57,8 @@ angular.module('News').factory 'Model', ->
 			if removeItemIndex != null
 				@items.splice(removeItemIndex, 1)
 				delete @itemIds[id]
+			@markAccessed()
 
-
-
-		removeByIds: (ids) ->
-			newItems = []
-			newItemIds = {}
-			for item in @items
-				if not ids[item.id]
-					newItems.push(item)
-					newItemIds[item.id] = item
-			@items = newItems
-			@itemIds = newItemIds
 
 		getItemById: (id) ->
 			return @itemIds[id]
