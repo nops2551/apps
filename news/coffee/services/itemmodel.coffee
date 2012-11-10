@@ -27,8 +27,11 @@ angular.module('News').factory 'ItemModel',
 			# cache for feed access
 			if not @feedCache[item.feedId]
 				@feedCache[item.feedId] = {}
-			
 			@feedCache[item.feedId][item.id] = item
+			
+			if item.isImportant
+				@importantCache[item.id] = item
+
 			item = @bindAdditional(item)
 			super(item)
 
@@ -52,7 +55,6 @@ angular.module('News').factory 'ItemModel',
 			switch type
 				when @feedType.Feed
 					items = @feedCache[id] || {}
-					console.log items
 					return items
 
 				when @feedType.Subscriptions
@@ -81,14 +83,13 @@ angular.module('News').factory 'ItemModel',
 					return items
 				
 				when @feedType.Starred
-					items = []
-					for itemId in @importantCache
-						items.push(@getItemById(itemId))
-
+					items = {}
+					for itemId, valid of @importantCache
+						items[itemId] = @getItemById(itemId)
 					return items
 
 
-		markImportant: (itemId, isImportant) ->
+		setImportant: (itemId, isImportant) ->
 			if isImportant
 				@importantCache[itemId] = true
 				@getItemById(itemId).isImportant = true

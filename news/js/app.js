@@ -485,6 +485,9 @@
             this.feedCache[item.feedId] = {};
           }
           this.feedCache[item.feedId][item.id] = item;
+          if (item.isImportant) {
+            this.importantCache[item.id] = item;
+          }
           item = this.bindAdditional(item);
           return ItemModel.__super__.add.call(this, item);
         };
@@ -508,11 +511,10 @@
         };
 
         ItemModel.prototype.getItemsByTypeAndId = function(type, id) {
-          var feed, feedId, itemId, items, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+          var feed, feedId, itemId, items, valid, _i, _j, _len, _len1, _ref, _ref1, _ref2;
           switch (type) {
             case this.feedType.Feed:
               items = this.feedCache[id] || {};
-              console.log(items);
               return items;
             case this.feedType.Subscriptions:
               return this.getItems();
@@ -539,17 +541,17 @@
               }
               return items;
             case this.feedType.Starred:
-              items = [];
+              items = {};
               _ref2 = this.importantCache;
-              for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-                itemId = _ref2[_k];
-                items.push(this.getItemById(itemId));
+              for (itemId in _ref2) {
+                valid = _ref2[itemId];
+                items[itemId] = this.getItemById(itemId);
               }
               return items;
           }
         };
 
-        ItemModel.prototype.markImportant = function(itemId, isImportant) {
+        ItemModel.prototype.setImportant = function(itemId, isImportant) {
           if (isImportant) {
             this.importantCache[itemId] = true;
             return this.getItemById(itemId).isImportant = true;
