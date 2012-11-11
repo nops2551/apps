@@ -872,55 +872,39 @@
         };
 
         Cache.prototype.getHighestId = function(type, id) {
-          return this.getCachedId(true, type, id);
+          if (this.isFeed(type)) {
+            return this.highestIds[id] || 0;
+          } else {
+            return this.highestId;
+          }
         };
 
         Cache.prototype.getHighestTimestamp = function(type, id) {
-          return this.getCachedTimestamp(true, type, id);
+          if (this.isFeed(type)) {
+            return this.highestTimestamps[id] || 0;
+          } else {
+            return this.highestTimestamp;
+          }
         };
 
         Cache.prototype.getLowestId = function(type, id) {
-          return this.getCachedId(false, type, id);
+          if (this.isFeed(type)) {
+            return this.lowestIds[id] || 0;
+          } else {
+            return this.lowestId;
+          }
         };
 
         Cache.prototype.getLowestTimestamp = function(type, id) {
-          return this.getCachedTimestamp(false, type, id);
+          if (this.isFeed(type)) {
+            return this.lowestTimestamps[id] || 0;
+          } else {
+            return this.lowestTimestamp;
+          }
         };
 
         Cache.prototype.isFeed = function(type) {
           return type === this.feedType.Feed;
-        };
-
-        Cache.prototype.getCachedId = function(highest, type, id) {
-          if (this.isFeed(type)) {
-            if (highest) {
-              return this.highestIds[id] || 0;
-            } else {
-              return this.lowestIds[id] || 0;
-            }
-          } else {
-            if (highest) {
-              return this.highestId;
-            } else {
-              return this.lowestId;
-            }
-          }
-        };
-
-        Cache.prototype.getCachedTimestamp = function(highest, type, id) {
-          if (this.isFeed(type)) {
-            if (highest) {
-              return this.highestTimestamps[id] || 0;
-            } else {
-              return this.lowestTimestamps[id] || 0;
-            }
-          } else {
-            if (highest) {
-              return this.highestTimestamp;
-            } else {
-              return this.lowestTimestamp;
-            }
-          }
         };
 
         return Cache;

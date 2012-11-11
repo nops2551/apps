@@ -85,50 +85,35 @@ angular.module('News').factory 'Cache',
 
 			
 		getHighestId: (type, id) ->
-			@getCachedId(true, type, id)
+			if @isFeed(type)
+				return @highestIds[id] || 0
+			else
+				return @highestId
 
 
 		getHighestTimestamp: (type, id) ->
-			@getCachedTimestamp(true, type, id)
+			if @isFeed(type)
+				return @highestTimestamps[id] || 0
+			else
+				return @highestTimestamp
 
 
 		getLowestId: (type, id) ->
-			@getCachedId(false, type, id)
+			if @isFeed(type)
+				return @lowestIds[id] || 0
+			else
+				return @lowestId
 
 
 		getLowestTimestamp: (type, id) ->
-			@getCachedTimestamp(false, type, id)
+			if @isFeed(type)
+				return @lowestTimestamps[id] || 0
+			else
+				return @lowestTimestamp
 
 
 		isFeed: (type) ->
 			return type == @feedType.Feed
-
-
-		getCachedId: (highest, type, id) ->
-			if @isFeed(type)
-				if highest
-					@highestIds[id] || 0
-				else
-					@lowestIds[id] || 0
-			else
-				if highest
-					return @highestId
-				else
-					return @lowestId
-
-
-		getCachedTimestamp: (highest, type, id) ->
-			if @isFeed(type)
-				if highest
-					@highestTimestamps[id] || 0
-				else
-					@lowestTimestamps[id] || 0
-			else
-				if highest
-					return @highestTimestamp
-				else
-					return @lowestTimestamp
-
 
 
 	return new Cache(FeedType, FeedModel, FolderModel)
