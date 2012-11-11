@@ -477,6 +477,19 @@
           this.clearCache();
         }
 
+        ItemModel.prototype.clearCache = function() {
+          this.feedCache = {};
+          this.folderCache = {};
+          this.folderCacheLastModified = 0;
+          this.importantCache = {};
+          this.items = {};
+          this.highestId = {};
+          this.lowestId = {};
+          this.highestTimestamp = {};
+          this.lowestTimestamp = {};
+          return ItemModel.__super__.clearCache.call(this);
+        };
+
         ItemModel.prototype.add = function(item) {
           if (!this.feedCache[item.feedId]) {
             this.feedCache[item.feedId] = {};
@@ -484,6 +497,18 @@
           this.feedCache[item.feedId][item.id] = item;
           if (item.isImportant) {
             this.importantCache[item.id] = item;
+          }
+          if (this.highestTimestamp[item.feedId] === void 0 || item.id > this.highestTimestamp[item.feedId]) {
+            this.highestTimestamp[item.feedId] = item.id;
+          }
+          if (this.lowestTimestamp[item.feedId] === void 0 || item.id > this.lowestTimestamp[item.feedId]) {
+            this.lowestTimestamp[item.feedId] = item.id;
+          }
+          if (this.highestId[item.feedId] === void 0 || item.id > this.highestId[item.feedId]) {
+            this.highestId[item.feedId] = item.id;
+          }
+          if (this.lowestId[item.feedId] === void 0 || item.id > this.lowestId[item.feedId]) {
+            this.lowestId[item.feedId] = item.id;
           }
           item = this.bindAdditional(item);
           return ItemModel.__super__.add.call(this, item);
@@ -536,15 +561,6 @@
               }
               return items;
           }
-        };
-
-        ItemModel.prototype.clearCache = function() {
-          this.feedCache = {};
-          this.folderCache = {};
-          this.folderCacheLastModified = 0;
-          this.importantCache = {};
-          this.items = {};
-          return ItemModel.__super__.clearCache.call(this);
         };
 
         ItemModel.prototype.setImportant = function(itemId, isImportant) {

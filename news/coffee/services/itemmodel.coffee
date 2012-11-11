@@ -20,14 +20,39 @@ angular.module('News').factory 'ItemModel',
 			@clearCache()
 
 
+		clearCache: () ->
+			@feedCache = {}
+			@folderCache = {}
+			@folderCacheLastModified = 0
+			@importantCache = {}
+			@items = {}			
+			@highestId = {}
+			@lowestId = {}
+			@highestTimestamp = {}
+			@lowestTimestamp = {}
+			super()
+
+
 		add: (item) ->
 			# cache for feed access
 			if not @feedCache[item.feedId]
 				@feedCache[item.feedId] = {}
 			@feedCache[item.feedId][item.id] = item
 			
+			# cache for important
 			if item.isImportant
 				@importantCache[item.id] = item
+
+			# cache lowest and highest ids and timestamps for only fetching new
+			# items
+			if @highestTimestamp[item.feedId] == undefined or item.id > @highestTimestamp[item.feedId]
+				@highestTimestamp[item.feedId] = item.id
+			if @lowestTimestamp[item.feedId] == undefined or item.id > @lowestTimestamp[item.feedId]
+				@lowestTimestamp[item.feedId] = item.id
+			if @highestId[item.feedId] == undefined or item.id > @highestId[item.feedId]
+				@highestId[item.feedId] = item.id
+			if @lowestId[item.feedId] == undefined or item.id > @lowestId[item.feedId]
+				@lowestId[item.feedId] = item.id
 
 			item = @bindAdditional(item)
 			super(item)
@@ -77,15 +102,6 @@ angular.module('News').factory 'ItemModel',
 					for itemId, valid of @importantCache
 						items[itemId] = @getItemById(itemId)
 					return items
-
-
-		clearCache: () ->
-			@feedCache = {}
-			@folderCache = {}
-			@folderCacheLastModified = 0
-			@importantCache = {}
-			@items = {}			
-			super()
 
 
 		setImportant: (itemId, isImportant) ->
