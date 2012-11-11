@@ -535,7 +535,7 @@
             case this.feedType.Subscriptions:
               return this.getItems();
             case this.feedType.Folder:
-              this.cache.buildFolderCache();
+              this.cache.buildFolderCache(id);
               items = {};
               _ref = this.cache.folderCache[id];
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -836,7 +836,7 @@
           }
         };
 
-        Cache.prototype.buildFolderCache = function() {
+        Cache.prototype.buildFolderCache = function(id) {
           var feed, _i, _len, _ref, _results;
           if (this.folderCacheLastModified !== this.feedModel.getLastModified()) {
             this.folderCache = {};

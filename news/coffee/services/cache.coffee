@@ -56,7 +56,7 @@ angular.module('News').factory 'Cache',
 				@lowestIds[item.feedId] = item.id
 
 
-		buildFolderCache: ->
+		buildFolderCache: (id) ->
 			# invalidate the foldercache if the last modified date is
 			# not the currently used one
 			if @folderCacheLastModified != @feedModel.getLastModified()

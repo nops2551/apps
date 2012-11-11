@@ -73,7 +73,7 @@ angular.module('News').factory 'ItemModel',
 					return @getItems()
 
 				when @feedType.Folder
-					@cache.buildFolderCache()
+					@cache.buildFolderCache(id)
 					
 					items = {}
 					for feedId in @cache.folderCache[id]
