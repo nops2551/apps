@@ -13,8 +13,8 @@ scrolling = true
 markingRead = true
 
 angular.module('News').directive 'whenScrolled',
-['$rootScope', 'MarkReadTimeout', 'ScrollTimeout'
-($rootScope, MarkReadTimeout, ScrollTimeout) ->
+['$rootScope', 'Config',
+($rootScope, Config) ->
 
 	return (scope, elm, attr) ->
 
@@ -25,7 +25,7 @@ angular.module('News').directive 'whenScrolled',
 				scrolling = false
 				setTimeout ->
 					scrolling = true
-				, ScrollTimeout
+				, Config.ScrollTimeout
 
 				if markingRead
 					markingRead = false
@@ -44,7 +44,7 @@ angular.module('News').directive 'whenScrolled',
 							else
 								break
 
-					, MarkReadTimeout
+					, Config.MarkReadTimeout
 
 				scope.$apply attr.whenScrolled;
 

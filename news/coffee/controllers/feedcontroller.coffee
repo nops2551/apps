@@ -12,14 +12,15 @@
 angular.module('News').controller 'FeedController', 
 ['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews',
 'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', '$rootScope', 'Loading',
+'Config',
 (Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews
-StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
+StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) ->
 
 	class FeedController extends Controller
 
 		constructor: (@$scope, @feedModel, @folderModel, @feedType, @activeFeed, 
 					  @persistence, @starredCount, @showAll, @itemModel,
-					  @garbageRegistry, @$rootScope, @loading) ->
+					  @garbageRegistry, @$rootScope, @loading, @config) ->
 
 			@showSubscriptions = true
 
@@ -67,14 +68,19 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 
 		loadFeed: (type, id) ->
 			# to not go crazy with autopaging, clear the caches if we switch the
-			# type of the feed
-			if type != @activeFeed.type
-				@itemModel.clearCache()
+			# type of the feed. if the caches only contain seperate feeds, the
+			# cache and autopage logic works fine. if the feed contains more than
+			# one 
+			if type != @activeFeed.type or id != @activeFeed.id
+				if not (type == @feedType.Feed && @activeFeed.type == @feedType.Feed)
+					@itemModel.clearCache()
+
 			@activeFeed.id = id
 			@activeFeed.type = type
 			@$scope.triggerHideRead()
-			# TODO: set limit, latestFeedId and latestTimestamp
-			@persistence.loadFeed(type, id, 0, 0, 20)
+			@persistence.loadFeed(type, id, 
+				@itemModel.getHighestId(type, id),
+				@itemModel.getHighestTimestamp(type, id), @config.initialLoadedItemsNr)
 
 
 		triggerHideRead: () ->
@@ -151,5 +157,6 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 
 	return new FeedController($scope, FeedModel, FolderModel, FeedType, 
 								ActiveFeed, PersistenceNews, StarredCount, ShowAll,
-								ItemModel, GarbageRegistry, $rootScope, Loading)
+								ItemModel, GarbageRegistry, $rootScope, Loading,
+								Config)
 ]

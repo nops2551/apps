@@ -11,12 +11,18 @@
 
 app = angular.module('News', []).config ($provide) ->
 	# enter your config values in here
-	$provide.value('MarkReadTimeout', 500)
-	$provide.value('ScrollTimeout', 500)
+	config =
+		MarkReadTimeout: 500
+		ScrollTimeout: 500
+		initialLoadedItemsNr: 20
+
+	$provide.value('Config', config)
+
 
 app.run ['PersistenceNews', (PersistenceNews) ->
 	PersistenceNews.loadInitial()
 ]
+
 
 $(document).ready ->
 	# this is used to forces browser to reload content after refreshing

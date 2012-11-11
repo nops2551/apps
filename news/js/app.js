@@ -18,8 +18,13 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   app = angular.module('News', []).config(function($provide) {
-    $provide.value('MarkReadTimeout', 500);
-    return $provide.value('ScrollTimeout', 500);
+    var config;
+    config = {
+      MarkReadTimeout: 500,
+      ScrollTimeout: 500,
+      initialLoadedItemsNr: 20
+    };
+    return $provide.value('Config', config);
   });
 
   app.run([
@@ -54,14 +59,14 @@
   markingRead = true;
 
   angular.module('News').directive('whenScrolled', [
-    '$rootScope', 'MarkReadTimeout', 'ScrollTimeout', function($rootScope, MarkReadTimeout, ScrollTimeout) {
+    '$rootScope', 'Config', function($rootScope, Config) {
       return function(scope, elm, attr) {
         return elm.bind('scroll', function() {
           if (scrolling) {
             scrolling = false;
             setTimeout(function() {
               return scrolling = true;
-            }, ScrollTimeout);
+            }, Config.ScrollTimeout);
             if (markingRead) {
               markingRead = false;
               setTimeout(function() {
@@ -84,7 +89,7 @@
                   }
                 }
                 return _results;
-              }, MarkReadTimeout);
+              }, Config.MarkReadTimeout);
             }
             return scope.$apply(attr.whenScrolled);
           }
@@ -463,115 +468,27 @@
 
 
   angular.module('News').factory('ItemModel', [
-    'Model', '$rootScope', 'FeedType', 'FeedModel', 'FolderModel', function(Model, $rootScope, FeedType, FeedModel, FolderModel) {
+    'Model', '$rootScope', 'Cache', 'FeedType', function(Model, $rootScope, Cache, FeedType) {
       var ItemModel;
       ItemModel = (function(_super) {
 
         __extends(ItemModel, _super);
 
-        function ItemModel($rootScope, feedType, feedModel, folderModel) {
+        function ItemModel($rootScope, cache, feedType) {
+          this.cache = cache;
           this.feedType = feedType;
-          this.feedModel = feedModel;
-          this.folderModel = folderModel;
           ItemModel.__super__.constructor.call(this, 'items', $rootScope);
-          this.clearCache();
         }
 
         ItemModel.prototype.clearCache = function() {
-          this.feedCache = {};
-          this.folderCache = {};
-          this.folderCacheLastModified = 0;
-          this.importantCache = {};
-          this.items = {};
-          this.highestId = {};
-          this.lowestId = {};
-          this.highestTimestamp = {};
-          this.lowestTimestamp = {};
+          this.cache.clear();
           return ItemModel.__super__.clearCache.call(this);
         };
 
         ItemModel.prototype.add = function(item) {
           item = this.bindAdditional(item);
           ItemModel.__super__.add.call(this, item);
-          item = this.getItemById(item.id);
-          if (!this.feedCache[item.feedId]) {
-            this.feedCache[item.feedId] = {};
-          }
-          this.feedCache[item.feedId][item.id] = item;
-          if (item.isImportant) {
-            this.importantCache[item.id] = item;
-          }
-          if (this.highestTimestamp[item.feedId] === void 0 || item.id > this.highestTimestamp[item.feedId]) {
-            this.highestTimestamp[item.feedId] = item.id;
-          }
-          if (this.lowestTimestamp[item.feedId] === void 0 || item.id > this.lowestTimestamp[item.feedId]) {
-            this.lowestTimestamp[item.feedId] = item.id;
-          }
-          if (this.highestId[item.feedId] === void 0 || item.id > this.highestId[item.feedId]) {
-            this.highestId[item.feedId] = item.id;
-          }
-          if (this.lowestId[item.feedId] === void 0 || item.id > this.lowestId[item.feedId]) {
-            return this.lowestId[item.feedId] = item.id;
-          }
-        };
-
-        ItemModel.prototype.removeById = function(itemId) {
-          var item;
-          item = this.getItemById(itemId);
-          delete this.feedCache[item.feedId][itemId];
-          delete this.importantCache[itemId];
-          return ItemModel.__super__.removeById.call(this, itemId);
-        };
-
-        ItemModel.prototype.getItemsByTypeAndId = function(type, id) {
-          var feed, feedId, itemId, items, valid, _i, _j, _len, _len1, _ref, _ref1, _ref2;
-          switch (type) {
-            case this.feedType.Feed:
-              items = this.feedCache[id] || {};
-              return items;
-            case this.feedType.Subscriptions:
-              return this.getItems();
-            case this.feedType.Folder:
-              if (this.folderCacheLastModified !== this.feedModel.getLastModified()) {
-                this.folderCache = {};
-                this.folderCacheLastModified = this.feedModel.getLastModified();
-              }
-              if (this.folderCache[id] === void 0) {
-                this.folderCache[id] = [];
-                _ref = this.feedModel.getItems();
-                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                  feed = _ref[_i];
-                  if (feed.folderId === id) {
-                    this.folderCache[id].push(feed.id);
-                  }
-                }
-              }
-              items = {};
-              _ref1 = this.folderCache[id];
-              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                feedId = _ref1[_j];
-                $.extend(items, this.feedCache[feedId]);
-              }
-              return items;
-            case this.feedType.Starred:
-              items = {};
-              _ref2 = this.importantCache;
-              for (itemId in _ref2) {
-                valid = _ref2[itemId];
-                items[itemId] = this.getItemById(itemId);
-              }
-              return items;
-          }
-        };
-
-        ItemModel.prototype.setImportant = function(itemId, isImportant) {
-          if (isImportant) {
-            this.importantCache[itemId] = true;
-            return this.getItemById(itemId).isImportant = true;
-          } else {
-            delete this.importantCache[itemId];
-            return this.getItemById(itemId).isImportant = false;
-          }
+          return this.cache.add(this.getItemById(item.id));
         };
 
         ItemModel.prototype.bindAdditional = function(item) {
@@ -588,10 +505,64 @@
           return item;
         };
 
+        ItemModel.prototype.removeById = function(itemId) {
+          this.cache.remove(this.getItemById(itemId));
+          return ItemModel.__super__.removeById.call(this, itemId);
+        };
+
+        ItemModel.prototype.getHighestId = function(type, id) {
+          return this.cache.getHighestId(type, id);
+        };
+
+        ItemModel.prototype.getHighestTimestamp = function(type, id) {
+          return this.cache.getHighestTimestamp(type, id);
+        };
+
+        ItemModel.prototype.getLowestId = function(type, id) {
+          return this.cache.getLowestId(type, id);
+        };
+
+        ItemModel.prototype.getLowestTimestamp = function(type, id) {
+          return this.cache.getLowestTimestamp(type, id);
+        };
+
+        ItemModel.prototype.getItemsByTypeAndId = function(type, id) {
+          var feedId, itemId, items, valid, _i, _len, _ref, _ref1;
+          switch (type) {
+            case this.feedType.Feed:
+              items = this.cache.feedCache[id] || {};
+              return items;
+            case this.feedType.Subscriptions:
+              return this.getItems();
+            case this.feedType.Folder:
+              this.cache.buildFolderCache();
+              items = {};
+              _ref = this.cache.folderCache[id];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                feedId = _ref[_i];
+                $.extend(items, this.cache.feedCache[feedId]);
+              }
+              return items;
+            case this.feedType.Starred:
+              items = {};
+              _ref1 = this.cache.importantCache;
+              for (itemId in _ref1) {
+                valid = _ref1[itemId];
+                items[itemId] = this.getItemById(itemId);
+              }
+              return items;
+          }
+        };
+
+        ItemModel.prototype.setImportant = function(itemId, isImportant) {
+          this.cache.setImportant(itemId, isImportant);
+          return this.getItemById(itemId).isImportant = isImportant;
+        };
+
         return ItemModel;
 
       })(Model);
-      return new ItemModel($rootScope, FeedType, FeedModel, FolderModel);
+      return new ItemModel($rootScope, Cache, FeedType);
     }
   ]);
 
@@ -686,6 +657,28 @@
         });
       }
 
+      Model.prototype.add = function(item) {
+        if (!this.feedCache[item.feedId]) {
+          this.feedCache[item.feedId] = {};
+        }
+        this.feedCache[item.feedId][item.id] = item;
+        if (item.isImportant) {
+          this.importantCache[item.id] = item;
+        }
+        if (this.highestTimestamp[item.feedId] === void 0 || item.id > this.highestTimestamp[item.feedId]) {
+          this.highestTimestamp[item.feedId] = item.id;
+        }
+        if (this.lowestTimestamp[item.feedId] === void 0 || item.id > this.lowestTimestamp[item.feedId]) {
+          this.lowestTimestamp[item.feedId] = item.id;
+        }
+        if (this.highestId[item.feedId] === void 0 || item.id > this.highestId[item.feedId]) {
+          this.highestId[item.feedId] = item.id;
+        }
+        if (this.lowestId[item.feedId] === void 0 || item.id > this.lowestId[item.feedId]) {
+          return this.lowestId[item.feedId] = item.id;
+        }
+      };
+
       Model.prototype.clearCache = function() {
         this.items = [];
         this.itemIds = {};
@@ -705,6 +698,8 @@
           this.items.push(item);
           this.itemIds[item.id] = item;
           return this.markAccessed();
+        } else {
+          return this.update(item);
         }
       };
 
@@ -777,6 +772,161 @@
         }
       });
       return starredCount;
+    }
+  ]);
+
+  angular.module('News').factory('Cache', [
+    'FeedType', 'FeedModel', 'FolderModel', function(FeedType, FeedModel, FolderModel) {
+      var Cache;
+      Cache = (function() {
+
+        function Cache(feedType, feedModel, folderModel) {
+          this.feedType = feedType;
+          this.feedModel = feedModel;
+          this.folderModel = folderModel;
+          this.clear();
+        }
+
+        Cache.prototype.clear = function() {
+          this.feedCache = {};
+          this.folderCache = {};
+          this.folderCacheLastModified = 0;
+          this.importantCache = {};
+          this.highestId = 0;
+          this.lowestId = 0;
+          this.highestTimestamp = 0;
+          this.lowestTimestamp = 0;
+          this.highestIds = {};
+          this.lowestIds = {};
+          this.highestTimestamps = {};
+          return this.lowestTimestamps = {};
+        };
+
+        Cache.prototype.add = function(item) {
+          if (!this.feedCache[item.feedId]) {
+            this.feedCache[item.feedId] = {};
+          }
+          this.feedCache[item.feedId][item.id] = item;
+          if (this.highestTimestamp < item.date) {
+            this.highestTimestamp = item.date;
+          }
+          if (this.lowestTimestamp > item.date) {
+            this.lowestTimestamp = item.date;
+          }
+          if (this.highestId < item.id) {
+            this.highestId = item.id;
+          }
+          if (this.lowestId > item.id) {
+            this.lowestId = item.id;
+          }
+          if (item.isImportant) {
+            this.importantCache[item.id] = item;
+          }
+          if (this.highestTimestamps[item.feedId] === void 0 || item.id > this.highestTimestamps[item.feedId]) {
+            this.highestTimestamps[item.feedId] = item.date;
+          }
+          if (this.lowestTimestamps[item.feedId] === void 0 || item.id > this.lowestTimestamps[item.feedId]) {
+            this.lowestTimestamps[item.feedId] = item.date;
+          }
+          if (this.highestIds[item.feedId] === void 0 || item.id > this.highestIds[item.feedId]) {
+            this.highestIds[item.feedId] = item.id;
+          }
+          if (this.lowestIds[item.feedId] === void 0 || item.id > this.lowestIds[item.feedId]) {
+            return this.lowestIds[item.feedId] = item.id;
+          }
+        };
+
+        Cache.prototype.buildFolderCache = function() {
+          var feed, _i, _len, _ref, _results;
+          if (this.folderCacheLastModified !== this.feedModel.getLastModified()) {
+            this.folderCache = {};
+            this.folderCacheLastModified = this.feedModel.getLastModified();
+          }
+          if (this.folderCache[id] === void 0) {
+            this.folderCache[id] = [];
+            _ref = this.feedModel.getItems();
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              feed = _ref[_i];
+              if (feed.folderId === id) {
+                _results.push(this.folderCache[id].push(feed.id));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+          }
+        };
+
+        Cache.prototype.remove = function(item) {
+          delete this.feedCache[item.feedId][itemId];
+          return delete this.importantCache[itemId];
+        };
+
+        Cache.prototype.setImportant = function(itemId, isImportant) {
+          if (isImportant) {
+            return this.importantCache[itemId] = true;
+          } else {
+            return delete this.importantCache[itemId];
+          }
+        };
+
+        Cache.prototype.getHighestId = function(type, id) {
+          return this.getCachedId(true, type, id);
+        };
+
+        Cache.prototype.getHighestTimestamp = function(type, id) {
+          return this.getCachedTimestamp(true, type, id);
+        };
+
+        Cache.prototype.getLowestId = function(type, id) {
+          return this.getCachedId(false, type, id);
+        };
+
+        Cache.prototype.getLowestTimestamp = function(type, id) {
+          return this.getCachedTimestamp(false, type, id);
+        };
+
+        Cache.prototype.isFeed = function(type) {
+          return type === this.feedType.Feed;
+        };
+
+        Cache.prototype.getCachedId = function(highest, type, id) {
+          if (this.isFeed(type)) {
+            if (highest) {
+              return this.highestIds[id] || 0;
+            } else {
+              return this.lowestIds[id] || 0;
+            }
+          } else {
+            if (highest) {
+              return this.highestId;
+            } else {
+              return this.lowestId;
+            }
+          }
+        };
+
+        Cache.prototype.getCachedTimestamp = function(highest, type, id) {
+          if (this.isFeed(type)) {
+            if (highest) {
+              return this.highestTimestamps[id] || 0;
+            } else {
+              return this.lowestTimestamps[id] || 0;
+            }
+          } else {
+            if (highest) {
+              return this.highestTimestamp;
+            } else {
+              return this.lowestTimestamp;
+            }
+          }
+        };
+
+        return Cache;
+
+      })();
+      return new Cache(FeedType, FeedModel, FolderModel);
     }
   ]);
 
@@ -929,13 +1079,13 @@
 
 
   angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', '$rootScope', 'Loading', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) {
+    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', '$rootScope', 'Loading', 'Config', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) {
       var FeedController;
       FeedController = (function(_super) {
 
         __extends(FeedController, _super);
 
-        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence, starredCount, showAll, itemModel, garbageRegistry, $rootScope, loading) {
+        function FeedController($scope, feedModel, folderModel, feedType, activeFeed, persistence, starredCount, showAll, itemModel, garbageRegistry, $rootScope, loading, config) {
           var _this = this;
           this.$scope = $scope;
           this.feedModel = feedModel;
@@ -949,6 +1099,7 @@
           this.garbageRegistry = garbageRegistry;
           this.$rootScope = $rootScope;
           this.loading = loading;
+          this.config = config;
           this.showSubscriptions = true;
           this.$scope.feeds = this.feedModel.getItems();
           this.$scope.folders = this.folderModel.getItems();
@@ -1000,13 +1151,15 @@
         }
 
         FeedController.prototype.loadFeed = function(type, id) {
-          if (type !== this.activeFeed.type) {
-            this.itemModel.clearCache();
+          if (type !== this.activeFeed.type || id !== this.activeFeed.id) {
+            if (!(type === this.feedType.Feed && this.activeFeed.type === this.feedType.Feed)) {
+              this.itemModel.clearCache();
+            }
           }
           this.activeFeed.id = id;
           this.activeFeed.type = type;
           this.$scope.triggerHideRead();
-          return this.persistence.loadFeed(type, id, 0, 0, 20);
+          return this.persistence.loadFeed(type, id, this.itemModel.getHighestId(type, id), this.itemModel.getHighestTimestamp(type, id), this.config.initialLoadedItemsNr);
         };
 
         FeedController.prototype.triggerHideRead = function() {
@@ -1091,7 +1244,7 @@
         return FeedController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading);
+      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config);
     }
   ]);
 

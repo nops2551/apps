@@ -22,6 +22,27 @@ angular.module('News').factory 'Model', ->
 						@add(item)
 
 
+		add: (item) ->
+			if not @feedCache[item.feedId]
+				@feedCache[item.feedId] = {}
+			@feedCache[item.feedId][item.id] = item
+			
+			# cache for important
+			if item.isImportant
+				@importantCache[item.id] = item
+
+			# cache lowest and highest ids and timestamps for only fetching new
+			# items
+			if @highestTimestamp[item.feedId] == undefined or item.id > @highestTimestamp[item.feedId]
+				@highestTimestamp[item.feedId] = item.id
+			if @lowestTimestamp[item.feedId] == undefined or item.id > @lowestTimestamp[item.feedId]
+				@lowestTimestamp[item.feedId] = item.id
+			if @highestId[item.feedId] == undefined or item.id > @highestId[item.feedId]
+				@highestId[item.feedId] = item.id
+			if @lowestId[item.feedId] == undefined or item.id > @lowestId[item.feedId]
+				@lowestId[item.feedId] = item.id
+
+
 		clearCache: () ->
 			@items = []
 			@itemIds = {}
@@ -37,11 +58,12 @@ angular.module('News').factory 'Model', ->
 
 
 		add: (item) ->
-			# dont add the item if it already exists
 			if @itemIds[item.id] == undefined
 				@items.push(item)
 				@itemIds[item.id] = item
 				@markAccessed()
+			else
+				@update(item)
 
 
 		update: (item) ->
