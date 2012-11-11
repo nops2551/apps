@@ -17,10 +17,7 @@ angular.module('News').factory 'ItemModel',
 
 		constructor: ($rootScope, @feedType, @feedModel, @folderModel) ->
 			super('items', $rootScope)			
-			@feedCache = {}
-			@folderCache = {}
-			@folderCacheLastModified = 0
-			@importantCache = {}
+			@clearCache()
 
 
 		add: (item) ->
@@ -42,13 +39,6 @@ angular.module('News').factory 'ItemModel',
 			delete @feedCache[item.feedId][itemId]
 			delete @importantCache[itemId]
 			super(itemId)
-
-
-		_objectToArray: (passedObject) ->
-			objectArray = []
-			for key, value of passedObject
-				objectArray.push(value)
-			return objectArray
 
 
 		getItemsByTypeAndId: (type, id) ->
@@ -87,6 +77,15 @@ angular.module('News').factory 'ItemModel',
 					for itemId, valid of @importantCache
 						items[itemId] = @getItemById(itemId)
 					return items
+
+
+		clearCache: () ->
+			@feedCache = {}
+			@folderCache = {}
+			@folderCacheLastModified = 0
+			@importantCache = {}
+			@items = {}			
+			super()
 
 
 		setImportant: (itemId, isImportant) ->

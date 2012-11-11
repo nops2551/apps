@@ -474,10 +474,7 @@
           this.feedModel = feedModel;
           this.folderModel = folderModel;
           ItemModel.__super__.constructor.call(this, 'items', $rootScope);
-          this.feedCache = {};
-          this.folderCache = {};
-          this.folderCacheLastModified = 0;
-          this.importantCache = {};
+          this.clearCache();
         }
 
         ItemModel.prototype.add = function(item) {
@@ -498,16 +495,6 @@
           delete this.feedCache[item.feedId][itemId];
           delete this.importantCache[itemId];
           return ItemModel.__super__.removeById.call(this, itemId);
-        };
-
-        ItemModel.prototype._objectToArray = function(passedObject) {
-          var key, objectArray, value;
-          objectArray = [];
-          for (key in passedObject) {
-            value = passedObject[key];
-            objectArray.push(value);
-          }
-          return objectArray;
         };
 
         ItemModel.prototype.getItemsByTypeAndId = function(type, id) {
@@ -549,6 +536,15 @@
               }
               return items;
           }
+        };
+
+        ItemModel.prototype.clearCache = function() {
+          this.feedCache = {};
+          this.folderCache = {};
+          this.folderCacheLastModified = 0;
+          this.importantCache = {};
+          this.items = {};
+          return ItemModel.__super__.clearCache.call(this);
         };
 
         ItemModel.prototype.setImportant = function(itemId, isImportant) {
@@ -658,9 +654,7 @@
         var _this = this;
         this.reactOn = reactOn;
         this.$rootScope = $rootScope;
-        this.items = [];
-        this.itemIds = {};
-        this.markAccessed();
+        this.clearCache();
         this.$rootScope.$on('update', function(scope, data) {
           var item, _i, _len, _ref, _results;
           if (data[_this.reactOn]) {
@@ -674,6 +668,12 @@
           }
         });
       }
+
+      Model.prototype.clearCache = function() {
+        this.items = [];
+        this.itemIds = {};
+        return this.markAccessed();
+      };
 
       Model.prototype.markAccessed = function() {
         return this.lastAccessed = new Date().getTime();
@@ -952,10 +952,7 @@
             }
           };
           this.$scope.loadFeed = function(type, id) {
-            _this.activeFeed.id = id;
-            _this.activeFeed.type = type;
-            _this.$scope.triggerHideRead();
-            return _this.persistence.loadFeed(type, id, 0, 0, 20);
+            return _this.loadFeed(type, id);
           };
           this.$scope.getUnreadCount = function(type, id) {
             var count;
@@ -978,12 +975,21 @@
             }
           };
           this.$scope.$on('triggerHideRead', function() {
-            return _this.triggerHideRead();
+            _this.itemModel.clearCache();
+            _this.triggerHideRead();
+            return _this.loadFeed(activeFeed.type, activeFeed.id);
           });
           this.$scope.$on('loadFeed', function(scope, params) {
-            return _this.$scope.loadFeed(params.type, params.id);
+            return _this.loadFeed(params.type, params.id);
           });
         }
+
+        FeedController.prototype.loadFeed = function(type, id) {
+          this.activeFeed.id = id;
+          this.activeFeed.type = type;
+          this.$scope.triggerHideRead();
+          return this.persistence.loadFeed(type, id, 0, 0, 20);
+        };
 
         FeedController.prototype.triggerHideRead = function() {
           var feed, folder, preventParentFolder, _i, _j, _len, _len1, _ref, _ref1;

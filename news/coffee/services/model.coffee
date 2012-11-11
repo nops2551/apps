@@ -14,14 +14,18 @@ angular.module('News').factory 'Model', ->
 	class Model
 
 		constructor: (@reactOn, @$rootScope) ->
-			@items = []
-			@itemIds = {}
-			@markAccessed()
-			
+			@clearCache()
+
 			@$rootScope.$on 'update', (scope, data) =>
 				if data[@reactOn]
 					for item in data[@reactOn]
 						@add(item)
+
+
+		clearCache: () ->
+			@items = []
+			@itemIds = {}
+			@markAccessed()
 
 
 		markAccessed: () ->

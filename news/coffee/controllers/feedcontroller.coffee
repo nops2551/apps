@@ -39,12 +39,7 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 					return false
 
 			@$scope.loadFeed = (type, id) =>
-				@activeFeed.id = id
-				@activeFeed.type = type
-				@$scope.triggerHideRead()
-				# TODO: set limit, latestFeedId and latestTimestamp
-				@persistence.loadFeed(type, id, 0, 0, 20)
-
+				@loadFeed(type, id)
 
 			@$scope.getUnreadCount = (type, id) =>
 				count = @getUnreadCount(type, id)
@@ -62,11 +57,20 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 					when @feedType.Starred then return @starredCount.count > 0
 
 			@$scope.$on 'triggerHideRead', =>
+				@itemModel.clearCache()
 				@triggerHideRead()
+				@loadFeed(activeFeed.type, activeFeed.id)
 
 			@$scope.$on 'loadFeed', (scope, params) =>
-				@$scope.loadFeed(params.type, params.id)
+				@loadFeed(params.type, params.id)
 
+
+		loadFeed: (type, id) ->
+			@activeFeed.id = id
+			@activeFeed.type = type
+			@$scope.triggerHideRead()
+			# TODO: set limit, latestFeedId and latestTimestamp
+			@persistence.loadFeed(type, id, 0, 0, 20)
 
 
 		triggerHideRead: () ->
