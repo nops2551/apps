@@ -34,6 +34,10 @@ angular.module('News').factory 'ItemModel',
 
 
 		add: (item) ->
+			item = @bindAdditional(item)
+			super(item)
+			item = @getItemById(item.id)
+			
 			# cache for feed access
 			if not @feedCache[item.feedId]
 				@feedCache[item.feedId] = {}
@@ -54,8 +58,7 @@ angular.module('News').factory 'ItemModel',
 			if @lowestId[item.feedId] == undefined or item.id > @lowestId[item.feedId]
 				@lowestId[item.feedId] = item.id
 
-			item = @bindAdditional(item)
-			super(item)
+			
 
 
 		removeById: (itemId) ->

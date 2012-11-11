@@ -37,10 +37,8 @@ angular.module('News').factory 'Model', ->
 
 
 		add: (item) ->
-			# check if we need to update or create the item
-			if @itemIds[item.id] != undefined
-				@update(item)
-			else
+			# dont add the item if it already exists
+			if @itemIds[item.id] == undefined
 				@items.push(item)
 				@itemIds[item.id] = item
 				@markAccessed()

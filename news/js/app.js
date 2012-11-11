@@ -491,6 +491,9 @@
         };
 
         ItemModel.prototype.add = function(item) {
+          item = this.bindAdditional(item);
+          ItemModel.__super__.add.call(this, item);
+          item = this.getItemById(item.id);
           if (!this.feedCache[item.feedId]) {
             this.feedCache[item.feedId] = {};
           }
@@ -508,10 +511,8 @@
             this.highestId[item.feedId] = item.id;
           }
           if (this.lowestId[item.feedId] === void 0 || item.id > this.lowestId[item.feedId]) {
-            this.lowestId[item.feedId] = item.id;
+            return this.lowestId[item.feedId] = item.id;
           }
-          item = this.bindAdditional(item);
-          return ItemModel.__super__.add.call(this, item);
         };
 
         ItemModel.prototype.removeById = function(itemId) {
@@ -700,9 +701,7 @@
       };
 
       Model.prototype.add = function(item) {
-        if (this.itemIds[item.id] !== void 0) {
-          return this.update(item);
-        } else {
+        if (this.itemIds[item.id] === void 0) {
           this.items.push(item);
           this.itemIds[item.id] = item;
           return this.markAccessed();
@@ -1001,6 +1000,9 @@
         }
 
         FeedController.prototype.loadFeed = function(type, id) {
+          if (type !== this.activeFeed.type) {
+            this.itemModel.clearCache();
+          }
           this.activeFeed.id = id;
           this.activeFeed.type = type;
           this.$scope.triggerHideRead();

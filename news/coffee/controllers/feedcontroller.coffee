@@ -66,6 +66,10 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading) ->
 
 
 		loadFeed: (type, id) ->
+			# to not go crazy with autopaging, clear the caches if we switch the
+			# type of the feed
+			if type != @activeFeed.type
+				@itemModel.clearCache()
 			@activeFeed.id = id
 			@activeFeed.type = type
 			@$scope.triggerHideRead()
