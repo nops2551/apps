@@ -38,7 +38,7 @@
 				<li class="share_link">
 					<a class="share" data-item-type="news_item" 
 					   data-item="{{item.id}}" title="<?php p($l->t('Share')) ?>" 
-					   data-possible-permissions="<?php p((OCP\Share::PERMISSION_READ | OCP\Share::PERMISSION_SHARE)) ?>" 
+					   data-possible-permissions="<?php //p((OCP\Share::PERMISSION_READ | OCP\Share::PERMISSION_SHARE)) ?>" 
 					   href="#">
 					   <?php p($l->t('Share')) ?>
 		  			</a>
