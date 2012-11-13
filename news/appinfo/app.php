@@ -9,6 +9,7 @@
 * See the COPYING-README file
 *
 */
+OC::$CLASSPATH['Pimple'] = 'apps/news/3rdparty/Pimple/Pimple.php';
 
 OC::$CLASSPATH['OCA\News\StatusFlag'] = 'apps/news/lib/item.php';
 OC::$CLASSPATH['OCA\News\Item'] = 'apps/news/lib/item.php';
@@ -22,6 +23,7 @@ OC::$CLASSPATH['OCA\News\ItemMapper'] = 'apps/news/lib/itemmapper.php';
 OC::$CLASSPATH['OCA\News\FolderMapper'] = 'apps/news/lib/foldermapper.php';
 
 OC::$CLASSPATH['OCA\News\Utils'] = 'apps/news/lib/utils.php';
+OC::$CLASSPATH['OCA\News\Security'] = 'apps/news/lib/security.php';
 
 OC::$CLASSPATH['OC_Search_Provider_News'] = 'apps/news/lib/search.php';
 
@@ -41,3 +43,5 @@ OCP\App::addNavigationEntry( array(
 OC_Search::registerProvider('OC_Search_Provider_News');
 
 OCP\Share::registerBackend('news_item', 'OCA\News\Share_Backend_News_Item');
+
+

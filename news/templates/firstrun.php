@@ -28,12 +28,8 @@
 	</div>
 	<div>
 	
-	<?php
-	require_once OC_App::getAppPath('news') .'/templates/subscribelet.php';
-	?>
-	
 	<h1><?php p($l->t('Or...')) ?></h1>
+	<?php print_unescaped($this->inc('part.subscriblet'));	?>
 
-	<?php createSubscribelet(); ?>
 	</div>
 </div>

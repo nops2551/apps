@@ -13,18 +13,33 @@
 namespace OCA\News;
 
 require_once \OC_App::getAppPath('news') . '/controllers/controller.php';
+require_once \OC_App::getAppPath('news') . '/lib/security.php';
+require_once \OC_App::getAppPath('news') . '/lib/feedmapper.php';
+require_once \OC_App::getAppPath('news') . '/lib/foldermapper.php';
+
+
+$container = Utils::getDIContainer();
+$container['NewsController'] = function($c){
+	return new NewsController($c['AppName'], $c['FeedMapper'], $c['FolderMapper'], 
+								$c['Security'], $c['UserId']);
+};
 
 
 class NewsController extends Controller {
 
 
 	/**
-	 * Does all the security checks
-	 * @param bool $csrfCheck pass false to disable the csrf check. true by default
+	 * @param string $appName: the name of the app
+	 * @param FolderMapper $folderMapper: an instance of the folder mapper
+	 * @param FeedMapper $feedMapper: an instance of the feed mapper
+	 * @param Security $security: the class which runs the security checks
+	 * @param string $userId: the id of the user
 	 */
-	public function __construct($csrfCheck=true){
-		parent::__construct($csrfCheck);
-		\OCP\App::setActiveNavigationEntry('news');
+	public function __construct($appName, $feedMapper, $folderMapper, $security, $userId){
+		parent::__construct($appName, $security, $userId);
+		$this->feedMapper = $feedMapper;
+		$this->folderMapper = $folderMapper;
+		\OCP\App::setActiveNavigationEntry($appName);
 	}
 
 
@@ -32,9 +47,7 @@ class NewsController extends Controller {
 	 * Decides wether to show the feedpage or the firstrun page
 	 */
 	public function index(){
-		$feedMapper = new FeedMapper($this->userId);
-
-		if($feedMapper->feedCount() > 0){
+		if($this->feedMapper->feedCount() > 0){
 			$this->feedPage();
 		} else {
 			$this->firstRun();
@@ -54,53 +67,36 @@ class NewsController extends Controller {
 		$this->add3rdPartyScript('angular-1.0.2/angular');
 		$this->add3rdPartyScript('moment.min');
 		$this->addScript('app');
-
-
 		$this->addStyle('news');
 		$this->addStyle('settings');
 
-		$folderMapper = new FolderMapper($this->userId);
-		$feedMapper = new FeedMapper($this->userId);
-		$itemMapper = new ItemMapper($this->userId);
+		if(isset($_GET['feedid'])){
+			$this->setUserValue('lastViewedFeed', $_GET['feedid']);
+			$this->setUserValue('lastViewedFeedType', FeedType::FEED);
+		}
 
-		// if no feed id is passed as parameter, then show the last viewed feed on reload
-		$lastViewedFeedId = isset( $_GET['feedid'] ) ? $_GET['feedid'] : (int)$this->getUserValue('lastViewedFeed');
-		$lastViewedFeedType = isset( $_GET['feedid'] ) ? FeedType::FEED : (int)$this->getUserValue('lastViewedFeedType');
-		
-	$showAll = $this->getUserValue('showAll');
+		$lastViewedFeedId = $this->getUserValue('lastViewedFeed');
+		$lastViewedFeedType = $this->getUserValue('lastViewedFeedType');
 
 		if( $lastViewedFeedId === null || $lastViewedFeedType === null) {
-			$lastViewedFeedId = $feedMapper->mostRecent();
+			$this->setUserValue('lastViewedFeed', $this->feedMapper->mostRecent());;
+			$this->setUserValue('lastViewedFeedType', FeedType::FEED);
 		} else {
 			// check if the last selected feed or folder exists
 			if( (
 					$lastViewedFeedType === FeedType::FEED &&
-					$feedMapper->findById($lastViewedFeedId) === null
+					$this->feedMapper->findById($lastViewedFeedId) === null
 				) ||
 				(
 					$lastViewedFeedType === FeedType::FOLDER &&
-					$folderMapper->findById($lastViewedFeedId) === null
+					$this->folderMapper->findById($lastViewedFeedId) === null
 				) ){
-				$lastViewedFeedId = $feedMapper->mostRecent();
+				$this->setUserValue('lastViewedFeed', $this->feedMapper->mostRecent());;
+				$this->setUserValue('lastViewedFeedType', FeedType::FEED);
 			}
 		}
 
-		$feeds = $folderMapper->childrenOfWithFeeds(0);
-		$folderForest = $folderMapper->childrenOf(0); //retrieve all the folders
-		$starredCount = $itemMapper->countEveryItemByStatus(StatusFlag::IMPORTANT);
-		$items = $itemMapper->getItems($lastViewedFeedType, $lastViewedFeedId, $showAll);
-
-		$params = array(
-			'allfeeds' => $feeds,
-			'folderforest' => $folderForest,
-			'showAll' => $showAll,
-			'lastViewedFeedId' => $lastViewedFeedId,
-			'lastViewedFeedType' => $lastViewedFeedType,
-			'starredCount' => $starredCount,
-			'items' => $items
-		);
-
-		$this->render('main', $params, array('items' => true));
+		$this->render('main');
 	}
 
 

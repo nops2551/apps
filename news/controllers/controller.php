@@ -15,44 +15,34 @@ namespace OCA\News;
 class Controller {
 
 	protected $userId;
-	protected $trans;
+	protected $appName;
 
-
-	public function __construct($csrfCheck=true, $closeSession=true){
-		\OCP\JSON::checkAppEnabled('news');
-		\OCP\JSON::checkLoggedIn();
-		
-		if($csrfCheck){
-			\OCP\JSON::callCheck();	
-		}
-
-		if($closeSession){
-			session_write_close();
-		}
-
-		$this->userId = \OCP\USER::getUser();
-		$this->trans = \OC_L10N::get('news');
+	public function __construct($appName, $security, $userId){
+		$this->userId = $userId;
+		$this->appName = $appName;
 		$this->safeParams = array();
+
+		$security->ensure();
 	}
 
 
 	protected function addScript($name){
-		\OCP\Util::addScript('news', $name);
+		\OCP\Util::addScript($this->appName, $name);
 	}
 
 
 	protected function addStyle($name){
-		\OCP\Util::addStyle('news', $name);
+		\OCP\Util::addStyle($this->appName, $name);
 	}
 
 
 	protected function add3rdPartyScript($name){
-		\OCP\Util::addScript('news/3rdparty', $name);
+		\OCP\Util::addScript($this->appName . '/3rdparty', $name);
 	}
 
 
 	protected function add3rdPartyStyle($name){
-		\OCP\Util::addStyle('news/3rdparty', $name);
+		\OCP\Util::addStyle($this->appName . '/3rdparty', $name);
 	}
 
 
@@ -62,7 +52,7 @@ class Controller {
 	 * @param $value the value that you want to store
 	 */
 	protected function setUserValue($key, $value){
-		\OCP\Config::setUserValue($this->userId, 'news', $key, $value);
+		\OCP\Config::setUserValue($this->userId, $this->appName, $key, $value);
 	}
 
 
@@ -71,7 +61,7 @@ class Controller {
 	 * @param $key the key under which the value is being stored
 	 */
 	protected function getUserValue($key){
-		return \OCP\Config::getUserValue($this->userId, 'news', $key);
+		return \OCP\Config::getUserValue($this->userId, $this->appName, $key);
 	}
 
 
@@ -88,9 +78,9 @@ class Controller {
 							  $fullPage=true){
 
 		if($fullPage){
-			$template = new \OCP\Template('news', $template, 'user');
+			$template = new \OCP\Template($this->appName, $template, 'user');
 		} else {
-			$template = new \OCP\Template('news', $template);
+			$template = new \OCP\Template($this->appName, $template);
 		}
 
 		foreach($arguments as $key => $value){
@@ -103,9 +93,9 @@ class Controller {
 		}
 
 		$template->assign('userId', $this->userId);
-		$template->assign('trans', $this->trans);
 		$template->printPage();
 	}
+
 
 	/**
 	 * @brief renders a json success

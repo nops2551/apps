@@ -14,6 +14,7 @@ namespace OCA\News;
 
 require_once \OC_App::getAppPath('news') . '/controllers/news.ajax.controller.php';
 
-$controller = new NewsAjaxController();
+$container = Utils::getDIContainer();
+$controller = $container['NewsAjaxController'];
 $controller->collapseFolder((int)$_POST['folderId'], 
 								$controller->postParamToBool($_POST['opened']));

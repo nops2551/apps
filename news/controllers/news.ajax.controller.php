@@ -13,17 +13,39 @@
 namespace OCA\News;
 
 require_once \OC_App::getAppPath('news') . '/controllers/controller.php';
+require_once \OC_App::getAppPath('news') . '/lib/security.php';
+require_once \OC_App::getAppPath('news') . '/lib/feedmapper.php';
+require_once \OC_App::getAppPath('news') . '/lib/foldermapper.php';
+require_once \OC_App::getAppPath('news') . '/lib/itemmapper.php';
 
 
+$container = Utils::getDIContainer();
+$container['NewsAjaxController'] = function($c){
+	return new NewsAjaxController($c['AppName'], $c['FeedMapper'], $c['FolderMapper'], 
+									$c['ItemMapper'], $c['Security'], $c['UserId']);
+};
+
+
+/**
+ * Class which handles all ajax calls
+ */
 class NewsAjaxController extends Controller {
 
 
 	/**
-	 * Does all the security checks
-	 * @param bool $csrfCheck pass false to disable the csrf check. true by default
+	 * @param string $appName: the name of the app
+	 * @param FeedMapper $feedMapepr an instance of the feed mapper
+	 * @param FolderMapper $folderMapper an instance of the folder mapper
+	 * @param ItemMapper $itemMapper an instance of the item mapper
+	 * @param Security $security: the class which runs the security checks
+	 * @param string $userId: the id of the user
 	 */
-	public function __construct($csrfCheck=true){
-		parent::__construct($csrfCheck);
+	public function __construct($appName, $feedMapper, $folderMapper, 
+								$itemMapper, $security, $userId){
+		parent::__construct($appName, $security, $userId);
+		$this->feedMapper = $feedMapper;
+		$this->folderMapper = $folderMapper;
+		$this->itemMapper = $itemMapper;
 	}
 
 
@@ -73,14 +95,12 @@ class NewsAjaxController extends Controller {
 	 * @return an array ready for sending as JSON
 	 */
 	private function feedsToArray($feeds){
-		$itemMapper = new \OCA\News\ItemMapper($this->userId);
-
 		$feedsArray = array();
 		foreach($feeds as $feed){
 			 array_push($feedsArray, array(
 				'id' => (int)$feed['id'],
 				'name' => $feed['title'],
-				'unreadCount' => $itemMapper->getUnreadCount(\OCA\News\FeedType::FEED, 
+				'unreadCount' => $this->itemMapper->getUnreadCount(\OCA\News\FeedType::FEED, 
 																$feed['id']),
 				'folderId' => (int)$feed['folderid'],
 				'show' => true,
@@ -126,12 +146,10 @@ class NewsAjaxController extends Controller {
 	 * and folders are requested
 	 */
 	public function init(){
-		$folderMapper = new \OCA\News\FolderMapper($this->userId);
-		$folders = $folderMapper->childrenOfWithFeeds(0);
+		$folders = $this->folderMapper->childrenOfWithFeeds(0);
 		$foldersArray = $this->foldersToArray($folders);
 
-		$feedMapper = new \OCA\News\FeedMapper($this->userId);
-		$feeds = $feedMapper->findAll();
+		$feeds = $this->feedMapper->findAll();
 		$feedsArray = $this->feedsToArray($feeds);
 
 		$activeFeed = array();
@@ -140,8 +158,7 @@ class NewsAjaxController extends Controller {
 
 		$showAll = $this->getUserValue('showAll') === "1";
 
-		$itemMapper = new \OCA\News\ItemMapper($this->userId);
-		$starredCount = $itemMapper->getUnreadCount(\OCA\News\FeedType::STARRED, 0);
+		$starredCount = $this->itemMapper->getUnreadCount(\OCA\News\FeedType::STARRED, 0);
 
 		$result = array(
 			'folders' => $foldersArray,
@@ -174,9 +191,8 @@ class NewsAjaxController extends Controller {
 
 		$showAll = $this->getUserValue('showAll');
 
-		$itemMapper = new \OCA\News\ItemMapper($this->userId);
-		$items = $itemMapper->getItems($feedType, $feedId, $showAll);
-		$unreadCount = $itemMapper->getUnreadCount($feedType, $feedId);
+		$items = $this->itemMapper->getItems($feedType, $feedId, $showAll);
+		$unreadCount = $this->itemMapper->getUnreadCount($feedType, $feedId);
 
 		$itemsArray = $this->itemsToArray($items);
 
@@ -203,11 +219,30 @@ class NewsAjaxController extends Controller {
 	 * @param bool $opened sets the folder opened or collapsed
 	 */
 	public function collapseFolder($folderId, $opened){
-		$folderMapper = new \OCA\News\FolderMapper($this->userId);
-		$folder = $folderMapper->find($folderId);
+		$folder = $this->folderMapper->find($folderId);
 		$folder->setOpened($opened);
 		$success = $folderMapper->update($folder);
 
+		$this->renderJSON();
+	}
+
+
+	/**
+	 * Deletes a feed
+	 * @param int $feedId the id of the feed that should be deleted
+	 */
+	public function deleteFeed($feedId){
+		$this->feedMapper->deleteById($feedId);
+		$this->renderJSON();
+	}
+
+
+	/**
+	 * Deletes a folder
+	 * @param int $folderId the id of the folder that should be deleted
+	 */
+	public function deleteFolder($folderId){
+		$this->folderMapper->deleteById($folderId);
 		$this->renderJSON();
 	}
 

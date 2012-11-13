@@ -277,8 +277,7 @@
           return this.post('init', {}, function(json) {
             _this.loading.loading -= 1;
             _this.$rootScope.$broadcast('update', json.data);
-            _this.$rootScope.$broadcast('triggerHideRead');
-            return _this.loadFeed(json.data.activeFeed.type, json.data.activeFeed.id, 0, 0);
+            return _this.$rootScope.$broadcast('triggerHideRead');
           });
         };
 
