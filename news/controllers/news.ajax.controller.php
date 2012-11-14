@@ -293,7 +293,7 @@ class NewsAjaxController extends Controller {
 			$folder = $folderMapper->find($folderId);
 			if(!$folder){
 				$msgString = 'Can not move feed %s to folder %s';
-				$msg = $this->trans($msgString, array($feedId, $folderId));
+				$msg = $this->trans->l($msgString, array($feedId, $folderId));
 				return $this->renderJSONError($msg, __FILE__);
 			}
 			$this->feedMapper->save($feed, $folder->getId());
@@ -323,7 +323,7 @@ class NewsAjaxController extends Controller {
 			return $this->renderJSON($feedsArray);
 		} else {
 			$msgString = 'Error updating feed %s';
-			$msg = $this->trans($msgString, array($feed->getUrl()));
+			$msg = $this->trans->l($msgString, array($feed->getUrl()));
 			return $this->renderJSONError($msg, __FILE__);
 		}
 

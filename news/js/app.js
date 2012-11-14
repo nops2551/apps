@@ -634,14 +634,14 @@
       };
 
       Persistence.prototype.executePostRequests = function() {
-        var request, _i, _len, _ref, _results;
+        var request, _i, _len, _ref;
         _ref = this.shelvedRequests;
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           request = _ref[_i];
-          _results.push(this.post(request.route, request.data, request.callback));
+          this.post(request.route, request.data, request.callback);
+          console.log(request);
         }
-        return _results;
+        return this.shelvedRequests = [];
       };
 
       Persistence.prototype.isIntialized = function() {
@@ -1205,7 +1205,7 @@
           this.$scope.$on('loadFeed', function(scope, params) {
             return _this.loadFeed(params.type, params.id);
           });
-          setTimeout(function() {
+          setInterval(function() {
             return _this.updateFeeds();
           }, this.config.FeedUpdateInterval);
         }

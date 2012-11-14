@@ -27,6 +27,8 @@ angular.module('News').factory 'Persistence', () ->
 		executePostRequests: () ->
 			for request in @shelvedRequests
 				@post(request.route, request.data, request.callback)
+				console.log request
+			@shelvedRequests = []
 
 
 		isIntialized: ->

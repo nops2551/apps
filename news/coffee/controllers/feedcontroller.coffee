@@ -65,7 +65,7 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 			@$scope.$on 'loadFeed', (scope, params) =>
 				@loadFeed(params.type, params.id)
 
-			setTimeout =>
+			setInterval =>
 				@updateFeeds()
 			, @config.FeedUpdateInterval
 
