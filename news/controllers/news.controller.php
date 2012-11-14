@@ -12,18 +12,6 @@
 
 namespace OCA\News;
 
-require_once \OC_App::getAppPath('news') . '/controllers/controller.php';
-require_once \OC_App::getAppPath('news') . '/lib/security.php';
-require_once \OC_App::getAppPath('news') . '/lib/feedmapper.php';
-require_once \OC_App::getAppPath('news') . '/lib/foldermapper.php';
-
-
-$container = Utils::getDIContainer();
-$container['NewsController'] = function($c){
-	return new NewsController($c['AppName'], $c['FeedMapper'], $c['FolderMapper'], 
-								$c['Security'], $c['UserId']);
-};
-
 
 class NewsController extends Controller {
 

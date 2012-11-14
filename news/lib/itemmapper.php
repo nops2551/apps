@@ -12,12 +12,6 @@
 
 namespace OCA\News;
 
-$container = Utils::getDIContainer();
-$container['ItemMapper'] = $container->share(function($c){
-	return new ItemMapper($c['UserId']);
-});
-
-
 /**
  * This class maps an item to a row of the items table in the database.
  * It follows the Data Mapper pattern (see http://martinfowler.com/eaaCatalog/dataMapper.html).

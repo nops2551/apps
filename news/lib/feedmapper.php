@@ -12,12 +12,6 @@
 
 namespace OCA\News;
 
-$container = Utils::getDIContainer();
-$container['FeedMapper'] = $container->share(function($c){
-	return new FeedMapper($c['UserId']);
-});
-
-
 /**
  * This class maps a feed to an entry in the feeds table of the database.
  */

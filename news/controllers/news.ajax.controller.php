@@ -12,20 +12,6 @@
 
 namespace OCA\News;
 
-require_once \OC_App::getAppPath('news') . '/controllers/controller.php';
-require_once \OC_App::getAppPath('news') . '/lib/security.php';
-require_once \OC_App::getAppPath('news') . '/lib/feedmapper.php';
-require_once \OC_App::getAppPath('news') . '/lib/foldermapper.php';
-require_once \OC_App::getAppPath('news') . '/lib/itemmapper.php';
-
-
-$container = Utils::getDIContainer();
-$container['NewsAjaxController'] = function($c){
-	return new NewsAjaxController($c['AppName'], $c['FeedMapper'], $c['FolderMapper'], 
-									$c['ItemMapper'], $c['Security'], $c['UserId']);
-};
-
-
 /**
  * Class which handles all ajax calls
  */
@@ -221,8 +207,7 @@ class NewsAjaxController extends Controller {
 	public function collapseFolder($folderId, $opened){
 		$folder = $this->folderMapper->find($folderId);
 		$folder->setOpened($opened);
-		$success = $folderMapper->update($folder);
-
+		$this->folderMapper->update($folder);
 		$this->renderJSON();
 	}
 

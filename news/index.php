@@ -13,15 +13,15 @@
 
 namespace OCA\News;
 
-require_once \OC_App::getAppPath('news') . '/controllers/news.controller.php';
-
-$container = Utils::getDIContainer();
-$container['Security']->setCSRFCheck(false);
-$controller = $container['NewsController'];
+require_once \OC_App::getAppPath('news') . '/lib/bootstrap.php';
 
 // routes
 if(isset($_GET['jstest'])){
+	$container['Security']->setCSRFCheck(false);
+	$controller = $container['NewsController'];
 	$controller->javascriptTests();
 } else {
+	$container['Security']->setCSRFCheck(false);
+	$controller = $container['NewsController'];
 	$controller->index();
 }

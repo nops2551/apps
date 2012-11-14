@@ -12,9 +12,8 @@
 
 namespace OCA\News;
 
-require_once \OC_App::getAppPath('news') . '/controllers/news.ajax.controller.php';
+require_once \OC_App::getAppPath('news') . '/lib/bootstrap.php';
 
-$container = Utils::getDIContainer();
 $controller = $container['NewsAjaxController'];
 $controller->loadFeed((int)$_POST['type'], (int)$_POST['id'], 
 						(int)$_POST['latestFeedId'], (int)$_POST['latestTimestamp'],

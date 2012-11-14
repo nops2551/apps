@@ -18,31 +18,6 @@ namespace OCA\News;
 
 class Utils {
 
-	public static $pimple;
-
-	public static function getDIContainer(){
-		if(!isset(self::$pimple)){
-			self::$pimple = new \Pimple();
-
-			// set default values
-			self::$pimple['UserId'] = function($c){
-				return \OCP\USER::getUser();
-			};
-
-			self::$pimple['AppName'] = function($c){
-				return 'news';
-			};
-
-			self::$pimple['Trans'] = function($c){
-				return \OC_L10N::get($c['AppName']);
-			};
-
-		}
-
-		return self::$pimple;
-	}
-
-
 	/**
 	 * @brief Transform a date from UNIX timestamp format to MDB2 timestamp format
 	 * @param dbtimestamp

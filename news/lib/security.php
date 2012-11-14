@@ -13,10 +13,6 @@
 
 namespace OCA\News;
 
-$container = Utils::getDIContainer();
-$container['Security'] = $container->share(function($c) {
-	return new Security($c['AppName']);	
-});
 
 /**
  * This class is a simple object with getters and setters and allows

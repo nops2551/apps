@@ -25,6 +25,10 @@ OC::$CLASSPATH['OCA\News\FolderMapper'] = 'apps/news/lib/foldermapper.php';
 OC::$CLASSPATH['OCA\News\Utils'] = 'apps/news/lib/utils.php';
 OC::$CLASSPATH['OCA\News\Security'] = 'apps/news/lib/security.php';
 
+OC::$CLASSPATH['OCA\News\Controller'] = 'apps/news/controllers/controller.php';
+OC::$CLASSPATH['OCA\News\NewsController'] = 'apps/news/controllers/news.controller.php';
+OC::$CLASSPATH['OCA\News\NewsAjaxController'] = 'apps/news/controllers/news.ajax.controller.php';
+
 OC::$CLASSPATH['OC_Search_Provider_News'] = 'apps/news/lib/search.php';
 
 OC::$CLASSPATH['OCA\News\Backgroundjob'] = 'apps/news/lib/backgroundjob.php';
