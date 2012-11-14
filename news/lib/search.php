@@ -16,9 +16,9 @@ class OC_Search_Provider_News extends OC_Search_Provider{
 			$l = new OC_l10n('news');
 			
 			foreach($allFeeds as $feed) {
-				if(substr_count(strtolower($feed['title']), strtolower($query)) > 0) {
-					$link = OCP\Util::linkTo('news', 'index.php').'&feedid='.urlencode($feed['id']);
-					$results[]=new OC_Search_Result($feed['title'], '', $link, (string)$l->t('News'));
+				if(substr_count(strtolower($feed->getTitle(), strtolower($query)) > 0) {
+					$link = OCP\Util::linkTo('news', 'index.php').'&feedid='.urlencode($feed->getId());
+					$results[]=new OC_Search_Result($feed->getTitle(), '', $link, (string)$l->t('News'));
 				}
 			}
 		}

@@ -14,13 +14,38 @@ angular.module('News').factory 'Persistence', () ->
 	class Persistence
 
 		constructor: (@appName, @$http) ->
+			@appInitalized = false
+			@shelvedRequests = []
 
 
-		post: (file, data={}, callback) ->
+		setInitialized: (isIntialized) ->
+			if isIntialized
+				@executePostRequests()
+			@appInitalized = isIntialized
+
+
+		executePostRequests: () ->
+			for request in @shelvedRequests
+				@post(request.route, request.data, request.callback)
+
+
+		isIntialized: ->
+			return @appInitalized
+
+
+		post: (route, data={}, callback, init=false) ->
+			if @isIntialized == false && init == false
+				request =
+					route: route
+					data: data
+					callback: callback
+				@shelvedRequests.push(request)
+				return
+
 			if not callback
 				callback = ->
 
-			url = OC.filePath(@appName, 'ajax', file + '.php')
+			url = OC.Router.generate("ajax_" + route)
 
 			data = $.param(data)
 

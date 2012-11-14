@@ -55,7 +55,7 @@ class Security {
 	/**
 	 * Runs all security checks
 	 */
-	public function ensure() {
+	public function runChecks() {
 
 		if($this->csrfCheck){
 			\OCP\JSON::callCheck();

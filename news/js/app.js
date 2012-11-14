@@ -111,6 +111,29 @@
   */
 
 
+  angular.module('News').directive('onEnter', function() {
+    return function(scope, elm, attr) {
+      return elm.bind('keyup', function(e) {
+        if (e.keyCode === 13) {
+          e.preventDefault();
+          return scope.$apply(attr.onEnter);
+        }
+      });
+    };
+  });
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
   angular.module('News').filter('feedInFolder', function() {
     return function(feeds, folderId) {
       var feed, result, _i, _len;
@@ -275,10 +298,13 @@
         PersistenceNews.prototype.loadInitial = function() {
           var _this = this;
           this.loading.loading += 1;
-          return this.post('init', {}, function(json) {
-            _this.loading.loading -= 1;
-            _this.$rootScope.$broadcast('update', json.data);
-            return _this.$rootScope.$broadcast('triggerHideRead');
+          return OC.Router.registerLoadedCallback(function() {
+            return _this.post('init', {}, function(json) {
+              _this.loading.loading -= 1;
+              _this.$rootScope.$broadcast('update', json.data);
+              _this.$rootScope.$broadcast('triggerHideRead');
+              return _this.setInitialized(true);
+            }, true);
           });
         };
 
@@ -596,17 +622,53 @@
       function Persistence(appName, $http) {
         this.appName = appName;
         this.$http = $http;
+        this.appInitalized = false;
+        this.shelvedRequests = [];
       }
 
-      Persistence.prototype.post = function(file, data, callback) {
-        var headers, url;
+      Persistence.prototype.setInitialized = function(isIntialized) {
+        if (isIntialized) {
+          this.executePostRequests();
+        }
+        return this.appInitalized = isIntialized;
+      };
+
+      Persistence.prototype.executePostRequests = function() {
+        var request, _i, _len, _ref, _results;
+        _ref = this.shelvedRequests;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          request = _ref[_i];
+          _results.push(this.post(request.route, request.data, request.callback));
+        }
+        return _results;
+      };
+
+      Persistence.prototype.isIntialized = function() {
+        return this.appInitalized;
+      };
+
+      Persistence.prototype.post = function(route, data, callback, init) {
+        var headers, request, url;
         if (data == null) {
           data = {};
+        }
+        if (init == null) {
+          init = false;
+        }
+        if (this.isIntialized === false && init === false) {
+          request = {
+            route: route,
+            data: data,
+            callback: callback
+          };
+          this.shelvedRequests.push(request);
+          return;
         }
         if (!callback) {
           callback = function() {};
         }
-        url = OC.filePath(this.appName, 'ajax', file + '.php');
+        url = OC.Router.generate("ajax_" + route);
         data = $.param(data);
         headers = {
           requesttoken: oc_requesttoken,
@@ -1270,18 +1332,20 @@
 
 
   angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews) {
+    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', 'FolderModel', 'FeedModel', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews, FolderModel, FeedModel) {
       var SettingsController;
       SettingsController = (function(_super) {
 
         __extends(SettingsController, _super);
 
-        function SettingsController($scope, $rootScope, showAll, persistence) {
+        function SettingsController($scope, $rootScope, showAll, persistence, folderModel, feedModel) {
           var _this = this;
           this.$scope = $scope;
           this.$rootScope = $rootScope;
           this.showAll = showAll;
           this.persistence = persistence;
+          this.folderModel = folderModel;
+          this.feedModel = feedModel;
           this.add = false;
           this.settings = false;
           this.$scope.getShowAll = function() {
@@ -1318,15 +1382,24 @@
             return $scope.feedUrl = "";
           };
           this.$scope.addFolder = function(name) {
-            console.log(name);
-            return $scope.folderName = "";
+            if (name !== '') {
+              _this.$scope.addFolderForm.folderName.$error = {
+                required: false
+              };
+              _this.$scope.folderName = '';
+            } else {
+              _this.$scope.addFolderForm.folderName.$error = {
+                required: true
+              };
+            }
+            return console.log(name);
           };
         }
 
         return SettingsController;
 
       })(Controller);
-      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews);
+      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel);
     }
   ]);
 
@@ -1343,18 +1416,20 @@
 
 
   angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews) {
+    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', 'FolderModel', 'FeedModel', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews, FolderModel, FeedModel) {
       var SettingsController;
       SettingsController = (function(_super) {
 
         __extends(SettingsController, _super);
 
-        function SettingsController($scope, $rootScope, showAll, persistence) {
+        function SettingsController($scope, $rootScope, showAll, persistence, folderModel, feedModel) {
           var _this = this;
           this.$scope = $scope;
           this.$rootScope = $rootScope;
           this.showAll = showAll;
           this.persistence = persistence;
+          this.folderModel = folderModel;
+          this.feedModel = feedModel;
           this.add = false;
           this.settings = false;
           this.$scope.getShowAll = function() {
@@ -1391,15 +1466,24 @@
             return $scope.feedUrl = "";
           };
           this.$scope.addFolder = function(name) {
-            console.log(name);
-            return $scope.folderName = "";
+            if (name !== '') {
+              _this.$scope.addFolderForm.folderName.$error = {
+                required: false
+              };
+              _this.$scope.folderName = '';
+            } else {
+              _this.$scope.addFolderForm.folderName.$error = {
+                required: true
+              };
+            }
+            return console.log(name);
           };
         }
 
         return SettingsController;
 
       })(Controller);
-      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews);
+      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel);
     }
   ]);
 

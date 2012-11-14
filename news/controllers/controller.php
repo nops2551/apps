@@ -16,13 +16,12 @@ class Controller {
 
 	protected $userId;
 	protected $appName;
+	protected $request;
 
-	public function __construct($appName, $security, $userId){
-		$this->userId = $userId;
+	public function __construct($request, $appName){
+		$this->userId = $request->getUserId();
 		$this->appName = $appName;
-		$this->safeParams = array();
-
-		$security->ensure();
+		$this->request = $request;
 	}
 
 
@@ -68,32 +67,20 @@ class Controller {
 	/**
 	 * Binds variables to the template and prints it
 	 * The following values are always assigned: userId, trans
+	 * @param $templateName the name of the template
 	 * @param $arguments an array with arguments in $templateVar => $content
-	 * @param $template the name of the template
-	 * @param $safeParams template parameters which should not be escaped
 	 * @param $fullPage if true, it will render a full page, otherwise only a part
 	 *                  defaults to true
 	 */
-	protected function render($template, $arguments=array(), $safeParams=array(),
+	protected function render($templateName, $arguments=array(),
 							  $fullPage=true){
 
-		if($fullPage){
-			$template = new \OCP\Template($this->appName, $template, 'user');
-		} else {
-			$template = new \OCP\Template($this->appName, $template);
-		}
+		$arguments['request'] = $this->request;
 
-		foreach($arguments as $key => $value){
-			if(array_key_exists($key, $safeParams)) {
-				$template->assign($key, $value, false);
-			} else {
-				$template->assign($key, $value);
-			}
-
-		}
-
-		$template->assign('userId', $this->userId);
-		$template->printPage();
+		$renderer = new TemplateRenderer($this->appName, $templateName);
+		$renderer->setParams($arguments);
+		$renderer->setFullPage($fullPage);
+		return $renderer->render();
 	}
 
 
@@ -102,8 +89,9 @@ class Controller {
 	 * @param array $params an array which will be converted to JSON
 	 */
 	protected function renderJSON($params=array()){
-		$data = array('data' => $params);
-		\OCP\JSON::success($data);	
+		$renderer = new JSONRenderer($this->appName);
+		$renderer->setData($params);
+		return $renderer->render();
 	}
 
 
@@ -113,11 +101,11 @@ class Controller {
 	 * @param string $file: the file that it occured in
 	 * @param array $params an array which will be converted to JSON
 	 */
-	protected function renderJSONError($msg="", $file="", $params=array()){
-		$data = array('data' => $params, 'msg' => $msg);
-		OCP\JSON::error($data);	
-		OCP\Util::writeLog($this->appName, $file . ': ' . $msg, OCP\Util::ERROR);
-		exit();
+	protected function renderJSONError($msg, $file="", $params=array()){
+		$renderer = new JSONRenderer($this->appName);
+		$renderer->setParams($params);
+		$renderer->setErrorMessage($msg, $file);
+		return $renderer->render();
 	}
 
 

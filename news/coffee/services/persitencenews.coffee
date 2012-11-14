@@ -21,10 +21,14 @@ angular.module('News').factory 'PersistenceNews',
 
 		loadInitial: () ->
 			@loading.loading += 1
-			@post 'init', {}, (json) =>
-				@loading.loading -= 1
-				@$rootScope.$broadcast('update', json.data)
-				@$rootScope.$broadcast('triggerHideRead')
+			OC.Router.registerLoadedCallback =>
+
+				@post 'init', {}, (json) =>
+					@loading.loading -= 1
+					@$rootScope.$broadcast('update', json.data)
+					@$rootScope.$broadcast('triggerHideRead')
+					@setInitialized(true)
+				, true
 
 
 		loadFeed: (type, id, latestFeedId, latestTimestamp, limit=20) ->

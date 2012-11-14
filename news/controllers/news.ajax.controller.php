@@ -23,17 +23,16 @@ class NewsAjaxController extends Controller {
 	private $trans;
 
 	/**
+	 * @param Request $request: the object with the request instance
 	 * @param string $appName: the name of the app
 	 * @param FeedMapper $feedMapepr an instance of the feed mapper
 	 * @param FolderMapper $folderMapper an instance of the folder mapper
 	 * @param ItemMapper $itemMapper an instance of the item mapper
-	 * @param Security $security: the class which runs the security checks
-	 * @param string $userId: the id of the user
 	 * @param $l: an instance of the translation object
 	 */
-	public function __construct($appName, $feedMapper, $folderMapper, 
-								$itemMapper, $security, $userId, $trans){
-		parent::__construct($appName, $security, $userId);
+	public function __construct($request, $appName, $feedMapper, $folderMapper, 
+								$itemMapper, $trans){
+		parent::__construct($request, $appName);
 		$this->feedMapper = $feedMapper;
 		$this->folderMapper = $folderMapper;
 		$this->itemMapper = $itemMapper;
@@ -161,22 +160,20 @@ class NewsAjaxController extends Controller {
 			'starredCount' => $starredCount
 		);
 
-		$this->renderJSON($result);
+		return $this->renderJSON($result);
 	}
 
 
 	/**
 	 * loads the next X feeds from the server
-	 * @param int $feedType the type of the feed
-	 * @param int $feedId the id of the feed
-	 * @param int $latestFeedId the it of the latest feed that the client has for
-	 *                          this type
-	 * @param int $latestTimestamp the timestamp of the latest feed that the 
-	 *                             client for this type client has
-	 * @param int $limit the amount of items that should be loaded, defaults to 20
 	 */
-	public function loadFeed($feedType, $feedId, $latestFeedId, $latestTimestamp,
-								$limit=20){
+	public function loadFeed(){
+		$feedType = (int)$this->request->post('type');
+		$feedId = (int)$this->request->post('id');
+		$latestFeedId = (int)$this->request->post('latestFeedId');
+		$latestTimestamp = (int)$this->request->post('latestTimestamp');
+		$limit = (int)$this->request->post('limit');
+
 		// FIXME: integrate latestFeedId, latestTimestamp and limit
 		$this->setUserValue('lastViewedFeed', $feedId);
 		$this->setUserValue('lastViewedFeedType', $feedType);
@@ -190,60 +187,61 @@ class NewsAjaxController extends Controller {
 
 		$result = array('items' => $itemsArray);
 
-		$this->renderJSON($result);
+		return $this->renderJSON($result);
 
 	}
 
 
 	/**
 	 * Used for setting the showAll value from a post request
-	 * @param bool $showAll sets the value
 	 */
-	public function setShowAll($showAll){       
+	public function setShowAll(){       
+		$feedType = $this->request->post('showAll');
 		$this->setUserValue('showAll', $showAll);
-		$this->renderJSON();
+		return $this->renderJSON();
 	}
 
 
 	/**
 	 * Used for setting the showAll value from a post request
-	 * @param int $folderId the id of the folder that we want to open or collapse
-	 * @param bool $opened sets the folder opened or collapsed
 	 */
-	public function collapseFolder($folderId, $opened){
+	public function collapseFolder(){
+		$folderId = (int)$this->request->post('folderId');
+		$opened = $this->postParamToBool($this->request->post('opened'));
+
 		$folder = $this->folderMapper->find($folderId);
 		$folder->setOpened($opened);
 		$this->folderMapper->update($folder);
-		$this->renderJSON();
+		return $this->renderJSON();
 	}
 
 
 	/**
 	 * Deletes a feed
-	 * @param int $feedId the id of the feed that should be deleted
 	 */
-	public function deleteFeed($feedId){
+	public function deleteFeed(){
+		$feedId = (int)$this->request->post('feedId');
 		$this->feedMapper->deleteById($feedId);
-		$this->renderJSON();
+		return $this->renderJSON();
 	}
 
 
 	/**
 	 * Deletes a folder
-	 * @param int $folderId the id of the folder that should be deleted
 	 */
-	public function deleteFolder($folderId){
+	public function deleteFolder(){
+		$folderId = (int)$this->request->post('folderId');
 		$this->folderMapper->deleteById($folderId);
-		$this->renderJSON();
+		return $this->renderJSON();
 	}
 
 
 	/**
 	 * Sets the status of an item
-	 * @param int $itemId: the id of the item that we want to set
-	 * @param string $status: can be read, unread, important or unimportant
 	 */
-	public function setItemStatus($itemId, $status){
+	public function setItemStatus(){
+		$itemId = (int)$this->request->post('itemId');
+		$status = $this->request->post('status');
 		$item = $this->itemMapper->findById($itemId);
 		
 		switch ($status) {
@@ -265,28 +263,29 @@ class NewsAjaxController extends Controller {
 		}
 
 		$this->itemMapper->update($item);
-		$this->renderJSON();
+		return $this->renderJSON();
 	}
 
 
 	/**
 	 * Changes the name of a folder
-	 * @param int $folderId: the id of the folder that we want to change
-	 * @param string $folderName: the new name for the folder
 	 */
-	public function changeFolderName($folderId, $folderName){
+	public function changeFolderName(){
+		$folderId = (int)$this->request->post('folderId');
+		$folderName = $this->request->post('folderName');
 		$folder = $this->folderMapper->find($folderId);
 		$folder->setName($folderName);
 		$this->folderMapper->update($folder);
+		return $this->renderJSON();
 	}
 
 
 	/**
 	 * Moves a feed to a new folder
-	 * @param int $feedId: the id of the feed that we want to move
-	 * @param string $folderId: the id of the folder that it should be moved to
 	 */
-	public function moveFeedToFolder($feedId, $folderId){
+	public function moveFeedToFolder(){
+		$feedId = (int)$this->request->post('feedId');
+		$folderId = (int)$this->request->post('folderId');
 		$feed = $this->feedMapper->findById($feedId);
 		if($folderId === 0) {
 			$this->feedMapper->save($feed, $folderId);
@@ -295,19 +294,19 @@ class NewsAjaxController extends Controller {
 			if(!$folder){
 				$msgString = 'Can not move feed %s to folder %s';
 				$msg = $this->trans($msgString, array($feedId, $folderId));
-				$this->renderJSONError($msg, __FILE__);
+				return $this->renderJSONError($msg, __FILE__);
 			}
 			$this->feedMapper->save($feed, $folder->getId());
 		}
-		$this->renderJSON();
+		return $this->renderJSON();
 	}
 
 
 	/**
 	 * Pulls new feed items from its url
-	 * @param int $feedId: the id of the feed that we want to update
 	 */
-	public function updateFeed($feedId){
+	public function updateFeed(){
+		$feedId = (int)$this->request->post('feedId');
 		$feed = $this->feedMapper->findById($feedId);
 		$newFeed = Utils::fetch($feed->getUrl());
 
@@ -321,11 +320,11 @@ class NewsAjaxController extends Controller {
 			$feedsArray = array(
 				'feeds' => $this->feedsToArray($feeds)
 			);
-			$this->renderJSON($feedsArray);
+			return $this->renderJSON($feedsArray);
 		} else {
 			$msgString = 'Error updating feed %s';
 			$msg = $this->trans($msgString, array($feed->getUrl()));
-			$this->renderJSONError($msg, __FILE__);
+			return $this->renderJSONError($msg, __FILE__);
 		}
 
 	}
@@ -333,16 +332,16 @@ class NewsAjaxController extends Controller {
 
 	/**
 	 * Creates a new folder
-	 * @param string $folderName: the name of the new folder
 	 */
-	public function createFolder($folderName){
+	public function createFolder(){
+		$folderName = (int)$this->request->post('folderName');
 		$folder = new Folder($folderName);
 		$folderId = $this->folderMapper->save($folder);
 		$folders = array($this->folderMapper->findById($folderId));
 		$foldersArray = array(
 			'folders' => $this->foldersToArray($feeds)
 		);
-		$this->renderJSON($foldersArray);
+		return $this->renderJSON($foldersArray);
 	}
 
 
@@ -350,11 +349,11 @@ class NewsAjaxController extends Controller {
 	/**
 	 * Sets all items read that are older than the current transmitted 
 	 * dates and ids
-	 * @param int $feedId: the id of the feed
-	 * @param int $mostRecentItemId: all items with an id bigger than this will
-	 *                               be spared from marking read
 	 */
 	public function setAllItemsRead($feedId, $mostRecentItemId){
+		$feedId = (int)$this->request->post('feedId');
+		$mostRecentItemId = (int)$this->request->post('mostRecentItemId');
+
 		$feed = $this->feedMapper->findById($feedId);
 
 		if($feed){
@@ -364,7 +363,7 @@ class NewsAjaxController extends Controller {
 			$feedsArray = array(
 				'feeds' => $this->feedsToArray($feeds)
 			);
-			$this->renderJSON($feedsArray);		
+			return $this->renderJSON($feedsArray);		
 		}
 
 	}

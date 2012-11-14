@@ -19,14 +19,13 @@ class NewsController extends Controller {
 	private $folderMapper;
 
 	/**
+	 * @param Request $request: the object with the request instance
 	 * @param string $appName: the name of the app
 	 * @param FolderMapper $folderMapper: an instance of the folder mapper
 	 * @param FeedMapper $feedMapper: an instance of the feed mapper
-	 * @param Security $security: the class which runs the security checks
-	 * @param string $userId: the id of the user
 	 */
-	public function __construct($appName, $feedMapper, $folderMapper, $security, $userId){
-		parent::__construct($appName, $security, $userId);
+	public function __construct($request, $appName, $feedMapper, $folderMapper, $security, $userId){
+		parent::__construct($request, $appName);
 		$this->feedMapper = $feedMapper;
 		$this->folderMapper = $folderMapper;
 		\OCP\App::setActiveNavigationEntry($appName);
@@ -37,31 +36,32 @@ class NewsController extends Controller {
 	 * Decides wether to show the feedpage or the firstrun page
 	 */
 	public function index(){
+
 		if($this->feedMapper->feedCount() > 0){
-			$this->feedPage();
+			return $this->feedPage();
 		} else {
-			$this->firstRun();
+			return $this->firstRun();
 		}
 	}
 
 
-	public function firstRun(){
+	private function firstRun(){
 		$this->addScript('news');
 		$this->addScript('firstrun');
 		$this->addStyle('firstrun');
-		$this->render('firstrun');
+		return $this->render('firstrun');
 	}
 
 
-	public function feedPage(){
+	private function feedPage(){
 		$this->add3rdPartyScript('angular-1.0.2/angular');
 		$this->add3rdPartyScript('moment.min');
 		$this->addScript('app');
 		$this->addStyle('news');
 		$this->addStyle('settings');
 
-		if(isset($_GET['feedid'])){
-			$this->setUserValue('lastViewedFeed', $_GET['feedid']);
+		if($this->request->get('feedid')){	
+			$this->setUserValue('lastViewedFeed', $this->request->get('feedid'));
 			$this->setUserValue('lastViewedFeedType', FeedType::FEED);
 		}
 
@@ -71,22 +71,19 @@ class NewsController extends Controller {
 		if( $lastViewedFeedId === null || $lastViewedFeedType === null) {
 			$this->setUserValue('lastViewedFeed', $this->feedMapper->mostRecent());;
 			$this->setUserValue('lastViewedFeedType', FeedType::FEED);
+
 		} else {
 			// check if the last selected feed or folder exists
-			if( (
-					$lastViewedFeedType === FeedType::FEED &&
-					$this->feedMapper->findById($lastViewedFeedId) === null
-				) ||
-				(
-					$lastViewedFeedType === FeedType::FOLDER &&
-					$this->folderMapper->findById($lastViewedFeedId) === null
-				) ){
+			if(($lastViewedFeedType === FeedType::FEED &&
+				$this->feedMapper->findById($lastViewedFeedId) === null) ||
+				($lastViewedFeedType === FeedType::FOLDER &&
+					$this->folderMapper->findById($lastViewedFeedId) === null)){
 				$this->setUserValue('lastViewedFeed', $this->feedMapper->mostRecent());;
 				$this->setUserValue('lastViewedFeedType', FeedType::FEED);
 			}
 		}
 
-		$this->render('main');
+		return $this->render('main');
 	}
 
 

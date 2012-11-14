@@ -9,43 +9,23 @@
 * See the COPYING-README file
 *
 */
-OC::$CLASSPATH['Pimple'] = 'apps/news/3rdparty/Pimple/Pimple.php';
 
-OC::$CLASSPATH['OCA\News\StatusFlag'] = 'apps/news/lib/item.php';
-OC::$CLASSPATH['OCA\News\Item'] = 'apps/news/lib/item.php';
-OC::$CLASSPATH['OCA\News\Collection'] = 'apps/news/lib/collection.php';
-OC::$CLASSPATH['OCA\News\Feed'] = 'apps/news/lib/feed.php';
-OC::$CLASSPATH['OCA\News\Folder'] = 'apps/news/lib/folder.php';
-OC::$CLASSPATH['OCA\News\FeedType'] = 'apps/news/lib/feedtypes.php';
+namespace OCA\News;
 
-OC::$CLASSPATH['OCA\News\FeedMapper'] = 'apps/news/lib/feedmapper.php';
-OC::$CLASSPATH['OCA\News\ItemMapper'] = 'apps/news/lib/itemmapper.php';
-OC::$CLASSPATH['OCA\News\FolderMapper'] = 'apps/news/lib/foldermapper.php';
+require_once \OC_App::getAppPath('news') . '/appinfo/bootstrap.php';
 
-OC::$CLASSPATH['OCA\News\Utils'] = 'apps/news/lib/utils.php';
-OC::$CLASSPATH['OCA\News\Security'] = 'apps/news/lib/security.php';
 
-OC::$CLASSPATH['OCA\News\Controller'] = 'apps/news/controllers/controller.php';
-OC::$CLASSPATH['OCA\News\NewsController'] = 'apps/news/controllers/news.controller.php';
-OC::$CLASSPATH['OCA\News\NewsAjaxController'] = 'apps/news/controllers/news.ajax.controller.php';
-
-OC::$CLASSPATH['OC_Search_Provider_News'] = 'apps/news/lib/search.php';
-
-OC::$CLASSPATH['OCA\News\Backgroundjob'] = 'apps/news/lib/backgroundjob.php';
-OCP\Backgroundjob::addRegularTask( 'OCA\News\Backgroundjob', 'run' );
-
-OC::$CLASSPATH['OCA\News\Share_Backend_News_Item'] = 'apps/news/lib/share/item.php';
-
-OCP\App::addNavigationEntry( array(
+\OCP\App::addNavigationEntry( array(
   'id' => 'news',
   'order' => 74,
-  'href' => OC_Helper::linkTo( 'news', 'index.php' ),
-  'icon' => OC_Helper::imagePath( 'news', 'icon.svg' ),
-  'name' => OC_L10N::get('news')->t('News')
+  'href' => \OC_Helper::linkToRoute('index'),
+  'icon' => \OC_Helper::imagePath( 'news', 'icon.svg' ),
+  'name' => \OC_L10N::get('news')->t('News')
 ));
 
-OC_Search::registerProvider('OC_Search_Provider_News');
+\OC_Search::registerProvider('OC_Search_Provider_News');
 
-OCP\Share::registerBackend('news_item', 'OCA\News\Share_Backend_News_Item');
+\OCP\Backgroundjob::addRegularTask( 'OCA\News\Backgroundjob', 'run' );
+\OCP\Share::registerBackend('news_item', 'OCA\News\Share_Backend_News_Item');
 
 

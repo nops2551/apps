@@ -34,13 +34,27 @@
 	<div class="open_add" ng-show="addIsShown()">
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Add Folder')); ?></strong></legend>
-			<input type="text" ng-model="folderName" placeholder="<?php p($l->t('Name')); ?>" required="required">
-			<button title="<?php p($l->t('Add')); ?>" ng-click="addFolder(folderName)"><?php p($l->t('Add')); ?></button>
+			<form name="addFolderForm" novalidate>
+				<input type="text" 
+						ng-model="folderName" 
+						name="folderName"
+						placeholder="<?php p($l->t('Name')); ?>" 
+						required="required">
+				<button title="<?php p($l->t('Add')); ?>" 
+						ng-click="addFolder(folderName)"><?php p($l->t('Add')); ?></button>
+			</form>
 		</fieldset>
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Add Subscription')); ?></strong></legend>
-			<input type="text" ng-model="feedUrl" placeholder="<?php p($l->t('Adress')); ?>" required="required">
-			<button title="<?php p($l->t('Add')); ?>" ng-click="addFeed(feedUrl)"><?php p($l->t('Add')); ?></button>
+			<form>
+				<input type="text" 
+					ng-model="feedUrl" 
+					on-enter="addFeed(feedUrl)" 
+					placeholder="<?php p($l->t('Adress')); ?>" 
+					required="required">
+				<button title="<?php p($l->t('Add')); ?>" 
+						ng-click="addFeed(feedUrl)"><?php p($l->t('Add')); ?></button>
+			<form>	
 		</fieldset>
 	</div>
 

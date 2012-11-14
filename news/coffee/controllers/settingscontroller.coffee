@@ -11,11 +11,14 @@
 
 angular.module('News').controller 'SettingsController', 
 ['Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews',
-(Controller, $scope, ShowAll, $rootScope, PersistenceNews) ->
+'FolderModel', 'FeedModel',
+(Controller, $scope, ShowAll, $rootScope, PersistenceNews, FolderModel,
+	FeedModel) ->
 
 	class SettingsController extends Controller
 
-		constructor: (@$scope, @$rootScope, @showAll, @persistence) ->
+		constructor: (@$scope, @$rootScope, @showAll, @persistence
+						@folderModel, @feedModel) ->
 			
 			@add = false
 			@settings = false
@@ -52,9 +55,19 @@ angular.module('News').controller 'SettingsController',
 				$scope.feedUrl = ""
 
 			@$scope.addFolder = (name) =>
+				#if @$scope.addFolderForm.$valid
+				#	for folder in @folderModel.getItems()
+				#		if name.toLowerCase() == folder.name.toLowerCase()
+				#			@$scope.addFolderForm.$valid = false
+				if name != ''
+					@$scope.addFolderForm.folderName.$error = {required: false}
+					@$scope.folderName = ''
+				else 
+					@$scope.addFolderForm.folderName.$error = {required: true}
 				console.log name
-				$scope.folderName = ""
+				
 
 
-	return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews)
+	return new SettingsController($scope, $rootScope, ShowAll, 
+									PersistenceNews, FolderModel, FeedModel)
 ]
