@@ -69,6 +69,6 @@ $container['NewsController'] = function($c){
 $container['NewsAjaxController'] = function($c){
 	return new NewsAjaxController($c['AppName'], $c['FeedMapper'], 
 									$c['FolderMapper'], $c['ItemMapper'], 
-									$c['Security'], $c['UserId']);
+									$c['Security'], $c['UserId'], $c['Trans']);
 };
 

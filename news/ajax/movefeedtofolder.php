@@ -10,33 +10,10 @@
 *
 */
 
-// Check if we are a user
-OCP\JSON::checkLoggedIn();
-OCP\JSON::checkAppEnabled('news');
-OCP\JSON::callCheck();
-session_write_close();
 
-$folderId = (int)$_POST['folderId'];
-$feedId = $_POST['feedId'];
+namespace OCA\News;
 
+require_once \OC_App::getAppPath('news') . '/lib/bootstrap.php';
 
-$feedMapper = new OCA\News\FeedMapper();
-$feed = $feedMapper->findById($feedId);
-
-if($folderId === 0) {
-    $success = $feedMapper->save($feed, $folderId);
-} else {
-    $folderMapper = new OCA\News\FolderMapper();
-    $folder = $folderMapper->find($folderId);
-    $success = $feedMapper->save($feed, $folder->getId());
-}
-
-$l = OC_L10N::get('news');
-
-if(!$success) {
-    OCP\JSON::error(array('data' => array('message' => $l->t('Error moving feed into folder.'))));
-    OCP\Util::writeLog('news','ajax/setallitemsread.php: Error moving feed ' . $feedId . ' into folder '. $folderId, OCP\Util::ERROR);
-    exit();
-}
-
-OCP\JSON::success();
+$controller = $container['NewsAjaxController'];
+$controller->moveFeedToFolder((int)$_POST['feedId'], (int)$_POST['folderId']);

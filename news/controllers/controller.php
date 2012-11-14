@@ -107,4 +107,18 @@ class Controller {
 	}
 
 
+	/**
+	 * @brief renders a json error
+	 * @param string $msg: the error message
+	 * @param string $file: the file that it occured in
+	 * @param array $params an array which will be converted to JSON
+	 */
+	protected function renderJSONError($msg="", $file="", $params=array()){
+		$data = array('data' => $params, 'msg' => $msg);
+		OCP\JSON::error($data);	
+		OCP\Util::writeLog($this->appName, $file . ': ' . $msg, OCP\Util::ERROR);
+		exit();
+	}
+
+
 }

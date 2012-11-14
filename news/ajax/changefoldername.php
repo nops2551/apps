@@ -10,26 +10,10 @@
 *
 */
 
-// Check if we are a user
-OCP\JSON::checkLoggedIn();
-OCP\JSON::checkAppEnabled('news');
-OCP\JSON::callCheck();
-session_write_close();
 
-$folderId = (int)$_POST['folderId'];
-$folderName = $_POST['folderName'];
+namespace OCA\News;
 
-$folderMapper = new OCA\News\FolderMapper();
-$folder = $folderMapper->find($folderId);
-$folder->setName($folderName);
-$success = $folderMapper->update($folder);
+require_once \OC_App::getAppPath('news') . '/lib/bootstrap.php';
 
-$l = OC_L10N::get('news');
-
-if(!$success) {
-    OCP\JSON::error(array('data' => array('message' => $l->t('Error changing name of folder ' . $folderId . ' to ' . $folderName))));
-    OCP\Util::writeLog('news','ajax/setallitemsread.php: Error changing name of folder ' . $folderId . ' to ' . $folderName, OCP\Util::ERROR);
-    exit();
-}
-
-OCP\JSON::success();
+$controller = $container['NewsAjaxController'];
+$controller->changeFolderName((int)$_POST['folderId'], $_POST['folderName']);

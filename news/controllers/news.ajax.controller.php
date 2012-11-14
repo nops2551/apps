@@ -17,6 +17,10 @@ namespace OCA\News;
  */
 class NewsAjaxController extends Controller {
 
+	private $feedMapper;
+	private $folderMapper;
+	private $itemMapper;
+	private $trans;
 
 	/**
 	 * @param string $appName: the name of the app
@@ -25,13 +29,15 @@ class NewsAjaxController extends Controller {
 	 * @param ItemMapper $itemMapper an instance of the item mapper
 	 * @param Security $security: the class which runs the security checks
 	 * @param string $userId: the id of the user
+	 * @param $l: an instance of the translation object
 	 */
 	public function __construct($appName, $feedMapper, $folderMapper, 
-								$itemMapper, $security, $userId){
+								$itemMapper, $security, $userId, $trans){
 		parent::__construct($appName, $security, $userId);
 		$this->feedMapper = $feedMapper;
 		$this->folderMapper = $folderMapper;
 		$this->itemMapper = $itemMapper;
+		$this->trans = $trans;
 	}
 
 
@@ -193,7 +199,7 @@ class NewsAjaxController extends Controller {
 	 * Used for setting the showAll value from a post request
 	 * @param bool $showAll sets the value
 	 */
-	public function setShowAll($showAll){		
+	public function setShowAll($showAll){       
 		$this->setUserValue('showAll', $showAll);
 		$this->renderJSON();
 	}
@@ -229,6 +235,95 @@ class NewsAjaxController extends Controller {
 	public function deleteFolder($folderId){
 		$this->folderMapper->deleteById($folderId);
 		$this->renderJSON();
+	}
+
+
+	/**
+	 * Sets the status of an item
+	 * @param int $itemId: the id of the item that we want to set
+	 * @param string $status: can be read, unread, important or unimportant
+	 */
+	public function setItemStatus($itemId, $status){
+		$item = $this->itemMapper->findById($itemId);
+		
+		switch ($status) {
+			case 'read':
+				$item->setRead();
+				break;
+			case 'unread':
+				$item->setUnread();
+				break;
+			case 'important':
+				$item->setImportant();
+				break;
+			case 'unimportant':
+				$item->setUnimportant();
+				break;
+			default:
+				exit();
+				break;
+		}
+
+		$this->itemMapper->update($item);
+		$this->renderJSON();
+	}
+
+
+	/**
+	 * Changes the name of a folder
+	 * @param int $folderId: the id of the folder that we want to change
+	 * @param string $folderName: the new name for the folder
+	 */
+	public function changeFolderName($folderId, $folderName){
+		$folder = $this->folderMapper->find($folderId);
+		$folder->setName($folderName);
+		$this->folderMapper->update($folder);
+	}
+
+
+	/**
+	 * Moves a feed to a new folder
+	 * @param int $feedId: the id of the feed that we want to move
+	 * @param string $folderId: the id of the folder that it should be moved to
+	 */
+	public function moveFeedToFolder($feedId, $folderId){
+		$feed = $this->feedMapper->findById($feedId);
+		if($folderId === 0) {
+			$this->feedMapper->save($feed, $folderId);
+		} else {
+			$folder = $folderMapper->find($folderId);
+			if(!$folder){
+				$msgString = 'Can not move feed %s to folder %s';
+				$msg = $this->trans($msgString, array($feedId, $folderId));
+				$this->renderJSONError($msg, __FILE__);
+			}
+			$this->feedMapper->save($feed, $folder->getId());
+		}
+		$this->renderJSON();
+	}
+
+
+	/**
+	 * Pulls new feed items from its url
+	 * @param int $feedId: the id of the feed that we want to update
+	 */
+	public function updateFeed($feedId){
+		$feed = $this->feedMapper->findById($feedId);
+		$newFeed = OCA\News\Utils::fetch($feed->getUrl());
+
+		$newFeedId = false;
+		if ($newFeed !== null) {
+		    $newFeedId = $this->feedMapper->save($newFeed, $feed->getFolderId());
+		}
+
+		if($newFeedId){
+			$this->renderJSON();
+		} else {
+			$msgString = 'Error updating feed %s';
+			$msg = $this->trans($msgString, array($feed->getUrl()));
+			$this->renderJSONError($msg, __FILE__);
+		}
+
 	}
 
 

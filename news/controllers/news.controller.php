@@ -15,6 +15,8 @@ namespace OCA\News;
 
 class NewsController extends Controller {
 
+	private $feedMapper;
+	private $folderMapper;
 
 	/**
 	 * @param string $appName: the name of the app
