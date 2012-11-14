@@ -65,6 +65,16 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 			@$scope.$on 'loadFeed', (scope, params) =>
 				@loadFeed(params.type, params.id)
 
+			setTimeout =>
+				@updateFeeds()
+			, @config.FeedUpdateInterval
+
+
+
+		updateFeeds: ->
+			for feed in @feedModel.getItems()
+				@persistence.updateFeed(feed.id)
+
 
 		loadFeed: (type, id) ->
 			# to not go crazy with autopaging, clear the caches if we switch the

@@ -22,7 +22,8 @@
     config = {
       MarkReadTimeout: 500,
       ScrollTimeout: 500,
-      initialLoadedItemsNr: 20
+      initialLoadedItemsNr: 20,
+      FeedUpdateInterval: 6000000
     };
     return $provide.value('Config', config);
   });
@@ -344,6 +345,17 @@
             opened: value
           };
           return this.post('collapsefolder', data);
+        };
+
+        PersistenceNews.prototype.updateFeed = function(feedId) {
+          var data,
+            _this = this;
+          data = {
+            feedId: feedId
+          };
+          return this.post('updatefeed', data, function(json) {
+            return _this.$rootScope.$broadcast('update', json.data);
+          });
         };
 
         return PersistenceNews;
@@ -1131,7 +1143,21 @@
           this.$scope.$on('loadFeed', function(scope, params) {
             return _this.loadFeed(params.type, params.id);
           });
+          setTimeout(function() {
+            return _this.updateFeeds();
+          }, this.config.FeedUpdateInterval);
         }
+
+        FeedController.prototype.updateFeeds = function() {
+          var feed, _i, _len, _ref, _results;
+          _ref = this.feedModel.getItems();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            feed = _ref[_i];
+            _results.push(this.persistence.updateFeed(feed.id));
+          }
+          return _results;
+        };
 
         FeedController.prototype.loadFeed = function(type, id) {
           if (type !== this.activeFeed.type || id !== this.activeFeed.id) {

@@ -38,37 +38,28 @@ class FeedMapper {
 		$url = $row['url'];
 		$title = $row['title'];
 		$id = $row['id'];
+		$folderid = $row['folder_id'];
 		$feed = new Feed($url, $title, null, $id);
 		$favicon = $row['favicon_link'];
 		$feed->setFavicon($favicon);
+		$feed->setFolderId($folderid);
 
 		return $feed;
 	}
 
 	/**
-	 * @brief as a list that can be easily parsed using JSON
+	 * @brief
 	 * @returns
 	 */
 	public function findAll() {
-		$query = 'SELECT * FROM ' . self::tableName;
-		$params = array();
-		if( $this->userid ) {
-			$query = $query.' WHERE user_id = ?';
-			$params[] = $this->userid;
-		}
+		$query = 'SELECT * FROM ' . self::tableName . ' WHERE user_id = ?';
+		$stmt = \OCP\DB::prepare($query);
+		$result = $stmt->execute(array($this->userid));
 
-		$stmt = \OCP\DB::prepare( $query );
-		$result = $stmt->execute( $params );
 		$feeds = array();
-		while ($row = $result->fetchRow()) {
-			$url = $row['url'];
-			$id = $row['id'];
-			$folderid = $row['folder_id'];
-			$userid = $row['user_id'];
-			$title = $row['title'];
-			$favicon = $row['favicon_link'];
-			$feeds[] = array("url" => $url, "id" => $id, "folderid" => $folderid, 
-				'userid' => $userid, 'title' => $title, 'favicon' => $favicon );
+		while($row = $result->fetchRow()){
+			$feed = $this->fromRow($row);
+			array_push($feeds, $feed);
 		}
 
 		return $feeds;

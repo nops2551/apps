@@ -90,14 +90,14 @@ class NewsAjaxController extends Controller {
 		$feedsArray = array();
 		foreach($feeds as $feed){
 			 array_push($feedsArray, array(
-				'id' => (int)$feed['id'],
-				'name' => $feed['title'],
-				'unreadCount' => $this->itemMapper->getUnreadCount(\OCA\News\FeedType::FEED, 
-																$feed['id']),
-				'folderId' => (int)$feed['folderid'],
+				'id' => (int)$feed->getId(),
+				'name' => $feed->getTitle(),
+				'unreadCount' => $this->itemMapper->getUnreadCount(FeedType::FEED, 
+																$feed->getId()),
+				'folderId' => (int)$feed->getFolderId(),
 				'show' => true,
-				'icon' => 'url(' . $feed['favicon'] .')',
-				'url' => $feed['url']
+				'icon' => 'url(' . $feed->getFavicon() .')',
+				'url' => $feed->getUrl()
 				)
 			);
 		}
@@ -309,7 +309,7 @@ class NewsAjaxController extends Controller {
 	 */
 	public function updateFeed($feedId){
 		$feed = $this->feedMapper->findById($feedId);
-		$newFeed = OCA\News\Utils::fetch($feed->getUrl());
+		$newFeed = Utils::fetch($feed->getUrl());
 
 		$newFeedId = false;
 		if ($newFeed !== null) {
@@ -317,7 +317,11 @@ class NewsAjaxController extends Controller {
 		}
 
 		if($newFeedId){
-			$this->renderJSON();
+			$feeds = array($this->feedMapper->findById($feedId));
+			$feedsArray = array(
+				'feeds' => $this->feedsToArray($feeds)
+			);
+			$this->renderJSON($feedsArray);
 		} else {
 			$msgString = 'Error updating feed %s';
 			$msg = $this->trans($msgString, array($feed->getUrl()));

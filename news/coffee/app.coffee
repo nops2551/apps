@@ -15,6 +15,7 @@ app = angular.module('News', []).config ($provide) ->
 		MarkReadTimeout: 500
 		ScrollTimeout: 500
 		initialLoadedItemsNr: 20
+		FeedUpdateInterval: 6000000
 
 	$provide.value('Config', config)
 

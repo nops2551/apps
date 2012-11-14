@@ -81,5 +81,13 @@ angular.module('News').factory 'PersistenceNews',
 			@post 'collapsefolder', data
 
 
+		updateFeed: (feedId) ->
+			data =
+				feedId: feedId
+
+			@post 'updatefeed', data, (json) =>	
+				@$rootScope.$broadcast('update', json.data)			
+
+
 	return new PersistenceNews($http, $rootScope, Loading)
 ]

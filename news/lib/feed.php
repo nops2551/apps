@@ -64,4 +64,12 @@ class Feed extends Collection {
 		return $this->items;
 	}
 
+	public function setFolderId($folderId){
+		$this->folderId = $folderId;
+	}
+
+	public function getFolderId(){
+		return $this->folderId;
+	}
+
 }
