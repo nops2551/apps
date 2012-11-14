@@ -155,6 +155,32 @@ class ItemMapper {
 		return $id;
 	}
 
+
+	/**
+	 * @brief marks all items read
+	 * @param int $feedId: the id of the feed
+	 * @param int $mostRecentItemId: every item with the same or lower id will 
+	 *								 be marked read
+	 */
+	public function markAllRead($feedId, $mostRecentItemId){
+		$stmt = \OCP\DB::prepare('
+				UPDATE ' . self::tableName .
+				' SET status = status | ?
+				WHERE 
+					feed_id = ?
+					AND
+					id <= ?');
+		
+		$params = array(
+			StatusFlag::UNREAD,
+			$feedId,
+			$mostRecentItemId
+		);
+
+		$stmt->execute($params);
+	}
+
+
 	/**
 	 * @brief Update the item after its status has changed
 	 * @returns The item whose status has changed.

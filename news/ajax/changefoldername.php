@@ -10,7 +10,6 @@
 *
 */
 
-
 namespace OCA\News;
 
 require_once \OC_App::getAppPath('news') . '/lib/bootstrap.php';

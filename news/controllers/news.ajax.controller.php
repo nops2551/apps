@@ -331,4 +331,43 @@ class NewsAjaxController extends Controller {
 	}
 
 
+	/**
+	 * Creates a new folder
+	 * @param string $folderName: the name of the new folder
+	 */
+	public function createFolder($folderName){
+		$folder = new Folder($folderName);
+		$folderId = $this->folderMapper->save($folder);
+		$folders = array($this->folderMapper->findById($folderId));
+		$foldersArray = array(
+			'folders' => $this->foldersToArray($feeds)
+		);
+		$this->renderJSON($foldersArray);
+	}
+
+
+
+	/**
+	 * Sets all items read that are older than the current transmitted 
+	 * dates and ids
+	 * @param int $feedId: the id of the feed
+	 * @param int $mostRecentItemId: all items with an id bigger than this will
+	 *                               be spared from marking read
+	 */
+	public function setAllItemsRead($feedId, $mostRecentItemId){
+		$feed = $this->feedMapper->findById($feedId);
+
+		if($feed){
+			$this->itemMapper->markAllRead($feed->getId(), $mostRecentItemId);
+
+			$feeds = array($this->feedMapper->findById($feed->getId()));
+			$feedsArray = array(
+				'feeds' => $this->feedsToArray($feeds)
+			);
+			$this->renderJSON($feedsArray);		
+		}
+
+	}
+
+
 }
