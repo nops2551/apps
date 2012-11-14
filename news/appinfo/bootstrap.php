@@ -97,13 +97,13 @@ function createDIContainer(){
 	 */
 	$newsContainer['NewsController'] = function($c){
 		return new NewsController($c['Request'], $c['AppName'], $c['FeedMapper'], 
-									$c['FolderMapper'], $c['Security']);
+									$c['FolderMapper']);
 	};
 
 	$newsContainer['NewsAjaxController'] = function($c){
 		return new NewsAjaxController($c['Request'], $c['AppName'], $c['FeedMapper'], 
 										$c['FolderMapper'], $c['ItemMapper'], 
-										$c['Security'], $c['Trans']);
+										$c['Trans']);
 	};
 
 	return $newsContainer;

@@ -49,7 +49,7 @@ class TemplateRenderer implements Renderer {
 			$template = new \OCP\Template($this->appName, $this->name);
 		}
 
-		foreach($arguments as $key => $value){
+		foreach($this->params as $key => $value){
 			$template->assign($key, $value, false);
 		}
 

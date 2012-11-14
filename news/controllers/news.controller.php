@@ -24,7 +24,7 @@ class NewsController extends Controller {
 	 * @param FolderMapper $folderMapper: an instance of the folder mapper
 	 * @param FeedMapper $feedMapper: an instance of the feed mapper
 	 */
-	public function __construct($request, $appName, $feedMapper, $folderMapper, $security, $userId){
+	public function __construct($request, $appName, $feedMapper, $folderMapper){
 		parent::__construct($request, $appName);
 		$this->feedMapper = $feedMapper;
 		$this->folderMapper = $folderMapper;

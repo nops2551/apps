@@ -69,7 +69,7 @@ class Backgroundjob {
 		foreach( $feeds as $feed ) {
 			if( $feed->getId() > $lastid ) {
 				// set lastid BEFORE updating feed!
-				\OCP\Config::setAppValue('news', 'backgroundjob_lastid',$feed['id']);
+				\OCP\Config::setAppValue('news', 'backgroundjob_lastid',$feed->getId());
 				$done = true;
 				self::updateFeed( $feedmapper, $feed );
 			}
