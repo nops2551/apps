@@ -34,7 +34,8 @@
 				ng-bind-html-unsafe="item.body"></div>
 
 		<div class="bottom_utils">
-			<ul class="secondary_item_utils">
+			<ul class="secondary_item_utils"
+				ng-class="{show_keep_unread: isKeptUnread(item.id)}">
 				<li class="share_link">
 					<a class="share" data-item-type="news_item" 
 					   data-item="{{item.id}}" title="<?php p($l->t('Share')) ?>" 
@@ -43,7 +44,8 @@
 					   <?php p($l->t('Share')) ?>
 		  			</a>
 		  		</li>
-				<li ng-click="keepUnread(item.id, item.feedId)" class="keep_unread"><?php p($l->t('Keep unread')); ?>
+				<li ng-click="keepUnread(item.id, item.feedId)" 
+					class="keep_unread"><?php p($l->t('Keep unread')); ?>
 					<input type="checkbox" ng-checked="isKeptUnread(item.id)"/>
 				</li>
 			</ul>

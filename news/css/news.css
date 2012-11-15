@@ -709,22 +709,29 @@ div.add_parentfolder {
 			 * Secondary feed items which are only shown on hover
 			 */
 			.feed_item .secondary_item_utils {
-				display: none;
 				float: right;
 				margin: 0 1.2em;
 			}
+
 
 			.feed_item .secondary_item_utils, .feed_item .secondary_item_utils a {
 				color: #000;
 			}
 
-			.feed_item:hover .secondary_item_utils {
-				display: block;
+			.feed_item:hover .secondary_item_utils li {
+				display: inline-block;
 			}
 
 				.feed_item .secondary_item_utils li {
-					display: inline-block;
 					padding-left: 25px;
+					display: none;
+				}
+
+				/**
+				 * Secondary feed items which are only shown on hover
+				 */
+				.feed_item .show_keep_unread .keep_unread{
+					display: block;
 				}
 
 				.feed_item li.share_link {
