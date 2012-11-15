@@ -52,7 +52,9 @@
 	<div id="rightcontent_news" class="main_column">
 		<div id="feed_items" 
 				ng-class="{loading: loading.loading>0}"
-				ng-controller="ItemController" when-scrolled="scroll()">
+				ng-controller="ItemController" 
+				when-scrolled="scroll()"
+				feed-navigation>
 			<?php
 				print_unescaped($this->inc("part.items"));
 			?>

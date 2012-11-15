@@ -134,6 +134,78 @@
   */
 
 
+  angular.module('News').directive('feedNavigation', function() {
+    return function(scope, elm, attr) {
+      var jumpTo, jumpToNextItem, jumpToPreviousItem;
+      jumpTo = function($scrollArea, $item) {
+        var position;
+        position = $item.offset().top - $scrollArea.offset().top + $scrollArea.scrollTop();
+        return $scrollArea.scrollTop(position);
+      };
+      jumpToPreviousItem = function(scrollArea) {
+        var $item, $items, $previous, $scrollArea, item, notJumped, _i, _len;
+        $scrollArea = $(scrollArea);
+        $items = $scrollArea.find('.feed_item');
+        notJumped = true;
+        for (_i = 0, _len = $items.length; _i < _len; _i++) {
+          item = $items[_i];
+          $item = $(item);
+          if ($item.position().top >= 0) {
+            $previous = $item.prev();
+            if ($previous.length > 0) {
+              jumpTo($scrollArea, $previous);
+            }
+            notJumped = false;
+            break;
+          }
+        }
+        if ($items.length > 0 && notJumped) {
+          return jumpTo($scrollArea, $items.last());
+        }
+      };
+      jumpToNextItem = function(scrollArea) {
+        var $item, $items, $scrollArea, item, _i, _len, _results;
+        $scrollArea = $(scrollArea);
+        $items = $scrollArea.find('.feed_item');
+        _results = [];
+        for (_i = 0, _len = $items.length; _i < _len; _i++) {
+          item = $items[_i];
+          $item = $(item);
+          if ($item.position().top > 1) {
+            jumpTo($scrollArea, $item);
+            break;
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      };
+      $(elm).click(function() {
+        return $(this).focus();
+      });
+      return $(elm).keydown(function(e) {
+        if (e.keyCode === 74 || e.keyCode === 39) {
+          jumpToNextItem(this);
+        } else if (e.keyCode === 75 || e.keyCode === 37) {
+          jumpToPreviousItem(this);
+        }
+        return scope.$apply(attr.feedNavigation);
+      });
+    };
+  });
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
   angular.module('News').filter('feedInFolder', function() {
     return function(feeds, folderId) {
       var feed, result, _i, _len;
@@ -974,8 +1046,8 @@
         };
 
         Cache.prototype.remove = function(item) {
-          delete this.feedCache[item.feedId][itemId];
-          return delete this.importantCache[itemId];
+          delete this.feedCache[item.feedId][item.id];
+          return delete this.importantCache[item.id];
         };
 
         Cache.prototype.setImportant = function(itemId, isImportant) {

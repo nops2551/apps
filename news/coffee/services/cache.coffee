@@ -73,8 +73,8 @@ angular.module('News').factory 'Cache',
 
 
 		remove: (item) ->
-			delete @feedCache[item.feedId][itemId]
-			delete @importantCache[itemId]
+			delete @feedCache[item.feedId][item.id]
+			delete @importantCache[item.id]
 
 
 		setImportant: (itemId, isImportant) ->

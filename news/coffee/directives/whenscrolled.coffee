@@ -46,7 +46,7 @@ angular.module('News').directive 'whenScrolled',
 
 					, Config.MarkReadTimeout
 
-				scope.$apply attr.whenScrolled;
+				scope.$apply attr.whenScrolled
 
 ]
 
