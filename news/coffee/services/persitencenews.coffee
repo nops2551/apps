@@ -45,11 +45,43 @@ angular.module('News').factory 'PersistenceNews',
 				@$rootScope.$broadcast('update', json.data)
 
 
+		createFeed: (feedUrl) ->
+			data = 
+				feedUrl: feedUrl
+				folderId: folderId
+			@post 'createFeed', data
+
+
+		deleteFeed: (feedId) ->
+			data = 
+				feedId: feedId
+			@post 'deletefeeed', data
+
+
+		moveFeedToFolder: (feedId, folderId) ->
+			data =
+				feedId: feedId
+				folderId: folderId
+			@post 'movefeedtofolder', data
+
+
+		createFolder: (folderName) ->
+			data = 
+				folderName: folderName
+			@post 'createfolder', data
+
+
+		deleteFolder: (folderId) ->
+			data = 
+				folderId: folderId
+			@post 'deletefolder', data
+
+
+
 		showAll: (isShowAll) ->
 			data = 
 				showAll: isShowAll
-
-			@post 'showall', data
+			@post 'setshowall', data
 
 
 		markRead: (itemId, isRead) ->

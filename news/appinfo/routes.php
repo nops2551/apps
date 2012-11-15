@@ -14,7 +14,6 @@ namespace OCA\News;
 
 require_once \OC_App::getAppPath('news') . '/appinfo/bootstrap.php';
 
-
 /**
  * Shortcut for calling a controller method
  * @param string $controllerName: the name of the controller under which it is
@@ -115,6 +114,12 @@ $this->create('ajax_updatefeed', '/ajax/updatefeed')->action(
 	}
 );
 
+$this->create('ajax_createfeed', '/ajax/createfeed')->action(
+	function($params){		
+		callController('NewsAjaxController', 'createFeed', $params);
+	}
+);
+
 $this->create('ajax_createfolder', '/ajax/createfolder')->action(
 	function($params){		
 		callController('NewsAjaxController', 'createFolder', $params);
@@ -126,3 +131,4 @@ $this->create('ajax_setallitemsread', '/ajax/setallitemsread')->action(
 		callController('NewsAjaxController', 'setAllItemsRead', $params);
 	}
 );
+

@@ -34,12 +34,11 @@
 	<div class="open_add" ng-show="addIsShown()">
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Add Folder')); ?></strong></legend>
-			<form name="addFolderForm" novalidate>
+			<form name="addFolderForm">
 				<input type="text" 
 						ng-model="folderName" 
 						name="folderName"
-						placeholder="<?php p($l->t('Name')); ?>" 
-						required="required">
+						placeholder="<?php p($l->t('Name')); ?>">
 				<button title="<?php p($l->t('Add')); ?>" 
 						ng-click="addFolder(folderName)"><?php p($l->t('Add')); ?></button>
 			</form>
@@ -63,6 +62,11 @@
 			<legend><strong><?php p($l->t('Subscribelet')); ?></strong></legend>
 			<p><?php print_unescaped($this->inc('part.subscribelet'));?>
 			</p>
+		</fieldset>
+		<fieldset class="personalblock">
+			<legend><strong><?php p($l->t('Import OPML')); ?></strong></legend>
+			<button title="<?php p($l->t('From disk')); ?>"><?php p($l->t('From disk')); ?></button>
+			<button title="<?php p($l->t('From cloud')); ?>"><?php p($l->t('From cloud')); ?></button>
 		</fieldset>
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Export')); ?></strong></legend>

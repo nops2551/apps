@@ -334,16 +334,49 @@ class NewsAjaxController extends Controller {
 	 * Creates a new folder
 	 */
 	public function createFolder(){
-		$folderName = (int)$this->request->post('folderName');
+		$folderName = $this->request->post('folderName');
 		$folder = new Folder($folderName);
 		$folderId = $this->folderMapper->save($folder);
 		$folders = array($this->folderMapper->findById($folderId));
 		$foldersArray = array(
-			'folders' => $this->foldersToArray($feeds)
+			'folders' => $this->foldersToArray($folders)
 		);
 		return $this->renderJSON($foldersArray);
 	}
 
+
+	/**
+	 * Creates a new feed
+	 */
+	public function createFeed(){
+		$feedUrl = trim($this->request->post('feedUrl'));
+		$folderId = (int)$this->request->post('folderId');
+
+		$folder = $this->folderMapper->findById($folderId);
+
+		if($folderId !== 0 || !$folder){
+			$msgString = 'Folder with id %s does not exist';
+			$msg = $this->trans->l($msgString, array($folderId));
+			return $this->renderJSONError($msg, __FILE__);
+		}
+
+		if($this->feedMapper->findIdFromUrl($feedUrl)){
+			$msgString = 'Feeed %s does already exist';
+			$msg = $this->trans->l($msgString, array($feedUrl));
+			return $this->renderJSONError($msg, __FILE__);
+		}
+
+		$feed = OCA\News\Utils::fetch($feedUrl);
+		if($feed){
+			$feedId = $this->feedMapper->save($feed, $folderId);
+		}
+
+		$feed = array($this->feedMapper->findById($feedId));
+		$feedsArray = array(
+			'feeds' => $this->feedsToArray($feeds)
+		);
+		return $this->renderJSON($feedsArray);
+	}
 
 
 	/**

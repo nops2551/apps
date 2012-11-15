@@ -58,7 +58,6 @@ class NewsController extends Controller {
 		$this->add3rdPartyScript('moment.min');
 		$this->addScript('app');
 		$this->addStyle('news');
-		$this->addStyle('settings');
 
 		if($this->request->get('feedid')){	
 			$this->setUserValue('lastViewedFeed', $this->request->get('feedid'));

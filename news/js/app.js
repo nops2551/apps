@@ -328,12 +328,54 @@
           });
         };
 
+        PersistenceNews.prototype.createFeed = function(feedUrl) {
+          var data;
+          data = {
+            feedUrl: feedUrl,
+            folderId: folderId
+          };
+          return this.post('createFeed', data);
+        };
+
+        PersistenceNews.prototype.deleteFeed = function(feedId) {
+          var data;
+          data = {
+            feedId: feedId
+          };
+          return this.post('deletefeeed', data);
+        };
+
+        PersistenceNews.prototype.moveFeedToFolder = function(feedId, folderId) {
+          var data;
+          data = {
+            feedId: feedId,
+            folderId: folderId
+          };
+          return this.post('movefeedtofolder', data);
+        };
+
+        PersistenceNews.prototype.createFolder = function(folderName) {
+          var data;
+          data = {
+            folderName: folderName
+          };
+          return this.post('createfolder', data);
+        };
+
+        PersistenceNews.prototype.deleteFolder = function(folderId) {
+          var data;
+          data = {
+            folderId: folderId
+          };
+          return this.post('deletefolder', data);
+        };
+
         PersistenceNews.prototype.showAll = function(isShowAll) {
           var data;
           data = {
             showAll: isShowAll
           };
-          return this.post('showall', data);
+          return this.post('setshowall', data);
         };
 
         PersistenceNews.prototype.markRead = function(itemId, isRead) {

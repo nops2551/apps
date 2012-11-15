@@ -102,7 +102,7 @@ News = {
 			$.ajax({
 				type: "POST",
 				url: OC.filePath('news', 'ajax', 'createfeed.php'),
-				data: { 'feedurl': feedurl, 'folderid': folderid },
+				data: { 'feedUrl': feedurl, 'folderId': folderid },
 				dataType: "json",
 				success: function(jsonData){
 					if($('#firstrun').length > 0){

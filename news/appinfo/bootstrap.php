@@ -2,9 +2,10 @@
 /**
 * ownCloud - News app
 *
-* @author Bernhard Posselt, Alessandro Copyright
-* Cosentino (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
-*                      Alessandro Cosentino <cosenal@gmail.com>
+* @author Alessandro Copyright
+* @author Bernhard Posselt
+* @copyright 2012 Alessandro Cosentino cosenal@gmail.com
+* @copyright 2012 Bernhard Posselt nukeawhale@gmail.com                    
 *
 * This file is licensed under the Affero General Public License version 3 or later.
 * See the COPYING-README file
