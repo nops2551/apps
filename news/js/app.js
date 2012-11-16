@@ -370,15 +370,14 @@
         }
 
         PersistenceNews.prototype.updateModels = function(data) {
-          var model, _i, _len, _ref;
+          var model, _i, _len, _ref, _results;
           _ref = this.models;
+          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             model = _ref[_i];
-            model.handle(data);
+            _results.push(model.handle(data));
           }
-          if (!this.isInitialized()) {
-            return this.$rootScope.$broadcast('triggerHideRead');
-          }
+          return _results;
         };
 
         PersistenceNews.prototype.loadInitial = function() {
@@ -388,6 +387,7 @@
             return _this.post('init', {}, function(json) {
               _this.loading.loading -= 1;
               _this.updateModels(json.data);
+              _this.$rootScope.$broadcast('triggerHideRead');
               return _this.setInitialized(true);
             }, null, true);
           });
@@ -431,7 +431,7 @@
           data = {
             feedId: feedId
           };
-          return this.post('deletefeeed', data, onSuccess);
+          return this.post('deletefeed', data, onSuccess);
         };
 
         PersistenceNews.prototype.moveFeedToFolder = function(feedId, folderId) {
@@ -461,6 +461,15 @@
             folderId: folderId
           };
           return this.post('deletefolder', data);
+        };
+
+        PersistenceNews.prototype.changeFolderName = function(folderId, newFolderName) {
+          var data;
+          data = {
+            folderId: folderId,
+            newFolderName: newFolderName
+          };
+          return this.post('folderName', data);
         };
 
         PersistenceNews.prototype.showAll = function(isShowAll) {
@@ -1311,6 +1320,16 @@
                 return _this.showSubscriptions;
               case _this.feedType.Starred:
                 return _this.starredCount.count > 0;
+            }
+          };
+          this.$scope["delete"] = function(type, id) {
+            switch (type) {
+              case _this.feedType.Folder:
+                _this.folderModel.removeById(id);
+                return _this.persistence.deleteFolder(id);
+              case _this.feedType.Feed:
+                _this.feedModel.removeById(id);
+                return _this.persistence.deleteFeed(id);
             }
           };
           this.$scope.$on('triggerHideRead', function() {

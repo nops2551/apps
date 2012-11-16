@@ -30,7 +30,7 @@ task 'watch', 'Watch prod source files and build changes', ->
         fs.watchFile file, (curr, prev) ->
             if +curr.mtime isnt +prev.mtime
                 util.log "Saw change in #{file}"
-                grrrr 'Whoa. Saw a change. Building. Hold plz.'
+                console.log  'Whoa. Saw a change. Building. Hold plz.'
                 invoke 'build'
 
 task 'build', 'Build single application file from source files', ->
@@ -47,13 +47,10 @@ task 'build', 'Build single application file from source files', ->
       exec 'coffee --compile js/app.coffee', (err, stdout, stderr) ->
         if err
           util.log 'Error compiling coffee file.'
-          grrrr 'Uh, your coffee is bad.'
+          console.error err
         else
           fs.unlink 'js/app.coffee', (err) ->
             if err
               util.log 'Couldn\'t delete the app.coffee file/'
             util.log 'Done building coffee file.'
-            grrrr 'Okay, coffee is ready.'
-
-grrrr = (message = '') ->
-  console.log message
+            console.log  'Okay, coffee is ready.'

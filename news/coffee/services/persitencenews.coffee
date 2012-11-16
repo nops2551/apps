@@ -28,9 +28,6 @@ ShowAll, StarredCount, ActiveFeed) ->
 			for model in @models
 				model.handle(data)
 
-			if not @isInitialized()
-				@$rootScope.$broadcast('triggerHideRead')
-
 
 		loadInitial: () ->
 			@loading.loading += 1
@@ -38,6 +35,7 @@ ShowAll, StarredCount, ActiveFeed) ->
 				@post 'init', {}, (json) =>
 					@loading.loading -= 1
 					@updateModels(json.data)
+					@$rootScope.$broadcast('triggerHideRead')
 					@setInitialized(true)
 				, null, true
 
@@ -69,7 +67,7 @@ ShowAll, StarredCount, ActiveFeed) ->
 		deleteFeed: (feedId, onSuccess) ->
 			data = 
 				feedId: feedId
-			@post 'deletefeeed', data, onSuccess
+			@post 'deletefeed', data, onSuccess
 
 
 		moveFeedToFolder: (feedId, folderId) ->
@@ -92,6 +90,12 @@ ShowAll, StarredCount, ActiveFeed) ->
 				folderId: folderId
 			@post 'deletefolder', data
 
+
+		changeFolderName: (folderId, newFolderName) ->
+			data = 
+				folderId: folderId
+				newFolderName: newFolderName
+			@post 'folderName', data
 
 
 		showAll: (isShowAll) ->

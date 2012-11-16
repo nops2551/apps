@@ -57,6 +57,15 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 					when @feedType.Subscriptions then return @showSubscriptions
 					when @feedType.Starred then return @starredCount.count > 0
 
+			@$scope.delete = (type, id) =>
+				switch type
+					when @feedType.Folder
+						@folderModel.removeById(id)
+						@persistence.deleteFolder(id)
+					when @feedType.Feed
+						@feedModel.removeById(id)
+						@persistence.deleteFeed(id)
+
 			@$scope.$on 'triggerHideRead', =>
 				@itemModel.clearCache()
 				@triggerHideRead()
