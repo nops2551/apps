@@ -90,7 +90,7 @@ class Controller {
 	 */
 	protected function renderJSON($params=array()){
 		$renderer = new JSONRenderer($this->appName);
-		$renderer->setData($params);
+		$renderer->setParams($params);
 		return $renderer->render();
 	}
 

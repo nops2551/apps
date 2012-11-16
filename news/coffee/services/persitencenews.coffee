@@ -28,7 +28,7 @@ angular.module('News').factory 'PersistenceNews',
 					@$rootScope.$broadcast('update', json.data)
 					@$rootScope.$broadcast('triggerHideRead')
 					@setInitialized(true)
-				, true
+				, null, true
 
 
 		loadFeed: (type, id, latestFeedId, latestTimestamp, limit=20) ->
@@ -45,17 +45,20 @@ angular.module('News').factory 'PersistenceNews',
 				@$rootScope.$broadcast('update', json.data)
 
 
-		createFeed: (feedUrl) ->
+		createFeed: (feedUrl, folderId, onSuccess, onError) ->
 			data = 
 				feedUrl: feedUrl
 				folderId: folderId
-			@post 'createFeed', data
+			@post 'createfeed', data, (json) =>
+				onSuccess()
+				@$rootScope.$broadcast('update', json.data)
+			, onError
 
 
-		deleteFeed: (feedId) ->
+		deleteFeed: (feedId, onSuccess) ->
 			data = 
 				feedId: feedId
-			@post 'deletefeeed', data
+			@post 'deletefeeed', data, onSuccess
 
 
 		moveFeedToFolder: (feedId, folderId) ->
@@ -65,10 +68,12 @@ angular.module('News').factory 'PersistenceNews',
 			@post 'movefeedtofolder', data
 
 
-		createFolder: (folderName) ->
+		createFolder: (folderName, onSuccess) ->
 			data = 
 				folderName: folderName
-			@post 'createfolder', data
+			@post 'createfolder', data, (json) =>
+				onSuccess()
+				@$rootScope.$broadcast('update', json.data)
 
 
 		deleteFolder: (folderId) ->

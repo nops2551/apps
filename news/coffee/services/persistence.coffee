@@ -35,7 +35,7 @@ angular.module('News').factory 'Persistence', () ->
 			return @appInitalized
 
 
-		post: (route, data={}, callback, init=false) ->
+		post: (route, data={}, callback, errorCallback, init=false) ->
 			if @isIntialized == false && init == false
 				request =
 					route: route
@@ -46,6 +46,8 @@ angular.module('News').factory 'Persistence', () ->
 
 			if not callback
 				callback = ->
+			if not errorCallback
+				errorCallback = ->
 
 			url = OC.Router.generate("ajax_" + route)
 
@@ -59,7 +61,7 @@ angular.module('News').factory 'Persistence', () ->
 			@$http.post(url, data, {headers: headers}).
 			success((data, status, headers, config) ->
 				if data.status == "error"
-					alert data.data.message
+					errorCallback(data.msg)
 				else
 					callback(data)
 			).

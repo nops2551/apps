@@ -73,7 +73,7 @@ class JSONRenderer implements Renderer {
 	}
 
 
-	public function setData($params){
+	public function setParams($params){
 		$this->data['data'] = $params;
 	}
 

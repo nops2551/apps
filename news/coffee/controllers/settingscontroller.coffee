@@ -22,6 +22,8 @@ angular.module('News').controller 'SettingsController',
 			
 			@add = false
 			@settings = false
+			@addingFeed = false
+			@addingFolder = false
 
 			@$scope.getFolders = =>
 				return @folderModel.getItems()
@@ -53,21 +55,59 @@ angular.module('News').controller 'SettingsController',
 			@$scope.settingsAreShown = =>
 				return @settings
 
-			@$scope.addFeed = (url) =>
-				console.log url
-				$scope.feedUrl = ""
+			@$scope.isAddingFeed = =>
+				return @addingFeed
+
+			@$scope.isAddingFolder = =>
+				return @addingFolder
+
+			@$scope.addFeed = (url, folder) =>
+				@$scope.feedEmptyError = false
+				@$scope.feedExistsError = false
+				@$scope.feedError = false
+			
+				if url == undefined or url.trim() == ''
+					@$scope.feedEmptyError = true
+				else 
+					url = url.trim()
+					for feed in @feedModel.getItems()
+						if url == feed.url # FIXME: can we really compare this
+							@$scope.feedExistsError = true
+				
+				if not (@$scope.feedEmptyError or @$scope.feedExistsError)
+					if folder == undefined
+						folderId = 0
+					else
+						folderId = folder.id
+					@addingFeed = true
+					onSuccess = =>
+						@$scope.feedUrl = ''
+						@addingFeed = false
+					onError = =>
+						@$scope.feedError = true
+						@addingFeed = false
+					@persistence.createFeed(url, folderId, onSuccess, onError)
+
+
 
 			@$scope.addFolder = (name) =>
-				#if @$scope.addFolderForm.$valid
-				#	for folder in @folderModel.getItems()
-				#		if name.toLowerCase() == folder.name.toLowerCase()
-				#			@$scope.addFolderForm.$valid = false
-				if name != ''
-					@$scope.addFolderForm.folderName.$error = {required: false}
-					@$scope.folderName = ''
+				@$scope.folderEmptyError = false
+				@$scope.folderExistsError = false
+			
+				if name == undefined or name.trim() == ''
+					@$scope.folderEmptyError = true
 				else 
-					@$scope.addFolderForm.folderName.$error = {required: true}
-				console.log name
+					name = name.trim()
+					for folder in @folderModel.getItems()
+						if name.toLowerCase() == folder.name.toLowerCase()
+							@$scope.folderExistsError = true
+				
+				if not (@$scope.folderEmptyError or @$scope.folderExistsError)
+					@addingFolder = true
+					onSuccess = =>
+						@$scope.folderName = ''
+						@addingFolder = false
+					@persistence.createFolder(name, onSuccess)
 				
 
 

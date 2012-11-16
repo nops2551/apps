@@ -196,7 +196,7 @@ class NewsAjaxController extends Controller {
 	 * Used for setting the showAll value from a post request
 	 */
 	public function setShowAll(){       
-		$feedType = $this->request->post('showAll');
+		$showAll = $this->postParamToBool($this->request->post('showAll'));
 		$this->setUserValue('showAll', $showAll);
 		return $this->renderJSON();
 	}
@@ -293,7 +293,7 @@ class NewsAjaxController extends Controller {
 			$folder = $folderMapper->find($folderId);
 			if(!$folder){
 				$msgString = 'Can not move feed %s to folder %s';
-				$msg = $this->trans->l($msgString, array($feedId, $folderId));
+				$msg = $this->trans->t($msgString, array($feedId, $folderId));
 				return $this->renderJSONError($msg, __FILE__);
 			}
 			$this->feedMapper->save($feed, $folder->getId());
@@ -323,7 +323,7 @@ class NewsAjaxController extends Controller {
 			return $this->renderJSON($feedsArray);
 		} else {
 			$msgString = 'Error updating feed %s';
-			$msg = $this->trans->l($msgString, array($feed->getUrl()));
+			$msg = $this->trans->t($msgString, array($feed->getUrl()));
 			return $this->renderJSONError($msg, __FILE__);
 		}
 
@@ -354,28 +354,32 @@ class NewsAjaxController extends Controller {
 
 		$folder = $this->folderMapper->findById($folderId);
 
-		if($folderId !== 0 || !$folder){
+		if(!$folder && $folderId !== 0){
 			$msgString = 'Folder with id %s does not exist';
-			$msg = $this->trans->l($msgString, array($folderId));
+			$msg = $this->trans->t($msgString, array($folderId));
+			var_dump($folder);
 			return $this->renderJSONError($msg, __FILE__);
 		}
 
 		if($this->feedMapper->findIdFromUrl($feedUrl)){
-			$msgString = 'Feeed %s does already exist';
-			$msg = $this->trans->l($msgString, array($feedUrl));
+			$msgString = 'Feed %s does already exist';
+			$msg = $this->trans->t($msgString, array($feedUrl));
 			return $this->renderJSONError($msg, __FILE__);
 		}
 
-		$feed = OCA\News\Utils::fetch($feedUrl);
+		$feed = Utils::fetch($feedUrl);
 		if($feed){
 			$feedId = $this->feedMapper->save($feed, $folderId);
-		}
-
-		$feed = array($this->feedMapper->findById($feedId));
-		$feedsArray = array(
-			'feeds' => $this->feedsToArray($feeds)
-		);
+			$feeds = array($this->feedMapper->findById($feedId));
+			$feedsArray = array(
+				'feeds' => $this->feedsToArray($feeds)
+			);
 		return $this->renderJSON($feedsArray);
+		} else {
+			$msgString = 'Could not create feed %s';
+			$msg = $this->trans->t($msgString, array($feedUrl));
+			return $this->renderJSONError($msg, __FILE__);			
+		}
 	}
 
 

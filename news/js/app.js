@@ -378,7 +378,7 @@
               _this.$rootScope.$broadcast('update', json.data);
               _this.$rootScope.$broadcast('triggerHideRead');
               return _this.setInitialized(true);
-            }, true);
+            }, null, true);
           });
         };
 
@@ -402,21 +402,25 @@
           });
         };
 
-        PersistenceNews.prototype.createFeed = function(feedUrl) {
-          var data;
+        PersistenceNews.prototype.createFeed = function(feedUrl, folderId, onSuccess, onError) {
+          var data,
+            _this = this;
           data = {
             feedUrl: feedUrl,
             folderId: folderId
           };
-          return this.post('createFeed', data);
+          return this.post('createfeed', data, function(json) {
+            onSuccess();
+            return _this.$rootScope.$broadcast('update', json.data);
+          }, onError);
         };
 
-        PersistenceNews.prototype.deleteFeed = function(feedId) {
+        PersistenceNews.prototype.deleteFeed = function(feedId, onSuccess) {
           var data;
           data = {
             feedId: feedId
           };
-          return this.post('deletefeeed', data);
+          return this.post('deletefeeed', data, onSuccess);
         };
 
         PersistenceNews.prototype.moveFeedToFolder = function(feedId, folderId) {
@@ -428,12 +432,16 @@
           return this.post('movefeedtofolder', data);
         };
 
-        PersistenceNews.prototype.createFolder = function(folderName) {
-          var data;
+        PersistenceNews.prototype.createFolder = function(folderName, onSuccess) {
+          var data,
+            _this = this;
           data = {
             folderName: folderName
           };
-          return this.post('createfolder', data);
+          return this.post('createfolder', data, function(json) {
+            onSuccess();
+            return _this.$rootScope.$broadcast('update', json.data);
+          });
         };
 
         PersistenceNews.prototype.deleteFolder = function(folderId) {
@@ -764,7 +772,7 @@
         return this.appInitalized;
       };
 
-      Persistence.prototype.post = function(route, data, callback, init) {
+      Persistence.prototype.post = function(route, data, callback, errorCallback, init) {
         var headers, request, url;
         if (data == null) {
           data = {};
@@ -784,6 +792,9 @@
         if (!callback) {
           callback = function() {};
         }
+        if (!errorCallback) {
+          errorCallback = function() {};
+        }
         url = OC.Router.generate("ajax_" + route);
         data = $.param(data);
         headers = {
@@ -794,7 +805,7 @@
           headers: headers
         }).success(function(data, status, headers, config) {
           if (data.status === "error") {
-            return alert(data.data.message);
+            return errorCallback(data.msg);
           } else {
             return callback(data);
           }
@@ -846,28 +857,6 @@
         });
       }
 
-      Model.prototype.add = function(item) {
-        if (!this.feedCache[item.feedId]) {
-          this.feedCache[item.feedId] = {};
-        }
-        this.feedCache[item.feedId][item.id] = item;
-        if (item.isImportant) {
-          this.importantCache[item.id] = item;
-        }
-        if (this.highestTimestamp[item.feedId] === void 0 || item.id > this.highestTimestamp[item.feedId]) {
-          this.highestTimestamp[item.feedId] = item.id;
-        }
-        if (this.lowestTimestamp[item.feedId] === void 0 || item.id > this.lowestTimestamp[item.feedId]) {
-          this.lowestTimestamp[item.feedId] = item.id;
-        }
-        if (this.highestId[item.feedId] === void 0 || item.id > this.highestId[item.feedId]) {
-          this.highestId[item.feedId] = item.id;
-        }
-        if (this.lowestId[item.feedId] === void 0 || item.id > this.lowestId[item.feedId]) {
-          return this.lowestId[item.feedId] = item.id;
-        }
-      };
-
       Model.prototype.clearCache = function() {
         this.items = [];
         this.itemIds = {};
@@ -883,12 +872,14 @@
       };
 
       Model.prototype.add = function(item) {
+        console.log(item);
         if (this.itemIds[item.id] === void 0) {
           this.items.push(item);
           this.itemIds[item.id] = item;
           return this.markAccessed();
         } else {
-          return this.update(item);
+          this.update(item);
+          return console.log('upd');
         }
       };
 
@@ -1464,6 +1455,8 @@
           this.feedModel = feedModel;
           this.add = false;
           this.settings = false;
+          this.addingFeed = false;
+          this.addingFolder = false;
           this.$scope.getFolders = function() {
             return _this.folderModel.getItems();
           };
@@ -1496,22 +1489,71 @@
           this.$scope.settingsAreShown = function() {
             return _this.settings;
           };
-          this.$scope.addFeed = function(url) {
-            console.log(url);
-            return $scope.feedUrl = "";
+          this.$scope.isAddingFeed = function() {
+            return _this.addingFeed;
+          };
+          this.$scope.isAddingFolder = function() {
+            return _this.addingFolder;
+          };
+          this.$scope.addFeed = function(url, folder) {
+            var feed, folderId, onError, onSuccess, _i, _len, _ref;
+            _this.$scope.feedEmptyError = false;
+            _this.$scope.feedExistsError = false;
+            _this.$scope.feedError = false;
+            if (url === void 0 || url.trim() === '') {
+              _this.$scope.feedEmptyError = true;
+            } else {
+              url = url.trim();
+              _ref = _this.feedModel.getItems();
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                feed = _ref[_i];
+                if (url === feed.url) {
+                  _this.$scope.feedExistsError = true;
+                }
+              }
+            }
+            if (!(_this.$scope.feedEmptyError || _this.$scope.feedExistsError)) {
+              if (folder === void 0) {
+                folderId = 0;
+              } else {
+                folderId = folder.id;
+              }
+              _this.addingFeed = true;
+              onSuccess = function() {
+                _this.$scope.feedUrl = '';
+                return _this.addingFeed = false;
+              };
+              onError = function() {
+                _this.$scope.feedError = true;
+                return _this.addingFeed = false;
+              };
+              return _this.persistence.createFeed(url, folderId, onSuccess, onError);
+            }
           };
           this.$scope.addFolder = function(name) {
-            if (name !== '') {
-              _this.$scope.addFolderForm.folderName.$error = {
-                required: false
-              };
-              _this.$scope.folderName = '';
+            var folder, onSuccess, _i, _len, _ref;
+            _this.$scope.folderEmptyError = false;
+            _this.$scope.folderExistsError = false;
+            if (name === void 0 || name.trim() === '') {
+              _this.$scope.folderEmptyError = true;
             } else {
-              _this.$scope.addFolderForm.folderName.$error = {
-                required: true
-              };
+              name = name.trim();
+              _ref = _this.folderModel.getItems();
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                folder = _ref[_i];
+                if (name.toLowerCase() === folder.name.toLowerCase()) {
+                  _this.$scope.folderExistsError = true;
+                }
+              }
             }
-            return console.log(name);
+            if (!(_this.$scope.folderEmptyError || _this.$scope.folderExistsError)) {
+              _this.addingFolder = true;
+              onSuccess = function() {
+                _this.$scope.folderName = '';
+                return _this.addingFolder = false;
+              };
+              return _this.persistence.createFolder(name, onSuccess);
+            }
           };
         }
 
@@ -1551,6 +1593,8 @@
           this.feedModel = feedModel;
           this.add = false;
           this.settings = false;
+          this.addingFeed = false;
+          this.addingFolder = false;
           this.$scope.getFolders = function() {
             return _this.folderModel.getItems();
           };
@@ -1583,22 +1627,71 @@
           this.$scope.settingsAreShown = function() {
             return _this.settings;
           };
-          this.$scope.addFeed = function(url) {
-            console.log(url);
-            return $scope.feedUrl = "";
+          this.$scope.isAddingFeed = function() {
+            return _this.addingFeed;
+          };
+          this.$scope.isAddingFolder = function() {
+            return _this.addingFolder;
+          };
+          this.$scope.addFeed = function(url, folder) {
+            var feed, folderId, onError, onSuccess, _i, _len, _ref;
+            _this.$scope.feedEmptyError = false;
+            _this.$scope.feedExistsError = false;
+            _this.$scope.feedError = false;
+            if (url === void 0 || url.trim() === '') {
+              _this.$scope.feedEmptyError = true;
+            } else {
+              url = url.trim();
+              _ref = _this.feedModel.getItems();
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                feed = _ref[_i];
+                if (url === feed.url) {
+                  _this.$scope.feedExistsError = true;
+                }
+              }
+            }
+            if (!(_this.$scope.feedEmptyError || _this.$scope.feedExistsError)) {
+              if (folder === void 0) {
+                folderId = 0;
+              } else {
+                folderId = folder.id;
+              }
+              _this.addingFeed = true;
+              onSuccess = function() {
+                _this.$scope.feedUrl = '';
+                return _this.addingFeed = false;
+              };
+              onError = function() {
+                _this.$scope.feedError = true;
+                return _this.addingFeed = false;
+              };
+              return _this.persistence.createFeed(url, folderId, onSuccess, onError);
+            }
           };
           this.$scope.addFolder = function(name) {
-            if (name !== '') {
-              _this.$scope.addFolderForm.folderName.$error = {
-                required: false
-              };
-              _this.$scope.folderName = '';
+            var folder, onSuccess, _i, _len, _ref;
+            _this.$scope.folderEmptyError = false;
+            _this.$scope.folderExistsError = false;
+            if (name === void 0 || name.trim() === '') {
+              _this.$scope.folderEmptyError = true;
             } else {
-              _this.$scope.addFolderForm.folderName.$error = {
-                required: true
-              };
+              name = name.trim();
+              _ref = _this.folderModel.getItems();
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                folder = _ref[_i];
+                if (name.toLowerCase() === folder.name.toLowerCase()) {
+                  _this.$scope.folderExistsError = true;
+                }
+              }
             }
-            return console.log(name);
+            if (!(_this.$scope.folderEmptyError || _this.$scope.folderExistsError)) {
+              _this.addingFolder = true;
+              onSuccess = function() {
+                _this.$scope.folderName = '';
+                return _this.addingFolder = false;
+              };
+              return _this.persistence.createFolder(name, onSuccess);
+            }
           };
         }
 
