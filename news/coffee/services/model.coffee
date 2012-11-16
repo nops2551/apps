@@ -37,14 +37,12 @@ angular.module('News').factory 'Model', ->
 
 
 		add: (item) ->
-			console.log item
 			if @itemIds[item.id] == undefined
 				@items.push(item)
 				@itemIds[item.id] = item
 				@markAccessed()
 			else
 				@update(item)
-				console.log 'upd'
 
 
 		update: (item) ->

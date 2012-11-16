@@ -872,14 +872,12 @@
       };
 
       Model.prototype.add = function(item) {
-        console.log(item);
         if (this.itemIds[item.id] === void 0) {
           this.items.push(item);
           this.itemIds[item.id] = item;
           return this.markAccessed();
         } else {
-          this.update(item);
-          return console.log('upd');
+          return this.update(item);
         }
       };
 
