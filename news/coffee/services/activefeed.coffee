@@ -15,7 +15,7 @@ angular.module('News').factory 'ActiveFeed',['$rootScope', ($rootScope) ->
 		id: 0
 		type: 3
 
-	$rootScope.$on 'update', (scope, data) ->
+	activeFeed.handle = (data) ->
 		if data['activeFeed']
 			activeFeed.id = data['activeFeed'].id
 			activeFeed.type = data['activeFeed'].type

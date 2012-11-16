@@ -16,10 +16,10 @@ angular.module('News').factory 'Model', ->
 		constructor: (@reactOn, @$rootScope) ->
 			@clearCache()
 
-			@$rootScope.$on 'update', (scope, data) =>
-				if data[@reactOn]
-					for item in data[@reactOn]
-						@add(item)
+		handle: (data) ->
+			if data[@reactOn]
+				for item in data[@reactOn]
+					@add(item)
 
 
 		clearCache: () ->

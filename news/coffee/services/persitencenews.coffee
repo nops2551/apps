@@ -10,23 +10,34 @@
 ###
 
 angular.module('News').factory 'PersistenceNews', 
-['Persistence', '$http', '$rootScope', 'Loading',
-(Persistence, $http, $rootScope, Loading) ->
+['Persistence', '$http', '$rootScope', 'Loading', 'FeedModel', 'FolderModel', 
+'ItemModel', 'ShowAll', 'StarredCount', 'ActiveFeed',
+(Persistence, $http, $rootScope, Loading, FeedModel, FolderModel, ItemModel,
+ShowAll, StarredCount, ActiveFeed) ->
 
 	class PersistenceNews extends Persistence
 
-		constructor: ($http, @$rootScope, @loading) ->
+		constructor: ($http, @$rootScope, @loading, feedModel, folderModel, 
+						itemModel, showAll, starredCount, activeFeed) ->
 			super('news', $http)
+			@models = [feedModel, folderModel, itemModel, showAll, starredCount,
+						activeFeed]
+
+
+		updateModels: (data) ->
+			for model in @models
+				model.handle(data)
+
+			if not @isInitialized()
+				@$rootScope.$broadcast('triggerHideRead')
 
 
 		loadInitial: () ->
 			@loading.loading += 1
 			OC.Router.registerLoadedCallback =>
-
 				@post 'init', {}, (json) =>
 					@loading.loading -= 1
-					@$rootScope.$broadcast('update', json.data)
-					@$rootScope.$broadcast('triggerHideRead')
+					@updateModels(json.data)
 					@setInitialized(true)
 				, null, true
 
@@ -42,7 +53,7 @@ angular.module('News').factory 'PersistenceNews',
 			@loading.loading += 1
 			@post 'loadfeed', data, (json) =>
 				@loading.loading -= 1
-				@$rootScope.$broadcast('update', json.data)
+				@updateModels(json.data)
 
 
 		createFeed: (feedUrl, folderId, onSuccess, onError) ->
@@ -51,7 +62,7 @@ angular.module('News').factory 'PersistenceNews',
 				folderId: folderId
 			@post 'createfeed', data, (json) =>
 				onSuccess()
-				@$rootScope.$broadcast('update', json.data)
+				@updateModels(json.data)
 			, onError
 
 
@@ -73,7 +84,7 @@ angular.module('News').factory 'PersistenceNews',
 				folderName: folderName
 			@post 'createfolder', data, (json) =>
 				onSuccess()
-				@$rootScope.$broadcast('update', json.data)
+				@updateModels(json.data)
 
 
 		deleteFolder: (folderId) ->
@@ -127,8 +138,9 @@ angular.module('News').factory 'PersistenceNews',
 				feedId: feedId
 
 			@post 'updatefeed', data, (json) =>	
-				@$rootScope.$broadcast('update', json.data)			
+				@updateModels(json.data)			
 
 
-	return new PersistenceNews($http, $rootScope, Loading)
+	return new PersistenceNews($http, $rootScope, Loading, FeedModel, FolderModel,
+								ItemModel, ShowAll, StarredCount, ActiveFeed)
 ]

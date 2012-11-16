@@ -14,7 +14,7 @@ angular.module('News').factory 'StarredCount', ['$rootScope', ($rootScope) ->
 	starredCount = 
 		count: 0
 
-	$rootScope.$on 'update', (scope, data) ->
+	starredCount.handle = (data) ->
 		if data['starredCount'] != undefined
 			starredCount.count = data['starredCount']
 

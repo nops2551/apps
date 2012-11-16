@@ -186,11 +186,10 @@
         if (!(focused.is('input') || focused.is('select') || focused.is('textarea') || focused.is('checkbox') || focused.is('button'))) {
           scrollArea = elm;
           if (e.keyCode === 74 || e.keyCode === 39) {
-            jumpToNextItem(scrollArea);
+            return jumpToNextItem(scrollArea);
           } else if (e.keyCode === 75 || e.keyCode === 37) {
-            jumpToPreviousItem(scrollArea);
+            return jumpToPreviousItem(scrollArea);
           }
-          return scope.$apply(attr.feedNavigation);
         }
       });
     };
@@ -335,11 +334,11 @@
       showAll = {
         showAll: false
       };
-      $rootScope.$on('update', function(scope, data) {
+      showAll.handle = function(data) {
         if (data['showAll'] !== void 0) {
           return showAll.showAll = data['showAll'];
         }
-      });
+      };
       return showAll;
     }
   ]);
@@ -357,17 +356,30 @@
 
 
   angular.module('News').factory('PersistenceNews', [
-    'Persistence', '$http', '$rootScope', 'Loading', function(Persistence, $http, $rootScope, Loading) {
+    'Persistence', '$http', '$rootScope', 'Loading', 'FeedModel', 'FolderModel', 'ItemModel', 'ShowAll', 'StarredCount', 'ActiveFeed', function(Persistence, $http, $rootScope, Loading, FeedModel, FolderModel, ItemModel, ShowAll, StarredCount, ActiveFeed) {
       var PersistenceNews;
       PersistenceNews = (function(_super) {
 
         __extends(PersistenceNews, _super);
 
-        function PersistenceNews($http, $rootScope, loading) {
+        function PersistenceNews($http, $rootScope, loading, feedModel, folderModel, itemModel, showAll, starredCount, activeFeed) {
           this.$rootScope = $rootScope;
           this.loading = loading;
           PersistenceNews.__super__.constructor.call(this, 'news', $http);
+          this.models = [feedModel, folderModel, itemModel, showAll, starredCount, activeFeed];
         }
+
+        PersistenceNews.prototype.updateModels = function(data) {
+          var model, _i, _len, _ref;
+          _ref = this.models;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            model = _ref[_i];
+            model.handle(data);
+          }
+          if (!this.isInitialized()) {
+            return this.$rootScope.$broadcast('triggerHideRead');
+          }
+        };
 
         PersistenceNews.prototype.loadInitial = function() {
           var _this = this;
@@ -375,8 +387,7 @@
           return OC.Router.registerLoadedCallback(function() {
             return _this.post('init', {}, function(json) {
               _this.loading.loading -= 1;
-              _this.$rootScope.$broadcast('update', json.data);
-              _this.$rootScope.$broadcast('triggerHideRead');
+              _this.updateModels(json.data);
               return _this.setInitialized(true);
             }, null, true);
           });
@@ -398,7 +409,7 @@
           this.loading.loading += 1;
           return this.post('loadfeed', data, function(json) {
             _this.loading.loading -= 1;
-            return _this.$rootScope.$broadcast('update', json.data);
+            return _this.updateModels(json.data);
           });
         };
 
@@ -411,7 +422,7 @@
           };
           return this.post('createfeed', data, function(json) {
             onSuccess();
-            return _this.$rootScope.$broadcast('update', json.data);
+            return _this.updateModels(json.data);
           }, onError);
         };
 
@@ -440,7 +451,7 @@
           };
           return this.post('createfolder', data, function(json) {
             onSuccess();
-            return _this.$rootScope.$broadcast('update', json.data);
+            return _this.updateModels(json.data);
           });
         };
 
@@ -504,14 +515,14 @@
             feedId: feedId
           };
           return this.post('updatefeed', data, function(json) {
-            return _this.$rootScope.$broadcast('update', json.data);
+            return _this.updateModels(json.data);
           });
         };
 
         return PersistenceNews;
 
       })(Persistence);
-      return new PersistenceNews($http, $rootScope, Loading);
+      return new PersistenceNews($http, $rootScope, Loading, FeedModel, FolderModel, ItemModel, ShowAll, StarredCount, ActiveFeed);
     }
   ]);
 
@@ -606,12 +617,12 @@
         id: 0,
         type: 3
       };
-      $rootScope.$on('update', function(scope, data) {
+      activeFeed.handle = function(data) {
         if (data['activeFeed']) {
           activeFeed.id = data['activeFeed'].id;
           return activeFeed.type = data['activeFeed'].type;
         }
-      });
+      };
       return activeFeed;
     }
   ]);
@@ -746,15 +757,15 @@
       function Persistence(appName, $http) {
         this.appName = appName;
         this.$http = $http;
-        this.appInitalized = false;
+        this.appInitialized = false;
         this.shelvedRequests = [];
       }
 
-      Persistence.prototype.setInitialized = function(isIntialized) {
-        if (isIntialized) {
+      Persistence.prototype.setInitialized = function(isInitialized) {
+        if (isInitialized) {
           this.executePostRequests();
         }
-        return this.appInitalized = isIntialized;
+        return this.appInitialized = isInitialized;
       };
 
       Persistence.prototype.executePostRequests = function() {
@@ -768,8 +779,8 @@
         return this.shelvedRequests = [];
       };
 
-      Persistence.prototype.isIntialized = function() {
-        return this.appInitalized;
+      Persistence.prototype.isInitialized = function() {
+        return this.appInitialized;
       };
 
       Persistence.prototype.post = function(route, data, callback, errorCallback, init) {
@@ -780,7 +791,7 @@
         if (init == null) {
           init = false;
         }
-        if (this.isIntialized === false && init === false) {
+        if (this.isInitialized === false && init === false) {
           request = {
             route: route,
             data: data,
@@ -839,23 +850,23 @@
     return Model = (function() {
 
       function Model(reactOn, $rootScope) {
-        var _this = this;
         this.reactOn = reactOn;
         this.$rootScope = $rootScope;
         this.clearCache();
-        this.$rootScope.$on('update', function(scope, data) {
-          var item, _i, _len, _ref, _results;
-          if (data[_this.reactOn]) {
-            _ref = data[_this.reactOn];
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              item = _ref[_i];
-              _results.push(_this.add(item));
-            }
-            return _results;
-          }
-        });
       }
+
+      Model.prototype.handle = function(data) {
+        var item, _i, _len, _ref, _results;
+        if (data[this.reactOn]) {
+          _ref = data[this.reactOn];
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            item = _ref[_i];
+            _results.push(this.add(item));
+          }
+          return _results;
+        }
+      };
 
       Model.prototype.clearCache = function() {
         this.items = [];
@@ -944,11 +955,11 @@
       starredCount = {
         count: 0
       };
-      $rootScope.$on('update', function(scope, data) {
+      starredCount.handle = function(data) {
         if (data['starredCount'] !== void 0) {
           return starredCount.count = data['starredCount'];
         }
-      });
+      };
       return starredCount;
     }
   ]);

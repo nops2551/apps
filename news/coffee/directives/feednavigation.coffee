@@ -63,5 +63,4 @@ angular.module('News').directive 'feedNavigation', ->
 				else if e.keyCode == 75 or e.keyCode == 37
 					jumpToPreviousItem(scrollArea)
 
-				scope.$apply attr.feedNavigation
 

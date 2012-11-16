@@ -14,14 +14,14 @@ angular.module('News').factory 'Persistence', () ->
 	class Persistence
 
 		constructor: (@appName, @$http) ->
-			@appInitalized = false
+			@appInitialized = false
 			@shelvedRequests = []
 
 
-		setInitialized: (isIntialized) ->
-			if isIntialized
+		setInitialized: (isInitialized) ->
+			if isInitialized
 				@executePostRequests()
-			@appInitalized = isIntialized
+			@appInitialized = isInitialized
 
 
 		executePostRequests: () ->
@@ -31,12 +31,12 @@ angular.module('News').factory 'Persistence', () ->
 			@shelvedRequests = []
 
 
-		isIntialized: ->
-			return @appInitalized
+		isInitialized: ->
+			return @appInitialized
 
 
 		post: (route, data={}, callback, errorCallback, init=false) ->
-			if @isIntialized == false && init == false
+			if @isInitialized == false && init == false
 				request =
 					route: route
 					data: data

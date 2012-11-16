@@ -14,7 +14,7 @@ angular.module('News').factory 'ShowAll', ['$rootScope', ($rootScope) ->
 	showAll = 
 		showAll: false
 
-	$rootScope.$on 'update', (scope, data) ->
+	showAll.handle = (data) ->
 		if data['showAll'] != undefined
 			showAll.showAll = data['showAll']
 
