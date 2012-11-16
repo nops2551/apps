@@ -54,7 +54,7 @@ angular.module('News').directive 'feedNavigation', ->
 			if not (focused.is('input') or focused.is('select') or 
 			focused.is('textarea') or focused.is('checkbox') or focused.is('button'))
 
-				scrollArea = document.getElementById('feed_items')
+				scrollArea = elm
 				# j or right
 				if e.keyCode == 74 or e.keyCode == 39
 					jumpToNextItem(scrollArea)

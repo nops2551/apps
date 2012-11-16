@@ -23,6 +23,9 @@ angular.module('News').controller 'SettingsController',
 			@add = false
 			@settings = false
 
+			@$scope.getFolders = =>
+				return @folderModel.getItems()
+
 			@$scope.getShowAll = =>
 				return @showAll.showAll
 

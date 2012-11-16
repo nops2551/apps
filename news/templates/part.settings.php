@@ -38,7 +38,8 @@
 				<input type="text" 
 						ng-model="folderName" 
 						name="folderName"
-						placeholder="<?php p($l->t('Name')); ?>">
+						maxlength="30"
+						placeholder="<?php p($l->t('Folder Name')); ?>">
 				<button title="<?php p($l->t('Add')); ?>" 
 						ng-click="addFolder(folderName)"><?php p($l->t('Add')); ?></button>
 			</form>
@@ -46,6 +47,11 @@
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Add Subscription')); ?></strong></legend>
 			<form>
+				<select name="folder" 
+						ng-model="folderId"
+						ng-options="folder.name for folder in getFolders()">
+					<option value=""><?php p($l->t('-- choose folder --')); ?></option>
+				</select>
 				<input type="text" 
 					ng-model="feedUrl" 
 					on-enter="addFeed(feedUrl)" 

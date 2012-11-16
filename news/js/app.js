@@ -184,7 +184,7 @@
         var focused, scrollArea;
         focused = $(':focus');
         if (!(focused.is('input') || focused.is('select') || focused.is('textarea') || focused.is('checkbox') || focused.is('button'))) {
-          scrollArea = document.getElementById('feed_items');
+          scrollArea = elm;
           if (e.keyCode === 74 || e.keyCode === 39) {
             jumpToNextItem(scrollArea);
           } else if (e.keyCode === 75 || e.keyCode === 37) {
@@ -1464,6 +1464,9 @@
           this.feedModel = feedModel;
           this.add = false;
           this.settings = false;
+          this.$scope.getFolders = function() {
+            return _this.folderModel.getItems();
+          };
           this.$scope.getShowAll = function() {
             return _this.showAll.showAll;
           };
@@ -1548,6 +1551,9 @@
           this.feedModel = feedModel;
           this.add = false;
           this.settings = false;
+          this.$scope.getFolders = function() {
+            return _this.folderModel.getItems();
+          };
           this.$scope.getShowAll = function() {
             return _this.showAll.showAll;
           };
