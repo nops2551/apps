@@ -180,16 +180,18 @@
         }
         return _results;
       };
-      $(elm).click(function() {
-        return $(this).focus();
-      });
-      return $(elm).keydown(function(e) {
-        if (e.keyCode === 74 || e.keyCode === 39) {
-          jumpToNextItem(this);
-        } else if (e.keyCode === 75 || e.keyCode === 37) {
-          jumpToPreviousItem(this);
+      return $(document).keydown(function(e) {
+        var focused, scrollArea;
+        focused = $(':focus');
+        if (!(focused.is('input') || focused.is('select') || focused.is('textarea') || focused.is('checkbox') || focused.is('button'))) {
+          scrollArea = document.getElementById('feed_items');
+          if (e.keyCode === 74 || e.keyCode === 39) {
+            jumpToNextItem(scrollArea);
+          } else if (e.keyCode === 75 || e.keyCode === 37) {
+            jumpToPreviousItem(scrollArea);
+          }
+          return scope.$apply(attr.feedNavigation);
         }
-        return scope.$apply(attr.feedNavigation);
       });
     };
   });

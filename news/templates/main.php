@@ -1,4 +1,4 @@
-<div class="content_wrapper" ng-app="News">
+<div class="content_wrapper" ng-app="News" feed-navigation>
 	<div id="leftcontent_news" class="main_column">
 		<div id="feed_wrapper">
 			<div id="feeds" ng-controller="FeedController">
@@ -53,8 +53,7 @@
 		<div id="feed_items" 
 				ng-class="{loading: loading.loading>0}"
 				ng-controller="ItemController" 
-				when-scrolled="scroll()"
-				feed-navigation>
+				when-scrolled="scroll()">
 			<?php
 				print_unescaped($this->inc("part.items"));
 			?>

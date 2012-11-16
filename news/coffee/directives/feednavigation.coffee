@@ -46,16 +46,22 @@ angular.module('News').directive 'feedNavigation', ->
 					jumpTo($scrollArea, $item)
 					break
 
-		$(elm).click ->
-			$(this).focus()
 
-		$(elm).keydown (e) ->
-			# j or right
-			if e.keyCode == 74 or e.keyCode == 39
-				jumpToNextItem(this)
+		$(document).keydown (e) ->
+			# only activate if no input elements is focused
+			focused = $(':focus')
 
-			# k or left
-			else if e.keyCode == 75 or e.keyCode == 37
-				jumpToPreviousItem(this)
+			if not (focused.is('input') or focused.is('select') or 
+			focused.is('textarea') or focused.is('checkbox') or focused.is('button'))
 
-			scope.$apply attr.feedNavigation
+				scrollArea = document.getElementById('feed_items')
+				# j or right
+				if e.keyCode == 74 or e.keyCode == 39
+					jumpToNextItem(scrollArea)
+
+				# k or left
+				else if e.keyCode == 75 or e.keyCode == 37
+					jumpToPreviousItem(scrollArea)
+
+				scope.$apply attr.feedNavigation
+
