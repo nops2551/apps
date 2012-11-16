@@ -15,10 +15,12 @@ namespace OCA\News;
 require_once \OC_App::getAppPath('news') . '/appinfo/bootstrap.php';
 
 /**
- * Shortcut for calling a controller method
+ * Shortcut for calling a controller method and printing the result
  * @param string $controllerName: the name of the controller under which it is
  *                                stored in the DI container
- * @param string $method: the method that you want to call
+ * @param string $methodName: the method that you want to call
+ * @param array $params: an array with variables extracted from the routes
+ * @param bool $disableCSRF: disables the csrf check, defaults to false
  */
 function callController($controllerName, $methodName, $params, $disableCSRF=false){
 	$container = createDIContainer();
@@ -59,28 +61,31 @@ $this->create('ajax_init', '/ajax/init')->action(
 	}
 );
 
-
-$this->create('ajax_loadfeed', '/ajax/loadfeed')->action(
-	function($params){		
-		callController('NewsAjaxController', 'loadFeed', $params);
-	}
-);
-
 $this->create('ajax_setshowall', '/ajax/setshowall')->action(
 	function($params){		
 		callController('NewsAjaxController', 'setShowAll', $params);
 	}
 );
 
+
+/**
+ * Folders
+ */
 $this->create('ajax_collapsefolder', '/ajax/collapsefolder')->action(
 	function($params){		
 		callController('NewsAjaxController', 'collapseFolder', $params);
 	}
 );
 
-$this->create('ajax_deletefeed', '/ajax/deletefeed')->action(
+$this->create('ajax_changefoldername', '/ajax/changefoldername')->action(
 	function($params){		
-		callController('NewsAjaxController', 'deleteFeed', $params);
+		callController('NewsAjaxController', 'changeFolderName', $params);
+	}
+);
+
+$this->create('ajax_createfolder', '/ajax/createfolder')->action(
+	function($params){		
+		callController('NewsAjaxController', 'createFolder', $params);
 	}
 );
 
@@ -90,15 +95,19 @@ $this->create('ajax_deletefolder', '/ajax/deletefolder')->action(
 	}
 );
 
-$this->create('ajax_setitemstatus', '/ajax/setitemstatus')->action(
+
+/**
+ * Feeds
+ */
+$this->create('ajax_loadfeed', '/ajax/loadfeed')->action(
 	function($params){		
-		callController('NewsAjaxController', 'setItemStatus', $params);
+		callController('NewsAjaxController', 'loadFeed', $params);
 	}
 );
 
-$this->create('ajax_changefoldername', '/ajax/changefoldername')->action(
+$this->create('ajax_deletefeed', '/ajax/deletefeed')->action(
 	function($params){		
-		callController('NewsAjaxController', 'changeFolderName', $params);
+		callController('NewsAjaxController', 'deleteFeed', $params);
 	}
 );
 
@@ -120,9 +129,13 @@ $this->create('ajax_createfeed', '/ajax/createfeed')->action(
 	}
 );
 
-$this->create('ajax_createfolder', '/ajax/createfolder')->action(
+
+/**
+ * Items
+ */
+$this->create('ajax_setitemstatus', '/ajax/setitemstatus')->action(
 	function($params){		
-		callController('NewsAjaxController', 'createFolder', $params);
+		callController('NewsAjaxController', 'setItemStatus', $params);
 	}
 );
 
