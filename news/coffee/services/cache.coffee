@@ -72,6 +72,10 @@ angular.module('News').factory 'Cache',
 						@folderCache[id].push(feed.id)
 
 
+		getFeedsOfFolderId: (id) ->
+			@buildFolderCache(id)
+			return @folderCache[id]
+
 		remove: (item) ->
 			delete @feedCache[item.feedId][item.id]
 			delete @importantCache[item.id]

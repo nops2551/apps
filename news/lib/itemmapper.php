@@ -163,20 +163,33 @@ class ItemMapper {
 	 *								 be marked read
 	 */
 	public function markAllRead($feedId, $mostRecentItemId){
-		$stmt = \OCP\DB::prepare('
+		if($mostRecentItemId === 0){
+			$stmt = \OCP\DB::prepare('
 				UPDATE ' . self::tableName .
-				' SET status = status | ?
+				' SET status = status & ?
+				WHERE 
+					feed_id = ?');
+		
+			$params = array(
+				~StatusFlag::UNREAD,
+				$feedId
+			);
+		} else {
+			$stmt = \OCP\DB::prepare('
+				UPDATE ' . self::tableName .
+				' SET status = status & ?
 				WHERE 
 					feed_id = ?
 					AND
 					id <= ?');
 		
-		$params = array(
-			StatusFlag::UNREAD,
-			$feedId,
-			$mostRecentItemId
-		);
-
+			$params = array(
+				~StatusFlag::UNREAD,
+				$feedId,
+				$mostRecentItemId
+			);
+		}
+		
 		$stmt->execute($params);
 	}
 

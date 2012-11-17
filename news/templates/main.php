@@ -19,6 +19,7 @@
 						</span>
 						<span class="buttons">
 					    	<button class="svg action feeds_markread" 
+					    			ng-click="markAllRead(feedType.Subscriptions, 0)"
 					    	        title="<?php p($l->t('Mark all read')) ?>"></button>
 					    </span>
 					</li>

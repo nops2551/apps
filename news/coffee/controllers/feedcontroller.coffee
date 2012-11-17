@@ -66,6 +66,33 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 						@feedModel.removeById(id)
 						@persistence.deleteFeed(id)
 
+			@$scope.markAllRead = (type, id) =>
+				switch type
+					when @feedType.Feed
+						for itemId, item of @itemModel.getItemsByTypeAndId(type, id)
+							item.isRead = true	
+						feed = @feedModel.getItemById(id)
+						feed.unreadCount = 0
+						mostRecentItemId = @itemModel.getHighestId(type, id)
+						@persistence.setAllItemsRead(feed.id, mostRecentItemId)
+					
+					when @feedType.Folder
+						for itemId, item of @itemModel.getItemsByTypeAndId(type, id)
+							item.isRead = true
+						for feedId in @itemModel.getFeedsOfFolderId(id)
+							feed = @feedModel.getItemById(feedId)
+							feed.unreadCount = 0
+							mostRecentItemId = @itemModel.getHighestId(type, feedId)
+							@persistence.setAllItemsRead(feedId, mostRecentItemId)
+
+					when @feedType.Subscriptions
+						for itemId, item of @itemModel.getItemsByTypeAndId(type, id)
+							item.isRead = true
+						for feed in @feedModel.getItems()
+							feed.unreadCount = 0
+							mostRecentItemId = @itemModel.getHighestId(type, feed.id)
+							@persistence.setAllItemsRead(feed.id, mostRecentItemId)
+
 			@$scope.$on 'triggerHideRead', =>
 				@itemModel.clearCache()
 				@triggerHideRead()

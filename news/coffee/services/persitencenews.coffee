@@ -145,6 +145,13 @@ ShowAll, StarredCount, ActiveFeed) ->
 				@updateModels(json.data)			
 
 
+		setAllItemsRead: (feedId, mostRecentItemId) ->
+			data =
+				feedId: feedId
+				mostRecentItemId: mostRecentItemId
+			@post 'setallitemsread', data
+
+
 	return new PersistenceNews($http, $rootScope, Loading, FeedModel, FolderModel,
 								ItemModel, ShowAll, StarredCount, ActiveFeed)
 ]

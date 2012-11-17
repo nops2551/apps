@@ -26,7 +26,7 @@
 				ng-click="rename(feedType.Folder, folder.id)"
 		        title="<?php p($l->t('Rename folder')); ?>"></button>
 		<button class="svg action feeds_markread" 
-		        ng-click="markRead(feedType.Folder, folder.id)"
+		        ng-click="markAllRead(feedType.Folder, folder.id)"
 		        title="<?php p($l->t('Mark all read')); ?>"></button>
 	</span>
 	<ul>

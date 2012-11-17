@@ -63,6 +63,10 @@ angular.module('News').factory 'ItemModel',
 			@cache.getLowestTimestamp(type, id)
 
 
+		getFeedsOfFolderId: (id) ->
+			@cache.getFeedsOfFolderId(id)
+
+
 		getItemsByTypeAndId: (type, id) ->
 			switch type
 				when @feedType.Feed

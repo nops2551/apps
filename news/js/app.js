@@ -528,6 +528,15 @@
           });
         };
 
+        PersistenceNews.prototype.setAllItemsRead = function(feedId, mostRecentItemId) {
+          var data;
+          data = {
+            feedId: feedId,
+            mostRecentItemId: mostRecentItemId
+          };
+          return this.post('setallitemsread', data);
+        };
+
         return PersistenceNews;
 
       })(Persistence);
@@ -705,6 +714,10 @@
 
         ItemModel.prototype.getLowestTimestamp = function(type, id) {
           return this.cache.getLowestTimestamp(type, id);
+        };
+
+        ItemModel.prototype.getFeedsOfFolderId = function(id) {
+          return this.cache.getFeedsOfFolderId(id);
         };
 
         ItemModel.prototype.getItemsByTypeAndId = function(type, id) {
@@ -1056,6 +1069,11 @@
           }
         };
 
+        Cache.prototype.getFeedsOfFolderId = function(id) {
+          this.buildFolderCache(id);
+          return this.folderCache[id];
+        };
+
         Cache.prototype.remove = function(item) {
           delete this.feedCache[item.feedId][item.id];
           return delete this.importantCache[item.id];
@@ -1330,6 +1348,53 @@
               case _this.feedType.Feed:
                 _this.feedModel.removeById(id);
                 return _this.persistence.deleteFeed(id);
+            }
+          };
+          this.$scope.markAllRead = function(type, id) {
+            var feed, feedId, item, itemId, mostRecentItemId, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4, _results, _results1;
+            switch (type) {
+              case _this.feedType.Feed:
+                _ref = _this.itemModel.getItemsByTypeAndId(type, id);
+                for (itemId in _ref) {
+                  item = _ref[itemId];
+                  item.isRead = true;
+                }
+                feed = _this.feedModel.getItemById(id);
+                feed.unreadCount = 0;
+                mostRecentItemId = _this.itemModel.getHighestId(type, id);
+                return _this.persistence.setAllItemsRead(feed.id, mostRecentItemId);
+              case _this.feedType.Folder:
+                _ref1 = _this.itemModel.getItemsByTypeAndId(type, id);
+                for (itemId in _ref1) {
+                  item = _ref1[itemId];
+                  item.isRead = true;
+                }
+                _ref2 = _this.itemModel.getFeedsOfFolderId(id);
+                _results = [];
+                for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+                  feedId = _ref2[_i];
+                  feed = _this.feedModel.getItemById(feedId);
+                  feed.unreadCount = 0;
+                  mostRecentItemId = _this.itemModel.getHighestId(type, feedId);
+                  _results.push(_this.persistence.setAllItemsRead(feedId, mostRecentItemId));
+                }
+                return _results;
+                break;
+              case _this.feedType.Subscriptions:
+                _ref3 = _this.itemModel.getItemsByTypeAndId(type, id);
+                for (itemId in _ref3) {
+                  item = _ref3[itemId];
+                  item.isRead = true;
+                }
+                _ref4 = _this.feedModel.getItems();
+                _results1 = [];
+                for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+                  feed = _ref4[_j];
+                  feed.unreadCount = 0;
+                  mostRecentItemId = _this.itemModel.getHighestId(type, feed.id);
+                  _results1.push(_this.persistence.setAllItemsRead(feed.id, mostRecentItemId));
+                }
+                return _results1;
             }
           };
           this.$scope.$on('triggerHideRead', function() {

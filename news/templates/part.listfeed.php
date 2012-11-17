@@ -16,7 +16,7 @@
 		        class="svg action feeds_delete" 
 		        title="<?php p($l->t('Delete feed')); ?>"></button>
 		<button class="svg action feeds_markread" 
-		        ng-click="markRead(feedType.Feed, feed.id)"
+		        ng-click="markAllRead(feedType.Feed, feed.id)"
 		        title="<?php p($l->t('Mark all read')); ?>"></button>
 	</span>
 </li>
