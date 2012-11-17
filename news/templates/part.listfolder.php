@@ -6,7 +6,9 @@
 }" 
     ng-repeat="folder in folders"
     ng-show="folder.show"
-    class="folder">
+    class="folder"
+    data-id="{{folder.id}}"
+    droppable>
     <button class="collapsable_trigger" 
             title="<?php p($l->t('Collapse'));?>"
             ng-click="toggleFolder(folder.id)"></button>
@@ -23,7 +25,7 @@
 		        class="svg action feeds_delete" 
 		        title="<?php p($l->t('Delete folder')); ?>"></button>
 		<button class="svg action feeds_edit" 
-				ng-click="rename(feedType.Folder, folder.id)"
+				ng-click="renameFolder(folder.id)"
 		        title="<?php p($l->t('Rename folder')); ?>"></button>
 		<button class="svg action feeds_markread" 
 		        ng-click="markAllRead(feedType.Folder, folder.id)"

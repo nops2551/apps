@@ -1,7 +1,9 @@
 <li ng-class="{active: isFeedActive(feedType.Feed, feed.id), all_read: feed.unreadCount==0}" 
     ng-repeat="feed in feeds|feedInFolder:<?php p($_['folderId']); ?>"
     ng-show="feed.show"
-    class="feed">
+    data-id="{{feed.id}}"
+    class="feed"
+    draggable>
 	<a ng-style="{backgroundImage: feed.icon}"
 	   href="#"
 	   class="title"

@@ -33,14 +33,17 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 				folder.open = !folder.open
 				@persistence.collapseFolder(folder.id, folder.open)
 
+
 			@$scope.isFeedActive = (type, id) =>
 				if type == @activeFeed.type && id == @activeFeed.id
 					return true
 				else
 					return false
 
+
 			@$scope.loadFeed = (type, id) =>
 				@loadFeed(type, id)
+
 
 			@$scope.getUnreadCount = (type, id) =>
 				count = @getUnreadCount(type, id)
@@ -49,22 +52,31 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 				else 
 					return count
 
+
+			@$scope.renameFolder = ->
+				alert 'not implemented yet, needs better solution'
+
+
 			@$scope.triggerHideRead = =>
 				@triggerHideRead()
+
 
 			@$scope.isShown = (type, id) =>
 				switch type
 					when @feedType.Subscriptions then return @showSubscriptions
 					when @feedType.Starred then return @starredCount.count > 0
 
+
 			@$scope.delete = (type, id) =>
 				switch type
 					when @feedType.Folder
 						@folderModel.removeById(id)
 						@persistence.deleteFolder(id)
+
 					when @feedType.Feed
 						@feedModel.removeById(id)
 						@persistence.deleteFeed(id)
+
 
 			@$scope.markAllRead = (type, id) =>
 				switch type
@@ -101,6 +113,9 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 			@$scope.$on 'loadFeed', (scope, params) =>
 				@loadFeed(params.type, params.id)
 
+			@$scope.$on 'moveFeedToFolder', (scope, params) =>
+				@moveFeedToFolder(params.feedId, params.folderId)
+
 			setInterval =>
 				@updateFeeds()
 			, @config.FeedUpdateInterval
@@ -110,6 +125,13 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 		updateFeeds: ->
 			for feed in @feedModel.getItems()
 				@persistence.updateFeed(feed.id)
+
+
+		moveFeedToFolder: (feedId, folderId) ->
+			feed = @feedModel.getItemById(feedId)
+			if feed.folderId != folderId
+				feed.folderId = folderId
+				@persistence.moveFeedToFolder(feedId, folderId)
 
 
 		loadFeed: (type, id) ->

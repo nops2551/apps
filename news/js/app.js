@@ -207,6 +207,68 @@
   */
 
 
+  angular.module('News').directive('draggable', function() {
+    return function(scope, elm, attr) {
+      var details;
+      details = {
+        revert: true,
+        stack: '> li',
+        zIndex: 1000,
+        axis: 'y'
+      };
+      return $(elm).draggable(details);
+    };
+  });
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
+  angular.module('News').directive('droppable', [
+    '$rootScope', function($rootScope) {
+      return function(scope, elm, attr) {
+        var $elem, details;
+        $elem = $(elm);
+        details = {
+          accept: '.feed',
+          hoverClass: 'dnd_over',
+          greedy: true,
+          drop: function(event, ui) {
+            var data;
+            $('.dnd_over').removeClass('dnd_over');
+            data = {
+              folderId: parseInt($elem.data('id'), 10),
+              feedId: parseInt($(ui.draggable).data('id'), 10)
+            };
+            $rootScope.$broadcast('moveFeedToFolder', data);
+            return scope.$apply(attr.droppable);
+          }
+        };
+        return $elem.droppable(details);
+      };
+    }
+  ]);
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
   angular.module('News').filter('feedInFolder', function() {
     return function(feeds, folderId) {
       var feed, result, _i, _len;
@@ -1329,6 +1391,9 @@
               return count;
             }
           };
+          this.$scope.renameFolder = function() {
+            return alert('not implemented yet, needs better solution');
+          };
           this.$scope.triggerHideRead = function() {
             return _this.triggerHideRead();
           };
@@ -1405,6 +1470,9 @@
           this.$scope.$on('loadFeed', function(scope, params) {
             return _this.loadFeed(params.type, params.id);
           });
+          this.$scope.$on('moveFeedToFolder', function(scope, params) {
+            return _this.moveFeedToFolder(params.feedId, params.folderId);
+          });
           setInterval(function() {
             return _this.updateFeeds();
           }, this.config.FeedUpdateInterval);
@@ -1419,6 +1487,15 @@
             _results.push(this.persistence.updateFeed(feed.id));
           }
           return _results;
+        };
+
+        FeedController.prototype.moveFeedToFolder = function(feedId, folderId) {
+          var feed;
+          feed = this.feedModel.getItemById(feedId);
+          if (feed.folderId !== folderId) {
+            feed.folderId = folderId;
+            return this.persistence.moveFeedToFolder(feedId, folderId);
+          }
         };
 
         FeedController.prototype.loadFeed = function(type, id) {

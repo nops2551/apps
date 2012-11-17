@@ -2,7 +2,7 @@
 	<div id="leftcontent_news" class="main_column">
 		<div id="feed_wrapper">
 			<div id="feeds" ng-controller="FeedController">
-				<ul>
+				<ul data-id="0" droppable>
 					<li ng-class="{
 							active: isFeedActive(feedType.Subscriptions, 0),
 							all_read: getUnreadCount(feedType.Subscriptions, 0)==0
