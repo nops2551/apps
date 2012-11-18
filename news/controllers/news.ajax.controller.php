@@ -181,11 +181,24 @@ class NewsAjaxController extends Controller {
 		$showAll = $this->getUserValue('showAll');
 
 		$items = $this->itemMapper->getItems($feedType, $feedId, $showAll);
-		$unreadCount = $this->itemMapper->getUnreadCount($feedType, $feedId);
-
 		$itemsArray = $this->itemsToArray($items);
 
-		$result = array('items' => $itemsArray);
+		$feeds = $this->feedMapper->findAll();
+		$feedsArray = array();
+
+		foreach($feeds as $feed){
+			$unreadCount = $this->itemMapper->countAllStatus($feed->getId(), StatusFlag::UNREAD);
+			$unreadArray = array(
+				'id' => $feed->getId(),
+				'unreadCount' => $unreadCount
+			);
+			array_push($feedsArray, $unreadArray);
+		}
+
+		$result = array(
+			'items' => $itemsArray,
+			'feeds' => $feedsArray
+		);
 
 		return $this->renderJSON($result);
 

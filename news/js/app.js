@@ -1494,6 +1494,7 @@
           feed = this.feedModel.getItemById(feedId);
           if (feed.folderId !== folderId) {
             feed.folderId = folderId;
+            this.feedModel.markAccessed();
             return this.persistence.moveFeedToFolder(feedId, folderId);
           }
         };

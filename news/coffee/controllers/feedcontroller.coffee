@@ -131,6 +131,7 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 			feed = @feedModel.getItemById(feedId)
 			if feed.folderId != folderId
 				feed.folderId = folderId
+				@feedModel.markAccessed()
 				@persistence.moveFeedToFolder(feedId, folderId)
 
 
