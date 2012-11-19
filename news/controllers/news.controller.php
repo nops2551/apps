@@ -59,8 +59,8 @@ class NewsController extends Controller {
 		$this->addScript('app');
 		$this->addStyle('news');
 
-		if($this->request->get('feedid')){	
-			$this->setUserValue('lastViewedFeed', $this->request->get('feedid'));
+		if($this->params('feedid')){	
+			$this->setUserValue('lastViewedFeed', $this->params('feedid'));
 			$this->setUserValue('lastViewedFeedType', FeedType::FEED);
 		}
 

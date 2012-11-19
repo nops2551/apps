@@ -18,7 +18,7 @@ require_once \OC_App::getAppPath('news') . '/appinfo/bootstrap.php';
 \OCP\App::addNavigationEntry( array(
   'id' => 'news',
   'order' => 74,
-  'href' => \OC_Helper::linkToRoute('index'),
+  'href' => \OC_Helper::linkToRoute('news_index'),
   'icon' => \OC_Helper::imagePath( 'news', 'icon.svg' ),
   'name' => \OC_L10N::get('news')->t('News')
 ));

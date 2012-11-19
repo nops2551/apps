@@ -36,6 +36,7 @@ class Security {
 		$this->csrfCheck = true;
 		$this->loggedInCheck = true;
 		$this->appEnabledCheck = true;
+		$this->isAdminCheck = true;
 	}
 
 
@@ -49,6 +50,10 @@ class Security {
 
 	public function setAppEnabledCheck($appEnabledCheck){
 		$this->appEnabledCheck = $appEnabledCheck;
+	}
+
+	public function setIsAdminCheck($isAdminCheck){
+		$this->isAdminCheck = $isAdminCheck;
 	}
 
 
@@ -67,6 +72,10 @@ class Security {
 
 		if($this->appEnabledCheck){
 			\OCP\JSON::checkAppEnabled($this->appName);
+		}
+
+		if($this->isAdminCheck){
+			\OCP\User::checkAdminUser();
 		}
 
 	}

@@ -49,7 +49,7 @@ angular.module('News').factory 'Persistence', () ->
 			if not errorCallback
 				errorCallback = ->
 
-			url = OC.Router.generate("ajax_" + route)
+			url = OC.Router.generate("news_ajax_" + route)
 
 			data = $.param(data)
 

@@ -40,7 +40,7 @@ class Request {
 	 * @param string $default: if the key is not found, return this value
 	 * @return the value of the stored array
 	 */
-	public function get($key, $default=null){
+	public function getGET($key, $default=null){
 		if(isset($this->get[$key])){
 			return $this->get[$key];
 		} else {
@@ -55,7 +55,7 @@ class Request {
 	 * @param string $default: if the key is not found, return this value
 	 * @return the value of the stored array
 	 */
-	public function post($key, $default=null){
+	public function getPOST($key, $default=null){
 		if(isset($this->post[$key])){
 			return $this->post[$key];
 		} else {

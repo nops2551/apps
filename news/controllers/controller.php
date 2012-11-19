@@ -65,6 +65,27 @@ class Controller {
 
 
 	/**
+	 * @brief lets you access post and get parameters by the index
+	 * @param string $key: the key which you want to access in the $_POST or
+	 *                     $_GET array. If both arrays store things under the same
+	 *                     key, return the value in $_POST
+	 * @return: the content of the array
+	 */
+	protected function params($key){
+		$postValue = $this->request->getPOST($key);
+		$getValue = $this->request->getGET($key);
+		
+		if($postValue !== null){
+			return $postValue;
+		}
+
+		if($getValue !== null){
+			return $getValue;
+		}
+	}
+
+
+	/**
 	 * Binds variables to the template and prints it
 	 * The following values are always assigned: userId, trans
 	 * @param $templateName the name of the template

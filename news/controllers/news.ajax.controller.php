@@ -168,11 +168,11 @@ class NewsAjaxController extends Controller {
 	 * loads the next X feeds from the server
 	 */
 	public function loadFeed(){
-		$feedType = (int)$this->request->post('type');
-		$feedId = (int)$this->request->post('id');
-		$latestFeedId = (int)$this->request->post('latestFeedId');
-		$latestTimestamp = (int)$this->request->post('latestTimestamp');
-		$limit = (int)$this->request->post('limit');
+		$feedType = (int)$this->params('type');
+		$feedId = (int)$this->params('id');
+		$latestFeedId = (int)$this->params('latestFeedId');
+		$latestTimestamp = (int)$this->params('latestTimestamp');
+		$limit = (int)$this->params('limit');
 
 		// FIXME: integrate latestFeedId, latestTimestamp and limit
 		$this->setUserValue('lastViewedFeed', $feedId);
@@ -210,7 +210,7 @@ class NewsAjaxController extends Controller {
 	 * Used for setting the showAll value from a post request
 	 */
 	public function setShowAll(){       
-		$showAll = $this->postParamToBool($this->request->post('showAll'));
+		$showAll = $this->postParamToBool($this->params('showAll'));
 		$this->setUserValue('showAll', $showAll);
 		return $this->renderJSON();
 	}
@@ -220,8 +220,8 @@ class NewsAjaxController extends Controller {
 	 * Used for setting the showAll value from a post request
 	 */
 	public function collapseFolder(){
-		$folderId = (int)$this->request->post('folderId');
-		$opened = $this->postParamToBool($this->request->post('opened'));
+		$folderId = (int)$this->params('folderId');
+		$opened = $this->postParamToBool($this->params('opened'));
 
 		$folder = $this->folderMapper->find($folderId);
 		$folder->setOpened($opened);
@@ -234,7 +234,7 @@ class NewsAjaxController extends Controller {
 	 * Deletes a feed
 	 */
 	public function deleteFeed(){
-		$feedId = (int)$this->request->post('feedId');
+		$feedId = (int)$this->params('feedId');
 		$this->feedMapper->deleteById($feedId);
 		return $this->renderJSON();
 	}
@@ -244,7 +244,7 @@ class NewsAjaxController extends Controller {
 	 * Deletes a folder
 	 */
 	public function deleteFolder(){
-		$folderId = (int)$this->request->post('folderId');
+		$folderId = (int)$this->params('folderId');
 		$this->folderMapper->deleteById($folderId);
 		return $this->renderJSON();
 	}
@@ -254,8 +254,8 @@ class NewsAjaxController extends Controller {
 	 * Sets the status of an item
 	 */
 	public function setItemStatus(){
-		$itemId = (int)$this->request->post('itemId');
-		$status = $this->request->post('status');
+		$itemId = (int)$this->params('itemId');
+		$status = $this->params('status');
 		$item = $this->itemMapper->findById($itemId);
 		
 		switch ($status) {
@@ -285,8 +285,8 @@ class NewsAjaxController extends Controller {
 	 * Changes the name of a folder
 	 */
 	public function changeFolderName(){
-		$folderId = (int)$this->request->post('folderId');
-		$folderName = $this->request->post('folderName');
+		$folderId = (int)$this->params('folderId');
+		$folderName = $this->params('folderName');
 		$folder = $this->folderMapper->find($folderId);
 		$folder->setName($folderName);
 		$this->folderMapper->update($folder);
@@ -298,8 +298,8 @@ class NewsAjaxController extends Controller {
 	 * Moves a feed to a new folder
 	 */
 	public function moveFeedToFolder(){
-		$feedId = (int)$this->request->post('feedId');
-		$folderId = (int)$this->request->post('folderId');
+		$feedId = (int)$this->params('feedId');
+		$folderId = (int)$this->params('folderId');
 		$feed = $this->feedMapper->findById($feedId);
 		if($folderId === 0) {
 			$this->feedMapper->save($feed, $folderId);
@@ -320,7 +320,7 @@ class NewsAjaxController extends Controller {
 	 * Pulls new feed items from its url
 	 */
 	public function updateFeed(){
-		$feedId = (int)$this->request->post('feedId');
+		$feedId = (int)$this->params('feedId');
 		$feed = $this->feedMapper->findById($feedId);
 		$newFeed = Utils::fetch($feed->getUrl());
 
@@ -348,7 +348,7 @@ class NewsAjaxController extends Controller {
 	 * Creates a new folder
 	 */
 	public function createFolder(){
-		$folderName = $this->request->post('folderName');
+		$folderName = $this->params('folderName');
 		$folder = new Folder($folderName);
 		$folderId = $this->folderMapper->save($folder);
 		$folders = array($this->folderMapper->findById($folderId));
@@ -363,8 +363,8 @@ class NewsAjaxController extends Controller {
 	 * Creates a new feed
 	 */
 	public function createFeed(){
-		$feedUrl = trim($this->request->post('feedUrl'));
-		$folderId = (int)$this->request->post('folderId');
+		$feedUrl = trim($this->params('feedUrl'));
+		$folderId = (int)$this->params('folderId');
 
 		$folder = $this->folderMapper->findById($folderId);
 
@@ -402,8 +402,8 @@ class NewsAjaxController extends Controller {
 	 * dates and ids
 	 */
 	public function setAllItemsRead($feedId, $mostRecentItemId){
-		$feedId = (int)$this->request->post('feedId');
-		$mostRecentItemId = (int)$this->request->post('mostRecentItemId');
+		$feedId = (int)$this->params('feedId');
+		$mostRecentItemId = (int)$this->params('mostRecentItemId');
 
 		$feed = $this->feedMapper->findById($feedId);
 
