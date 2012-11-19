@@ -63,13 +63,4 @@ class Request {
 		}
 	}
 
-
-	/**
-	 * Returns the user id
-	 * @return the value of the stored user id
-	 */
-	public function getUserId(){
-		return $this->userId;
-	}
-
 }

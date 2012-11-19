@@ -35,6 +35,7 @@ namespace OCA\News;
 
 \OC::$CLASSPATH['OCA\News\Utils'] = 'apps/news/lib/utils.php';
 \OC::$CLASSPATH['OCA\News\Security'] = 'apps/news/lib/security.php';
+\OC::$CLASSPATH['OCA\News\API'] = 'apps/news/lib/api.php';
 \OC::$CLASSPATH['OCA\News\Request'] = 'apps/news/lib/request.php';
 
 \OC::$CLASSPATH['OCA\News\TemplateRenderer'] = 'apps/news/lib/renderers.php';
@@ -59,18 +60,14 @@ function createDIContainer(){
 	/** 
 	 * CLASSES
 	 */
-	$newsContainer['UserId'] = function($c){
-		return \OCP\USER::getUser();
-	};
-
-	$newsContainer['Request'] = $newsContainer->share(function($c){
-		return new Request($c['UserId'], $_GET, $_POST);
+	$newsContainer['API'] = $newsContainer->share(function($c){
+		return new API($c['AppName']);
 	});
 
 
-	$newsContainer['Trans'] = function($c){
-		return \OC_L10N::get($c['AppName']);
-	};
+	$newsContainer['Request'] = $newsContainer->share(function($c){
+		return new Request($_GET, $_POST);
+	});
 
 
 	$newsContainer['Security'] = $newsContainer->share(function($c) {
@@ -81,15 +78,15 @@ function createDIContainer(){
 	 * MAPPERS
 	 */
 	$newsContainer['ItemMapper'] = $newsContainer->share(function($c){
-		return new ItemMapper($c['UserId']);
+		return new ItemMapper($c['API']->getUserId());
 	});
 
 	$newsContainer['FeedMapper'] = $newsContainer->share(function($c){
-		return new FeedMapper($c['UserId']);
+		return new FeedMapper($c['API']->getUserId());
 	});
 
 	$newsContainer['FolderMapper'] = $newsContainer->share(function($c){
-		return new FolderMapper($c['UserId']);
+		return new FolderMapper($c['API']->getUserId());
 	});
 
 
@@ -97,14 +94,13 @@ function createDIContainer(){
 	 * CONTROLLERS
 	 */
 	$newsContainer['NewsController'] = function($c){
-		return new NewsController($c['Request'], $c['AppName'], $c['FeedMapper'], 
+		return new NewsController($c['Request'], $c['API'], $c['FeedMapper'], 
 									$c['FolderMapper']);
 	};
 
 	$newsContainer['NewsAjaxController'] = function($c){
-		return new NewsAjaxController($c['Request'], $c['AppName'], $c['FeedMapper'], 
-										$c['FolderMapper'], $c['ItemMapper'], 
-										$c['Trans']);
+		return new NewsAjaxController($c['Request'], $c['API'], $c['FeedMapper'], 
+										$c['FolderMapper'], $c['ItemMapper']);
 	};
 
 	return $newsContainer;

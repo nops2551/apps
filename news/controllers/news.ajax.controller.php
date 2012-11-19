@@ -20,23 +20,20 @@ class NewsAjaxController extends Controller {
 	private $feedMapper;
 	private $folderMapper;
 	private $itemMapper;
-	private $trans;
 
 	/**
 	 * @param Request $request: the object with the request instance
-	 * @param string $appName: the name of the app
+	 * @param string $api: an instance of the api wrapper
 	 * @param FeedMapper $feedMapepr an instance of the feed mapper
 	 * @param FolderMapper $folderMapper an instance of the folder mapper
 	 * @param ItemMapper $itemMapper an instance of the item mapper
-	 * @param $l: an instance of the translation object
 	 */
-	public function __construct($request, $appName, $feedMapper, $folderMapper, 
-								$itemMapper, $trans){
-		parent::__construct($request, $appName);
+	public function __construct($request, $api, $feedMapper, $folderMapper, 
+								$itemMapper){
+		parent::__construct($request, $api);
 		$this->feedMapper = $feedMapper;
 		$this->folderMapper = $folderMapper;
 		$this->itemMapper = $itemMapper;
-		$this->trans = $trans;
 	}
 
 
@@ -144,10 +141,10 @@ class NewsAjaxController extends Controller {
 		$feedsArray = $this->feedsToArray($feeds);
 
 		$activeFeed = array();
-		$activeFeed['id'] = (int)$this->getUserValue('lastViewedFeed');
-		$activeFeed['type'] = (int)$this->getUserValue('lastViewedFeedType');
+		$activeFeed['id'] = (int)$this->api->getUserValue('lastViewedFeed');
+		$activeFeed['type'] = (int)$this->api->getUserValue('lastViewedFeedType');
 
-		$showAll = $this->getUserValue('showAll') === "1";
+		$showAll = $this->api->getUserValue('showAll') === "1";
 
 		$starredCount = $this->itemMapper->getUnreadCount(\OCA\News\FeedType::STARRED, 0);
 
@@ -175,10 +172,10 @@ class NewsAjaxController extends Controller {
 		$limit = (int)$this->params('limit');
 
 		// FIXME: integrate latestFeedId, latestTimestamp and limit
-		$this->setUserValue('lastViewedFeed', $feedId);
-		$this->setUserValue('lastViewedFeedType', $feedType);
+		$this->api->setUserValue('lastViewedFeed', $feedId);
+		$this->api->setUserValue('lastViewedFeedType', $feedType);
 
-		$showAll = $this->getUserValue('showAll');
+		$showAll = $this->api->getUserValue('showAll');
 
 		$items = $this->itemMapper->getItems($feedType, $feedId, $showAll);
 		$itemsArray = $this->itemsToArray($items);
@@ -211,7 +208,7 @@ class NewsAjaxController extends Controller {
 	 */
 	public function setShowAll(){       
 		$showAll = $this->postParamToBool($this->params('showAll'));
-		$this->setUserValue('showAll', $showAll);
+		$this->api->setUserValue('showAll', $showAll);
 		return $this->renderJSON();
 	}
 

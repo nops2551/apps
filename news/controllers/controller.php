@@ -17,50 +17,15 @@ class Controller {
 	protected $userId;
 	protected $appName;
 	protected $request;
+	protected $api;
+	protected $trans;
 
-	public function __construct($request, $appName){
-		$this->userId = $request->getUserId();
-		$this->appName = $appName;
+	public function __construct($request, $api){
+		$this->api = $api;
+		$this->userId = $api->getUserId();
+		$this->appName = $api->getAppName();
 		$this->request = $request;
-	}
-
-
-	protected function addScript($name){
-		\OCP\Util::addScript($this->appName, $name);
-	}
-
-
-	protected function addStyle($name){
-		\OCP\Util::addStyle($this->appName, $name);
-	}
-
-
-	protected function add3rdPartyScript($name){
-		\OCP\Util::addScript($this->appName . '/3rdparty', $name);
-	}
-
-
-	protected function add3rdPartyStyle($name){
-		\OCP\Util::addStyle($this->appName . '/3rdparty', $name);
-	}
-
-
-	/**
-	 * Shortcut for setting a user defined value
-	 * @param $key the key under which the value is being stored
-	 * @param $value the value that you want to store
-	 */
-	protected function setUserValue($key, $value){
-		\OCP\Config::setUserValue($this->userId, $this->appName, $key, $value);
-	}
-
-
-	/**
-	 * Shortcut for getting a user defined value
-	 * @param $key the key under which the value is being stored
-	 */
-	protected function getUserValue($key){
-		return \OCP\Config::getUserValue($this->userId, $this->appName, $key);
+		$this->trans = $api->getTrans();
 	}
 
 
