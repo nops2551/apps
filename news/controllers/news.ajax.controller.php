@@ -183,6 +183,7 @@ class NewsAjaxController extends Controller {
 		$items = $this->itemMapper->getItems($feedType, $feedId, $showAll);
 		$itemsArray = $this->itemsToArray($items);
 
+		// update unread count of all feeds
 		$feeds = $this->feedMapper->findAll();
 		$feedsArray = array();
 
