@@ -19,9 +19,10 @@ require_once \OC_App::getAppPath('news') . '/appinfo/bootstrap.php';
  * @param string $controllerName: the name of the controller under which it is
  *                                stored in the DI container
  * @param string $methodName: the method that you want to call
- * @param array $params: an array with variables extracted from the routes
+ * @param $urlParams
  * @param bool $disableCSRF: disables the csrf check, defaults to false
  * @param bool $disableAdminCheck: disables the check for adminuser rights
+ * @internal param array $params : an array with variables extracted from the routes
  */
 function callController($controllerName, $methodName, $urlParams, 
 						$disableCSRF=false, $disableAdminCheck=true){
