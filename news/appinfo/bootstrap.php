@@ -29,18 +29,24 @@ namespace OCA\News;
 \OC::$CLASSPATH['OCA\News\Folder'] = 'apps/news/lib/folder.php';
 \OC::$CLASSPATH['OCA\News\FeedType'] = 'apps/news/lib/feedtypes.php';
 
-\OC::$CLASSPATH['OCA\News\FeedMapper'] = 'apps/news/lib/feedmapper.php';
-\OC::$CLASSPATH['OCA\News\ItemMapper'] = 'apps/news/lib/itemmapper.php';
-\OC::$CLASSPATH['OCA\News\FolderMapper'] = 'apps/news/lib/foldermapper.php';
+\OC::$CLASSPATH['OCA\News\FeedMapper'] = 'apps/news/db/feedmapper.php';
+\OC::$CLASSPATH['OCA\News\ItemMapper'] = 'apps/news/db/itemmapper.php';
+\OC::$CLASSPATH['OCA\News\FolderMapper'] = 'apps/news/db/foldermapper.php';
+\OC::$CLASSPATH['OCA\News\Folder'] = 'apps/news/db/folder.php';
+\OC::$CLASSPATH['OCA\News\Feed'] = 'apps/news/db/feed.php';
+\OC::$CLASSPATH['OCA\News\Item'] = 'apps/news/db/item.php';
+\OC::$CLASSPATH['OCA\News\Collection'] = 'apps/news/db/collection.php';
+\OC::$CLASSPATH['OCA\News\FeedType'] = 'apps/news/db/feedtype.php';
+\OC::$CLASSPATH['OCA\News\StatusFlag'] = 'apps/news/db/statusflag.php';
 
 \OC::$CLASSPATH['OCA\News\Utils'] = 'apps/news/lib/utils.php';
 \OC::$CLASSPATH['OCA\News\Security'] = 'apps/news/lib/security.php';
 \OC::$CLASSPATH['OCA\News\API'] = 'apps/news/lib/api.php';
 \OC::$CLASSPATH['OCA\News\Request'] = 'apps/news/lib/request.php';
+\OC::$CLASSPATH['OCA\News\TemplateResponse'] = 'apps/news/lib/response.php';
+\OC::$CLASSPATH['OCA\News\JSONResponse'] = 'apps/news/lib/response.php';
+\OC::$CLASSPATH['OCA\News\Controller'] = 'apps/news/lib/controller.php';
 
-\OC::$CLASSPATH['OCA\News\TemplateRenderer'] = 'apps/news/lib/renderers.php';
-\OC::$CLASSPATH['OCA\News\JSONRenderer'] = 'apps/news/lib/renderers.php';
-\OC::$CLASSPATH['OCA\News\Controller'] = 'apps/news/controllers/controller.php';
 \OC::$CLASSPATH['OCA\News\NewsController'] = 'apps/news/controllers/news.controller.php';
 \OC::$CLASSPATH['OCA\News\NewsAjaxController'] = 'apps/news/controllers/news.ajax.controller.php';
 

@@ -12,13 +12,6 @@
 
 namespace OCA\News;
 
-class StatusFlag{
-	const UNREAD    = 0x02;
-	const IMPORTANT = 0x04;
-	const DELETED   = 0x08;
-	const UPDATED   = 0x16;
-}
-
 /**
  * This class models an item.
  *

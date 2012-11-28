@@ -19,28 +19,57 @@ require_once \OC_App::getAppPath('news') . '/appinfo/bootstrap.php';
  * @param string $controllerName: the name of the controller under which it is
  *                                stored in the DI container
  * @param string $methodName: the method that you want to call
- * @param $urlParams
- * @param bool $disableCSRF: disables the csrf check, defaults to false
+ * @param array $urlParams: an array with variables extracted from the routes
  * @param bool $disableAdminCheck: disables the check for adminuser rights
- * @internal param array $params : an array with variables extracted from the routes
+ * @param bool $isAjax: if the request is an ajax request
  */
-function callController($controllerName, $methodName, $urlParams, 
-						$disableCSRF=false, $disableAdminCheck=true){
+function callController($controllerName, $methodName, $urlParams, $disableAdminCheck=true,
+						$isAjax=false){
 	$container = createDIContainer();
 	
 	// run security checks
 	$security = $container['Security'];
-	if($disableCSRF){
-		$security->setCSRFCheck(false);	
-	}
+	runSecurityChecks($security, $isAjax, $disableAdminCheck);
+
+	// call the controller and render the page
+	$controller = $container[$controllerName];
+	$response = $controller->$methodName($urlParams);
+	echo $response->render();
+}
+
+
+/**
+ * Shortcut for calling an ajax controller method and printing the result
+ * @param string $controllerName: the name of the controller under which it is
+ *                                stored in the DI container
+ * @param string $methodName: the method that you want to call
+ * @param array $urlParams: an array with variables extracted from the routes
+ * @param bool $disableAdminCheck: disables the check for adminuser rights
+ */
+function callAjaxController($controllerName, $methodName, $urlParams, $disableAdminCheck=true){
+	callController($controllerName, $methodName, $urlParams, $disableAdminCheck, true);
+}
+
+
+/**
+ * Runs the security checks and exits on error
+ * @param Security $security: the security object
+ * @param bool $isAjax: if true, the ajax checks will be run, otherwise the normal
+ *                      checks
+ * @param bool $disableAdminCheck: disables the check for adminuser rights
+ */
+function runSecurityChecks($security, $isAjax=false, $disableAdminCheck=true){
 	if($disableAdminCheck){
 		$security->setIsAdminCheck(false);	
 	}
-	$security->runChecks();
 
-	$controller = $container[$controllerName];
-	echo $controller->$methodName($urlParams);
+	if($isAjax){
+		$security->runAJAXChecks();
+	} else {
+		$security->runChecks();
+	}
 }
+
 
 /*************************
  * Define your routes here
@@ -62,13 +91,13 @@ $this->create('news_index', '/')->action(
  */
 $this->create('news_ajax_init', '/ajax/init')->action(
 	function($params){		
-		callController('NewsAjaxController', 'init', $params);
+		callAjaxController('NewsAjaxController', 'init', $params);
 	}
 );
 
 $this->create('news_ajax_setshowall', '/ajax/setshowall')->action(
 	function($params){		
-		callController('NewsAjaxController', 'setShowAll', $params);
+		callAjaxController('NewsAjaxController', 'setShowAll', $params);
 	}
 );
 
@@ -78,25 +107,25 @@ $this->create('news_ajax_setshowall', '/ajax/setshowall')->action(
  */
 $this->create('news_ajax_collapsefolder', '/ajax/collapsefolder')->action(
 	function($params){		
-		callController('NewsAjaxController', 'collapseFolder', $params);
+		callAjaxController('NewsAjaxController', 'collapseFolder', $params);
 	}
 );
 
 $this->create('news_ajax_changefoldername', '/ajax/changefoldername')->action(
 	function($params){		
-		callController('NewsAjaxController', 'changeFolderName', $params);
+		callAjaxController('NewsAjaxController', 'changeFolderName', $params);
 	}
 );
 
 $this->create('news_ajax_createfolder', '/ajax/createfolder')->action(
 	function($params){		
-		callController('NewsAjaxController', 'createFolder', $params);
+		callAjaxController('NewsAjaxController', 'createFolder', $params);
 	}
 );
 
 $this->create('news_ajax_deletefolder', '/ajax/deletefolder')->action(
 	function($params){		
-		callController('NewsAjaxController', 'deleteFolder', $params);
+		callAjaxController('NewsAjaxController', 'deleteFolder', $params);
 	}
 );
 
@@ -106,31 +135,31 @@ $this->create('news_ajax_deletefolder', '/ajax/deletefolder')->action(
  */
 $this->create('news_ajax_loadfeed', '/ajax/loadfeed')->action(
 	function($params){		
-		callController('NewsAjaxController', 'loadFeed', $params);
+		callAjaxController('NewsAjaxController', 'loadFeed', $params);
 	}
 );
 
 $this->create('news_ajax_deletefeed', '/ajax/deletefeed')->action(
 	function($params){		
-		callController('NewsAjaxController', 'deleteFeed', $params);
+		callAjaxController('NewsAjaxController', 'deleteFeed', $params);
 	}
 );
 
 $this->create('news_ajax_movefeedtofolder', '/ajax/movefeedtofolder')->action(
 	function($params){		
-		callController('NewsAjaxController', 'moveFeedToFolder', $params);
+		callAjaxController('NewsAjaxController', 'moveFeedToFolder', $params);
 	}
 );
 
 $this->create('news_ajax_updatefeed', '/ajax/updatefeed')->action(
 	function($params){		
-		callController('NewsAjaxController', 'updateFeed', $params);
+		callAjaxController('NewsAjaxController', 'updateFeed', $params);
 	}
 );
 
 $this->create('news_ajax_createfeed', '/ajax/createfeed')->action(
 	function($params){		
-		callController('NewsAjaxController', 'createFeed', $params);
+		callAjaxController('NewsAjaxController', 'createFeed', $params);
 	}
 );
 
@@ -140,13 +169,13 @@ $this->create('news_ajax_createfeed', '/ajax/createfeed')->action(
  */
 $this->create('news_ajax_setitemstatus', '/ajax/setitemstatus')->action(
 	function($params){		
-		callController('NewsAjaxController', 'setItemStatus', $params);
+		callAjaxController('NewsAjaxController', 'setItemStatus', $params);
 	}
 );
 
 $this->create('news_ajax_setallitemsread', '/ajax/setallitemsread')->action(
 	function($params){		
-		callController('NewsAjaxController', 'setAllItemsRead', $params);
+		callAjaxController('NewsAjaxController', 'setAllItemsRead', $params);
 	}
 );
 

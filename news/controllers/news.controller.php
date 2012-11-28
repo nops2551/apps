@@ -36,24 +36,6 @@ class NewsController extends Controller {
 	 * Decides wether to show the feedpage or the firstrun page
 	 */
 	public function index(){
-
-		if($this->feedMapper->feedCount() > 0){
-			return $this->feedPage();
-		} else {
-			return $this->firstRun();
-		}
-	}
-
-
-	private function firstRun(){
-		$this->api->addScript('news');
-		$this->api->addScript('firstrun');
-		$this->api->addStyle('firstrun');
-		return $this->render('firstrun');
-	}
-
-
-	private function feedPage(){
 		$this->api->add3rdPartyScript('angular-1.0.2/angular');
 		$this->api->add3rdPartyScript('moment.min');
 		$this->api->addScript('app');
