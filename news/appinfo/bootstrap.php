@@ -17,17 +17,22 @@ namespace OCA\News;
 \OC::$CLASSPATH['Pimple'] = 'apps/news/3rdparty/Pimple/Pimple.php';
 
 \OC::$CLASSPATH['OC_Search_Provider_News'] = 'apps/news/lib/search.php';
-
 \OC::$CLASSPATH['OCA\News\Backgroundjob'] = 'apps/news/lib/backgroundjob.php';
-
 \OC::$CLASSPATH['OCA\News\Share_Backend_News_Item'] = 'apps/news/lib/share/item.php';
-
 \OC::$CLASSPATH['OCA\News\StatusFlag'] = 'apps/news/lib/item.php';
 \OC::$CLASSPATH['OCA\News\Item'] = 'apps/news/lib/item.php';
 \OC::$CLASSPATH['OCA\News\Collection'] = 'apps/news/lib/collection.php';
 \OC::$CLASSPATH['OCA\News\Feed'] = 'apps/news/lib/feed.php';
 \OC::$CLASSPATH['OCA\News\Folder'] = 'apps/news/lib/folder.php';
 \OC::$CLASSPATH['OCA\News\FeedType'] = 'apps/news/lib/feedtypes.php';
+\OC::$CLASSPATH['OCA\News\Utils'] = 'apps/news/lib/utils.php';
+\OC::$CLASSPATH['OCA\News\Security'] = 'apps/news/lib/security.php';
+\OC::$CLASSPATH['OCA\News\API'] = 'apps/news/lib/api.php';
+\OC::$CLASSPATH['OCA\News\Request'] = 'apps/news/lib/request.php';
+\OC::$CLASSPATH['OCA\News\TemplateResponse'] = 'apps/news/lib/response.php';
+\OC::$CLASSPATH['OCA\News\JSONResponse'] = 'apps/news/lib/response.php';
+\OC::$CLASSPATH['OCA\News\Controller'] = 'apps/news/lib/controller.php';
+\OC::$CLASSPATH['OCA\News\OPMLParser'] = 'apps/news/lib/opmlparser.php';
 
 \OC::$CLASSPATH['OCA\News\FeedMapper'] = 'apps/news/db/feedmapper.php';
 \OC::$CLASSPATH['OCA\News\ItemMapper'] = 'apps/news/db/itemmapper.php';
@@ -38,14 +43,6 @@ namespace OCA\News;
 \OC::$CLASSPATH['OCA\News\Collection'] = 'apps/news/db/collection.php';
 \OC::$CLASSPATH['OCA\News\FeedType'] = 'apps/news/db/feedtype.php';
 \OC::$CLASSPATH['OCA\News\StatusFlag'] = 'apps/news/db/statusflag.php';
-
-\OC::$CLASSPATH['OCA\News\Utils'] = 'apps/news/lib/utils.php';
-\OC::$CLASSPATH['OCA\News\Security'] = 'apps/news/lib/security.php';
-\OC::$CLASSPATH['OCA\News\API'] = 'apps/news/lib/api.php';
-\OC::$CLASSPATH['OCA\News\Request'] = 'apps/news/lib/request.php';
-\OC::$CLASSPATH['OCA\News\TemplateResponse'] = 'apps/news/lib/response.php';
-\OC::$CLASSPATH['OCA\News\JSONResponse'] = 'apps/news/lib/response.php';
-\OC::$CLASSPATH['OCA\News\Controller'] = 'apps/news/lib/controller.php';
 
 \OC::$CLASSPATH['OCA\News\NewsController'] = 'apps/news/controllers/news.controller.php';
 \OC::$CLASSPATH['OCA\News\NewsAjaxController'] = 'apps/news/controllers/news.ajax.controller.php';

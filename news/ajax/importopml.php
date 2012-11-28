@@ -31,8 +31,6 @@ function bailOut($msg) {
 global $eventSource;
 $eventSource=new OC_EventSource();
 
-require_once 'news/opmlparser.php';
-
 $source = isset( $_REQUEST['source'] ) ? $_REQUEST['source'] : '';
 $path = isset( $_REQUEST['path'] ) ? $_REQUEST['path'] : '';
 
