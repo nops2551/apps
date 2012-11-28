@@ -377,6 +377,11 @@ div.add_parentfolder {
 		background-color: #ccc;
 	}
 
+	#feed_settings button img {
+		border: 0;
+		outline: none;
+	}
+
 	#feed_settings .controls button {
 		height: 2.4em;
 		width: 2.4em;
