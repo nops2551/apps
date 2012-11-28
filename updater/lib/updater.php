@@ -91,7 +91,7 @@ class Updater {
         
 	public static function update($version, $backupBase) {
 		if (!is_dir($backupBase)) {
-			throw new \Exception('Backup directory is not found');
+			throw new \Exception("Backup directory $backupBase is not found");
 		}
 
 		set_include_path(
@@ -120,8 +120,8 @@ class Updater {
 			throw $e;
 		}
 
-		$config = "/" . Helper::CORE_DIRNAME . "/config/config.php";
-		copy($backupBase . $config, \OC::$SERVERROOT . $config);
+		$config = "/config/config.php";
+		copy($backupBase . "/" . Helper::CORE_DIRNAME . $config, \OC::$SERVERROOT . $config);
 		
 		// zip backup 
 		$zip = new \ZipArchive();
