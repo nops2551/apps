@@ -12,15 +12,42 @@
 
 namespace OCA\News;
 
-interface Response {
-	function render();
+
+abstract class Response {
+
+	private $headers;
+
+	protected function __construct(){
+		$this->headers = array();
+	}
+
+	/**
+	 * Adds a new header to the response that will be called before the render
+	 * function
+	 * @param string header: the string that will be used in the header() function
+	 */
+	public function setHeader($header){
+
+	}
+
+
+	/**
+	 * Renders all headers
+	 */
+	public function render(){
+		foreach ($this->headers as $value) {
+			header($value);
+		}
+	}
+
+
 }
 
 
 /**
  * Response for a normal template
  */
-class TemplateResponse implements Response {
+class TemplateResponse extends Response {
 
 	private $templateName;
 	private $params;
@@ -65,6 +92,8 @@ class TemplateResponse implements Response {
 	 * @return the rendered html
 	 */
 	public function render(){
+		parent::render();
+
 		if($this->renderAs === 'blank'){
 			$template = new \OCP\Template($this->appName, $this->templateName);
 		} else {
@@ -85,7 +114,7 @@ class TemplateResponse implements Response {
 /**
  * A renderer for JSON calls
  */
-class JSONResponse implements Response {
+class JSONResponse extends Response {
 
 	private $name;
 	private $data;
@@ -129,6 +158,7 @@ class JSONResponse implements Response {
 	 * @return the rendered json
 	 */
 	public function render(){
+		parent::render();
 
 		ob_start();
 

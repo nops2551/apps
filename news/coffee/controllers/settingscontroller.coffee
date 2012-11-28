@@ -109,7 +109,7 @@ angular.module('News').controller 'SettingsController',
 					@persistence.createFolder(name, onSuccess)
 				
 
-			@$scope.$on 'appfocus', =>
+			@$scope.$on 'hidesettings', =>
 				@add = false
 				@settings = false
 

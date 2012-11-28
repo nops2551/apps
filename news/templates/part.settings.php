@@ -1,6 +1,7 @@
 <div id="feed_settings" 
 		ng-controller="SettingsController" 
-		ng-class="{expanded: isExpanded()}">
+		ng-class="{expanded: isExpanded()}"
+		hide-settings-when-focus-lost>
 	<ul class="controls">
 		<li class="view show_all" 
 		    ng-show="getShowAll()"

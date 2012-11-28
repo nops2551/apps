@@ -213,12 +213,15 @@
   */
 
 
-  angular.module('News').directive('appfocus', [
+  angular.module('News').directive('hideSettingsWhenFocusLost', [
     '$rootScope', function($rootScope) {
       return function(scope, elm, attr) {
-        return elm.bind('click', function() {
-          $rootScope.$broadcast('appfocus');
-          return scope.$apply(attr.appfocus);
+        $(document.body).click(function() {
+          $rootScope.$broadcast('hidesettings');
+          return scope.$apply(attr.hideSettingsWhenFocusLost);
+        });
+        return $(elm).click(function(e) {
+          return e.stopPropagation();
         });
       };
     }
@@ -1755,149 +1758,7 @@
               return _this.persistence.createFolder(name, onSuccess);
             }
           };
-          this.$scope.$on('appfocus', function() {
-            _this.add = false;
-            return _this.settings = false;
-          });
-        }
-
-        return SettingsController;
-
-      })(Controller);
-      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel);
-    }
-  ]);
-
-  /*
-  # ownCloud - News app
-  #
-  # @author Bernhard Posselt
-  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
-  #
-  # This file is licensed under the Affero General Public License version 3 or later.
-  # See the COPYING-README file
-  #
-  */
-
-
-  angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', 'FolderModel', 'FeedModel', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews, FolderModel, FeedModel) {
-      var SettingsController;
-      SettingsController = (function(_super) {
-
-        __extends(SettingsController, _super);
-
-        function SettingsController($scope, $rootScope, showAll, persistence, folderModel, feedModel) {
-          var _this = this;
-          this.$scope = $scope;
-          this.$rootScope = $rootScope;
-          this.showAll = showAll;
-          this.persistence = persistence;
-          this.folderModel = folderModel;
-          this.feedModel = feedModel;
-          this.add = false;
-          this.settings = false;
-          this.addingFeed = false;
-          this.addingFolder = false;
-          this.$scope.getFolders = function() {
-            return _this.folderModel.getItems();
-          };
-          this.$scope.getShowAll = function() {
-            return _this.showAll.showAll;
-          };
-          this.$scope.setShowAll = function(value) {
-            _this.showAll.showAll = value;
-            _this.persistence.showAll(value);
-            return _this.$rootScope.$broadcast('triggerHideRead');
-          };
-          this.$scope.toggleSettings = function() {
-            if (_this.add) {
-              _this.add = false;
-            }
-            return _this.settings = !_this.settings;
-          };
-          this.$scope.toggleAdd = function() {
-            if (_this.settings) {
-              _this.settings = false;
-            }
-            return _this.add = !_this.add;
-          };
-          this.$scope.isExpanded = function() {
-            return _this.settings || _this.add;
-          };
-          this.$scope.addIsShown = function() {
-            return _this.add;
-          };
-          this.$scope.settingsAreShown = function() {
-            return _this.settings;
-          };
-          this.$scope.isAddingFeed = function() {
-            return _this.addingFeed;
-          };
-          this.$scope.isAddingFolder = function() {
-            return _this.addingFolder;
-          };
-          this.$scope.addFeed = function(url, folder) {
-            var feed, folderId, onError, onSuccess, _i, _len, _ref;
-            _this.$scope.feedEmptyError = false;
-            _this.$scope.feedExistsError = false;
-            _this.$scope.feedError = false;
-            if (url === void 0 || url.trim() === '') {
-              _this.$scope.feedEmptyError = true;
-            } else {
-              url = url.trim();
-              _ref = _this.feedModel.getItems();
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                feed = _ref[_i];
-                if (url === feed.url) {
-                  _this.$scope.feedExistsError = true;
-                }
-              }
-            }
-            if (!(_this.$scope.feedEmptyError || _this.$scope.feedExistsError)) {
-              if (folder === void 0) {
-                folderId = 0;
-              } else {
-                folderId = folder.id;
-              }
-              _this.addingFeed = true;
-              onSuccess = function() {
-                _this.$scope.feedUrl = '';
-                return _this.addingFeed = false;
-              };
-              onError = function() {
-                _this.$scope.feedError = true;
-                return _this.addingFeed = false;
-              };
-              return _this.persistence.createFeed(url, folderId, onSuccess, onError);
-            }
-          };
-          this.$scope.addFolder = function(name) {
-            var folder, onSuccess, _i, _len, _ref;
-            _this.$scope.folderEmptyError = false;
-            _this.$scope.folderExistsError = false;
-            if (name === void 0 || name.trim() === '') {
-              _this.$scope.folderEmptyError = true;
-            } else {
-              name = name.trim();
-              _ref = _this.folderModel.getItems();
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                folder = _ref[_i];
-                if (name.toLowerCase() === folder.name.toLowerCase()) {
-                  _this.$scope.folderExistsError = true;
-                }
-              }
-            }
-            if (!(_this.$scope.folderEmptyError || _this.$scope.folderExistsError)) {
-              _this.addingFolder = true;
-              onSuccess = function() {
-                _this.$scope.folderName = '';
-                return _this.addingFolder = false;
-              };
-              return _this.persistence.createFolder(name, onSuccess);
-            }
-          };
-          this.$scope.$on('appfocus', function() {
+          this.$scope.$on('hidesettings', function() {
             _this.add = false;
             return _this.settings = false;
           });

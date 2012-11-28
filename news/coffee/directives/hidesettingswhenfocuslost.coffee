@@ -13,11 +13,13 @@
 # This is used to signal the settings bar that the app has been focused and that
 # it should hide
 ###
-angular.module('News').directive 'appfocus', ['$rootScope', ($rootScope) ->
+angular.module('News').directive 'hideSettingsWhenFocusLost', ['$rootScope', ($rootScope) ->
 
 	return (scope, elm, attr) ->
-		elm.bind 'click', ->
-			$rootScope.$broadcast('appfocus')
-			scope.$apply attr.appfocus
+		$(document.body).click ->
+			$rootScope.$broadcast('hidesettings')
+			scope.$apply attr.hideSettingsWhenFocusLost
 
+		$(elm).click (e) ->
+			e.stopPropagation()
 ]
