@@ -2,7 +2,8 @@
 		ng-controller="SettingsController" 
 		ng-class="{expanded: isExpanded()}">
 	<ul class="controls">
-		<li title="<?php p($l->t('Add feed or folder')) ?>">
+		<li title="<?php p($l->t('Add feed or folder')) ?>"
+			ng-class="{active: addIsShown()}">
 			<button ng-click="toggleAdd()">
 				<img class="svg" 
 				     src="<?php print_unescaped(link_to('news', 'img/add.svg')) ?>" 
@@ -20,7 +21,8 @@
 			title="<?php p($l->t('Show only unread')); ?>">
 			<button></button>
 		</li>
-		<li style="float: right">
+		<li style="float: right"
+			ng-class="{active: settingsAreShown()}">
 			<button id="settingsbtn" 
 			        title="<?php p($l->t('Settings')); ?>"
 			        ng-click="toggleSettings()">
