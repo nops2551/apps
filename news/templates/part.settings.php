@@ -2,13 +2,6 @@
 		ng-controller="SettingsController" 
 		ng-class="{expanded: isExpanded()}">
 	<ul class="controls">
-		<li title="<?php p($l->t('Add feed or folder')) ?>"
-			ng-class="{active: addIsShown()}">
-			<button ng-click="toggleAdd()">
-				<img class="svg" 
-				     src="<?php print_unescaped(link_to('news', 'img/add.svg')) ?>" 
-				     alt="<?php p($l->t('Add Feed/Folder')) ?>" /></button>
-		</li>
 		<li class="view show_all" 
 		    ng-show="getShowAll()"
 		    ng-click="setShowAll(false)"
@@ -30,6 +23,14 @@
 			         src="<?php print_unescaped(image_path('core','actions/settings.png')); ?>" 
 			         alt="<?php p($l->t('Settings')); ?>"   />
 			</button>
+		</li>
+		<li style="float: right"
+			title="<?php p($l->t('Add feed or folder')) ?>"
+			ng-class="{active: addIsShown()}">
+			<button ng-click="toggleAdd()">
+				<img class="svg" 
+				     src="<?php print_unescaped(link_to('news', 'img/add.svg')) ?>" 
+				     alt="<?php p($l->t('Add Feed/Folder')) ?>" /></button>
 		</li>
 	</ul>
 
