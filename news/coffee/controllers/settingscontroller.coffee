@@ -89,7 +89,6 @@ angular.module('News').controller 'SettingsController',
 					@persistence.createFeed(url, folderId, onSuccess, onError)
 
 
-
 			@$scope.addFolder = (name) =>
 				@$scope.folderEmptyError = false
 				@$scope.folderExistsError = false
@@ -109,6 +108,10 @@ angular.module('News').controller 'SettingsController',
 						@addingFolder = false
 					@persistence.createFolder(name, onSuccess)
 				
+
+			@$scope.$on 'appfocus', =>
+				@add = false
+				@settings = false
 
 
 	return new SettingsController($scope, $rootScope, ShowAll, 

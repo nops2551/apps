@@ -1,6 +1,6 @@
 <div class="content_wrapper" ng-app="News">
 	<div id="leftcontent_news" class="main_column">
-		<div id="feed_wrapper">
+		<div id="feed_wrapper" appfocus>
 			<div id="feeds" ng-controller="FeedController">
 				<ul data-id="0" droppable>
 					<li ng-class="{
@@ -50,7 +50,7 @@
 
 	</div>
 
-	<div id="rightcontent_news" class="main_column">
+	<div id="rightcontent_news" class="main_column" appfocus>
 		<div id="feed_items" 
 				ng-class="{loading: loading.loading>0}"
 				ng-controller="ItemController" 
