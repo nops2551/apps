@@ -88,7 +88,7 @@ class NewsAjaxController extends Controller {
 			 array_push($feedsArray, array(
 				'id' => (int)$feed->getId(),
 				'name' => $feed->getTitle(),
-				'unreadCount' => $this->itemMapper->getUnreadCount(FeedType::FEED, 
+				'unreadCount' => (int)$this->itemMapper->getUnreadCount(FeedType::FEED, 
 																$feed->getId()),
 				'folderId' => (int)$feed->getFolderId(),
 				'show' => true,
@@ -187,8 +187,8 @@ class NewsAjaxController extends Controller {
 		foreach($feeds as $feed){
 			$unreadCount = $this->itemMapper->countAllStatus($feed->getId(), StatusFlag::UNREAD);
 			$unreadArray = array(
-				'id' => $feed->getId(),
-				'unreadCount' => $unreadCount
+				'id' => (int)$feed->getId(),
+				'unreadCount' => (int)$unreadCount
 			);
 			array_push($feedsArray, $unreadArray);
 		}
