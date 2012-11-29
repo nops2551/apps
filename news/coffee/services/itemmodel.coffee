@@ -44,8 +44,8 @@ angular.module('News').factory 'ItemModel',
 
 		removeById: (itemId) ->
 			item = @getItemById(itemId)
-			if item
-				@cache.remove()
+			if item != undefined
+				@cache.remove(item)
 				super(itemId)
 
 			

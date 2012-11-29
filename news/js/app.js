@@ -796,8 +796,8 @@
         ItemModel.prototype.removeById = function(itemId) {
           var item;
           item = this.getItemById(itemId);
-          if (item) {
-            this.cache.remove();
+          if (item !== void 0) {
+            this.cache.remove(item);
             return ItemModel.__super__.removeById.call(this, itemId);
           }
         };
