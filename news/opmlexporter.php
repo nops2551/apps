@@ -67,7 +67,7 @@ class OPMLExporter {
 			if ($collection instanceOf Folder) {
 				$outline_el->setAttribute('title', $collection->getName());
 				$outline_el->setAttribute('text', $collection->getName());
-				feedsToXML($collection->getChildren(), $outline_el, $dom);
+				$this->feedsToXML($collection->getChildren(), $outline_el, $dom);
 			}
 			elseif ($collection instanceOf Feed) {
 				$outline_el->setAttribute('title', $collection->getTitle());
