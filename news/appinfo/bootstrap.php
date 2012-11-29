@@ -31,9 +31,11 @@ namespace OCA\News;
 \OC::$CLASSPATH['OCA\News\Request'] = 'apps/news/lib/request.php';
 \OC::$CLASSPATH['OCA\News\TemplateResponse'] = 'apps/news/lib/response.php';
 \OC::$CLASSPATH['OCA\News\JSONResponse'] = 'apps/news/lib/response.php';
+\OC::$CLASSPATH['OCA\News\TextDownloadResponse'] = 'apps/news/lib/response.php';
 \OC::$CLASSPATH['OCA\News\Controller'] = 'apps/news/lib/controller.php';
 
 \OC::$CLASSPATH['OCA\News\OPMLParser'] = 'apps/news/opmlparser.php';
+\OC::$CLASSPATH['OCA\News\OPMLExporter'] = 'apps/news/opmlexporter.php';
 
 \OC::$CLASSPATH['OCA\News\FeedMapper'] = 'apps/news/db/feedmapper.php';
 \OC::$CLASSPATH['OCA\News\ItemMapper'] = 'apps/news/db/itemmapper.php';

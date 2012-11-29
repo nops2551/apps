@@ -85,6 +85,12 @@ $this->create('news_index', '/')->action(
 	}
 );
 
+$this->create('news_export_opml', '/export/opml')->action(
+	function($params){		
+		callController('NewsController', 'exportOPML', $params, true);
+	}
+);
+
 
 /**
  * AJAX Routes

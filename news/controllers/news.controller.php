@@ -33,9 +33,26 @@ class NewsController extends Controller {
 
 
 	/**
+	 * OPML export download page
+	 */
+	public function exportOPML($urlParams=array()){
+		$opmlExporter = new OPMLExporter($this->api);
+
+		$allFeeds = $this->folderMapper->childrenOfWithFeeds(0);
+		$opml = $opmlExporter->buildOPML($allFeeds);
+
+		$fileName = 'ownCloud ' . $this->trans->t('News') . ' ' . $this->userId . '.opml'; 
+		$contentType = 'application/x.opml+xml';
+		$response = new TextDownloadResponse($opml, $fileName, $contentType);
+		
+		return $response;
+	}
+
+
+	/**
 	 * Decides wether to show the feedpage or the firstrun page
 	 */
-	public function index(){
+	public function index($urlParams=array()){
 		$this->api->add3rdPartyScript('angular-1.0.2/angular');
 		$this->api->add3rdPartyScript('moment.min');
 		$this->api->addScript('app');

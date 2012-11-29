@@ -94,7 +94,10 @@
 		</fieldset>
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Export')); ?></strong></legend>
-			<button title="<?php p($l->t('Download OPML')); ?>"><?php p($l->t('Download OPML')); ?></button>
+			<a class="button" 
+				target="_blank"
+				href="<?php print_unescaped(\OC_Helper::linkToRoute('news_export_opml')) ?>"
+				title="<?php p($l->t('Download OPML')); ?>"><?php p($l->t('Download OPML')); ?></a>
 		</fieldset>
 
 	</div>

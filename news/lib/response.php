@@ -26,8 +26,8 @@ abstract class Response {
 	 * function
 	 * @param string header: the string that will be used in the header() function
 	 */
-	public function setHeader($header){
-
+	public function addHeader($header){
+		array_push($this->headers, $header);
 	}
 
 
@@ -35,9 +35,48 @@ abstract class Response {
 	 * Renders all headers
 	 */
 	public function render(){
-		foreach ($this->headers as $value) {
+		foreach($this->headers as $value) {
 			header($value);
 		}
+	}
+
+
+}
+
+
+/**
+ * Prompts the user to download the a textfile
+ */
+class TextDownloadResponse extends Response {
+	
+	private $content;
+	private $filename;
+	private $contentType;
+
+	/**
+	 * Creates a response that prompts the user to download the file
+	 * @param string $content: the content that should be written into the file
+	 * @param string $filename: the name that the downloaded file should have
+	 * @param string $contentType: the mimetype that the downloaded file should have
+	 */
+	public function __construct($content, $filename, $contentType){
+		parent::__construct();
+		$this->content = $content;
+		$this->filename = $filename;
+		$this->contentType = $contentType;
+
+		$this->addHeader('Content-Disposition: attachment; filename="' . $filename . '"');
+		$this->addHeader('Content-Type: ' . $contentType);
+	}
+
+
+	/**
+	 * Simply sets the headers and returns the file contents
+	 * @return the file contents
+	 */
+	public function render(){
+		parent::render();
+		return $this->content;
 	}
 
 
@@ -59,6 +98,7 @@ class TemplateResponse extends Response {
 	 * @param string $templateName: the name of the template
 	 */
 	public function __construct($appName, $templateName) {
+		parent::__construct();
 		$this->templateName = $templateName;
 		$this->appName = $appName;
 		$this->params = array();
@@ -124,6 +164,7 @@ class JSONResponse extends Response {
 	 * @param string $appName: the name of your app
 	 */
 	public function __construct($appName) {
+		parent::__construct();
 		$this->appName = $appName;
 		$this->data = array();
 		$this->error = false;
