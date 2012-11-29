@@ -21,16 +21,18 @@ class Request {
 	private $get;
 	private $post;
 	private $userId;
+	private $files;
 
 	/**
 	 * @param string $userId: the id of the current user
 	 * @param array $get: the $_GET array
 	 * @param array $post: the $_POST array
 	 */
-	public function __construct($userId, $get=array(), $post=array()) {
+	public function __construct($userId, $get=array(), $post=array(), $files) {
 		$this->get = $get;
 		$this->post = $post;
 		$this->userId = $userId;
+		$this->files = $files;
 	}
 
 
@@ -45,6 +47,20 @@ class Request {
 			return $this->get[$key];
 		} else {
 			return $default;
+		}
+	}
+
+
+	/**
+	 * Returns the get value of the files array
+	 * @param string $key: the array key that should be looked up
+	 * @return the value of the stored array
+	 */
+	public function getFILES($key){
+		if(isset($this->files[$key])){
+			return $this->files[$key];
+		} else {
+			return null;
 		}
 	}
 

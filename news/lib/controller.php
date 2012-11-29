@@ -52,6 +52,15 @@ class Controller {
 		return $default;
 	}
 
+	/**
+	 * Shortcut for accessing an uploaded file through the $_FILES array
+	 * @param string $key: the key that will be taken from the $_FILES array
+	 * @return the file in the $_FILES element
+	 */
+	protected function getUploadedFile($key){
+		return $this->request->getFILES($key);
+	}
+
 
 	/**
 	 * Binds variables to the template and prints it

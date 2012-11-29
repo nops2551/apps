@@ -72,7 +72,7 @@ function createDIContainer(){
 
 
 	$newsContainer['Request'] = $newsContainer->share(function($c){
-		return new Request($_GET, $_POST);
+		return new Request($_GET, $_POST, $_FILES);
 	});
 
 
