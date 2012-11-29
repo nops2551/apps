@@ -107,6 +107,12 @@ angular.module('News').factory 'Cache',
 			@removeItemInArray(item.id, @feedCache[item.feedId])
 			@removeItemInArray(item.id, @importantCache)
 
+
+		setImportant: (item, isImportant) ->
+			if isImportant
+				@importantCache.push(item)
+			else
+				@removeItemInArray(item.id, @importantCache)
 			
 		getHighestId: (type, id) ->
 			if @isFeed(type)

@@ -794,8 +794,12 @@
         };
 
         ItemModel.prototype.removeById = function(itemId) {
-          this.cache.remove(this.getItemById(itemId));
-          return ItemModel.__super__.removeById.call(this, itemId);
+          var item;
+          item = this.getItemById(itemId);
+          if (item) {
+            this.cache.remove();
+            return ItemModel.__super__.removeById.call(this, itemId);
+          }
         };
 
         ItemModel.prototype.getHighestId = function(type, id) {
@@ -840,7 +844,10 @@
         };
 
         ItemModel.prototype.setImportant = function(itemId, isImportant) {
-          return this.getItemById(itemId).isImportant = isImportant;
+          var item;
+          item = this.getItemById(itemId);
+          this.cache.setImportant(item, isImportant);
+          return item.isImportant = isImportant;
         };
 
         return ItemModel;
@@ -1199,6 +1206,14 @@
         Cache.prototype.remove = function(item) {
           this.removeItemInArray(item.id, this.feedCache[item.feedId]);
           return this.removeItemInArray(item.id, this.importantCache);
+        };
+
+        Cache.prototype.setImportant = function(item, isImportant) {
+          if (isImportant) {
+            return this.importantCache.push(item);
+          } else {
+            return this.removeItemInArray(item.id, this.importantCache);
+          }
         };
 
         Cache.prototype.getHighestId = function(type, id) {

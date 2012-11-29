@@ -43,8 +43,10 @@ angular.module('News').factory 'ItemModel',
 
 
 		removeById: (itemId) ->
-			@cache.remove(@getItemById(itemId))
-			super(itemId)
+			item = @getItemById(itemId)
+			if item
+				@cache.remove()
+				super(itemId)
 
 			
 		getHighestId: (type, id) ->
@@ -87,7 +89,9 @@ angular.module('News').factory 'ItemModel',
 
 
 		setImportant: (itemId, isImportant) ->
-			@getItemById(itemId).isImportant = isImportant
+			item = @getItemById(itemId)
+			@cache.setImportant(item, isImportant)
+			item.isImportant = isImportant
 
 
 
