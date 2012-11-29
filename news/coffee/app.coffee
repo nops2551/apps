@@ -33,3 +33,6 @@ $(document).ready ->
 			document.location.reload(true);
 			return false
 
+	# click on upload button should trigger the file input
+	$('#browselink').click ->
+		$('#file_upload_start').trigger('click');

@@ -89,8 +89,14 @@
 		</fieldset>
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Import OPML')); ?></strong></legend>
-			<button title="<?php p($l->t('From disk')); ?>"><?php p($l->t('From disk')); ?></button>
-			<button title="<?php p($l->t('From cloud')); ?>"><?php p($l->t('From cloud')); ?></button>
+			<input type="file" id="file_upload_start" name="files[]" />
+			<button title="<?php p($l->t('From disk')); ?>"
+					id="browselink">
+				<?php p($l->t('From disk')); ?>
+			</button>
+			<button title="<?php p($l->t('From cloud')); ?>">
+				<?php p($l->t('From cloud')); ?>
+			</button>
 		</fieldset>
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Export')); ?></strong></legend>
