@@ -9,10 +9,10 @@ angular.module('News').factory 'Cache',
 
 
 		clear: ->
-			@feedCache = {}
+			@feedCache = []
 			@folderCache = {}
 			@folderCacheLastModified = 0
-			@importantCache = {}
+			@importantCache = []
 			@highestId = 0
 			@lowestId = 0
 			@highestTimestamp = 0
@@ -26,8 +26,8 @@ angular.module('News').factory 'Cache',
 		add: (item) ->
 			# cache for feed access
 			if not @feedCache[item.feedId]
-				@feedCache[item.feedId] = {}
-			@feedCache[item.feedId][item.id] = item
+				@feedCache[item.feedId] = []
+			@feedCache[item.feedId].push(item)
 			
 			# cache for non feeds
 			if @highestTimestamp < item.date
@@ -42,7 +42,7 @@ angular.module('News').factory 'Cache',
 
 			# cache for important
 			if item.isImportant
-				@importantCache[item.id] = item
+				@importantCache.push(item)
 
 			# cache lowest and highest ids and timestamps for only fetching new
 			# items
@@ -54,6 +54,19 @@ angular.module('News').factory 'Cache',
 				@highestIds[item.feedId] = item.id
 			if @lowestIds[item.feedId] == undefined or item.id > @lowestIds[item.feedId]
 				@lowestIds[item.feedId] = item.id
+
+
+		getItemsOfFeed: (feedId) ->
+			return @feedCache[feedId]
+
+
+		getFeedIdsOfFolder: (folderId) ->
+			@buildFolderCache(folderId)
+			return @folderCache[folderId]
+
+
+		getImportantItems: ->
+			return @importantCache
 
 
 		buildFolderCache: (id) ->
@@ -76,16 +89,23 @@ angular.module('News').factory 'Cache',
 			@buildFolderCache(id)
 			return @folderCache[id]
 
+
+		removeItemInArray: (id, array) ->
+			removeItemIndex = null
+			counter = 0
+			for element in array
+				if element.id == id
+					removeItemIndex = counter
+					break
+				counter += 1
+
+			if removeItemIndex != null
+				array.splice(removeItemIndex, 1)
+
+
 		remove: (item) ->
-			delete @feedCache[item.feedId][item.id]
-			delete @importantCache[item.id]
-
-
-		setImportant: (itemId, isImportant) ->
-			if isImportant
-				@importantCache[itemId] = true
-			else
-				delete @importantCache[itemId]
+			@removeItemInArray(item.id, @feedCache[item.feedId])
+			@removeItemInArray(item.id, @importantCache)
 
 			
 		getHighestId: (type, id) ->

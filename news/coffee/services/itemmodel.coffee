@@ -26,8 +26,8 @@ angular.module('News').factory 'ItemModel',
 
 		add: (item) ->
 			item = @bindAdditional(item)
-			super(item)
-			@cache.add(@getItemById(item.id))			
+			if super(item)
+				@cache.add(@getItemById(item.id))			
 
 
 		bindAdditional: (item) ->
@@ -70,31 +70,23 @@ angular.module('News').factory 'ItemModel',
 		getItemsByTypeAndId: (type, id) ->
 			switch type
 				when @feedType.Feed
-					items = @cache.feedCache[id] || {}
+					items = @cache.getItemsOfFeed(id) || []
 					return items
 
 				when @feedType.Subscriptions
 					return @getItems()
 
 				when @feedType.Folder
-					@cache.buildFolderCache(id)
-					
-					items = {}
-					for feedId in @cache.folderCache[id]
-						# merge objects
-						$.extend(items, @cache.feedCache[feedId])
-
+					items = []
+					for feedId in @cache.getFeedIdsOfFolder(id)
+						items = items.concat(@cache.getItemsOfFeed(feedId) || [])
 					return items
 				
 				when @feedType.Starred
-					items = {}
-					for itemId, valid of @cache.importantCache
-						items[itemId] = @getItemById(itemId)
-					return items
+					return @cache.getImportantItems()
 
 
 		setImportant: (itemId, isImportant) ->
-			@cache.setImportant(itemId, isImportant)
 			@getItemById(itemId).isImportant = isImportant
 
 

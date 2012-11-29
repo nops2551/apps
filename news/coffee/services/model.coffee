@@ -41,8 +41,10 @@ angular.module('News').factory 'Model', ->
 				@items.push(item)
 				@itemIds[item.id] = item
 				@markAccessed()
+				return true
 			else
 				@update(item)
+				return false
 
 
 		update: (item) ->
