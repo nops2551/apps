@@ -27,8 +27,9 @@ class Request {
 	 * @param string $userId: the id of the current user
 	 * @param array $get: the $_GET array
 	 * @param array $post: the $_POST array
+	 * @param array $files the $_FILES array
 	 */
-	public function __construct($userId, $get=array(), $post=array(), $files) {
+	public function __construct($userId, $get=array(), $post=array(), $files=array()) {
 		$this->get = $get;
 		$this->post = $post;
 		$this->userId = $userId;
