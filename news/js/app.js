@@ -398,7 +398,7 @@
           _ref = this.registeredItemIds;
           for (id in _ref) {
             item = _ref[id];
-            if (!item.isImportant && !item.keptUnread) {
+            if (!item.keptUnread) {
               this.itemModel.removeById(parseInt(id, 10));
             }
             item.keptUnread = false;

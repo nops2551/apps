@@ -28,7 +28,7 @@ angular.module('News').factory 'GarbageRegistry', ['ItemModel', (ItemModel)->
 		clear: () ->
 			# delete read items for performance reasons when showAll == false
 			for id, item of @registeredItemIds
-				if not item.isImportant and not item.keptUnread
+				if not item.keptUnread
 					@itemModel.removeById(parseInt(id, 10))
 				item.keptUnread = false
 			@registeredItemIds = {}
