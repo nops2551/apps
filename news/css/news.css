@@ -16,8 +16,6 @@ div.add_parentfolder {
 }
 
 #file_upload_start {
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-	filter:alpha(opacity=0);
 	opacity:0;
 	z-index:1001;
 	width:0;
@@ -445,9 +443,6 @@ div.add_parentfolder {
 			display: none;
 		}
 
-		#feed_items li:active {
-			background: none;
-		}
 
 		/**
 		 * Rules for a single feed item
