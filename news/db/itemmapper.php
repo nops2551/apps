@@ -36,12 +36,12 @@ class ItemMapper {
 	 * @returns an object of the class OC_News_Item
 	 */
 	public function fromRow($row) {
-	
 		$url = $row['url'];
 		$title = $row['title'];
 		$guid = $row['guid'];
 		$body = $row['body'];
 		$id = $row['id'];
+		
 		$item = new Item($url, $title, $guid, $body, $id);
 		$item->setStatus($row['status']);
 		$item->setAuthor($row['author']);
@@ -51,6 +51,13 @@ class ItemMapper {
 		$feedmapper = new FeedMapper($this->userid);
 		$feed = $feedmapper->findById($row['feed_id']);
 		$item->setFeedTitle($feed->getTitle());
+
+		if($row['enclosure_mime'] !== null && $row['enclosure_link'] !== null) {
+			$enclosure = new Item_Enclosure();
+			$enclosure->setMimeType($row['enclosure_mime']);
+			$enclosure->setLink($row['enclosure_link']);
+			$item->setEnclosure($enclosure);
+		}
 		
 		return $item;
 	}
@@ -236,11 +243,18 @@ class ItemMapper {
 			$title = $item->getTitle();
 			$body = $item->getBody();
 			$author = $item->getAuthor();
-
+			$enclosure_mime = null;
+			$enclosure_link = null;
+			
+			if($enclosure = $item->getEnclosure()) {
+				$enclosure_mime = $enclosure->getMimeType();
+				$enclosure_link = $enclosure->getLink();
+			}
+			
 			$stmt = \OCP\DB::prepare('
 				INSERT INTO ' . self::tableName .
-				'(url, title, body, author, guid, guid_hash, pub_date, feed_id, status)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+				'(url, title, body, author, guid, guid_hash, pub_date, enclosure_mime, enclosure_link, feed_id, status)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				');
 
 			if(empty($title)) {
@@ -263,6 +277,8 @@ class ItemMapper {
 				$guid,
 				$guid_hash,
 				$pub_date,
+				$enclosure_mime,
+				$enclosure_link,
 				$feedid,
 				$status
 			);
@@ -285,7 +301,7 @@ class ItemMapper {
 	public function findById($id) {
 
 		$stmt = \OCP\DB::prepare('SELECT ' . self::tableName . '.id AS id, ' . self::tableName . 
-			'.url AS url, ' . self::tableName . '.title AS title, guid, body, status, author, feed_id, pub_date' .
+			'.url AS url, ' . self::tableName . '.title AS title, guid, body, status, author, feed_id, pub_date, enclosure_mime, enclosure_link' .
 			' FROM ' . self::tableName . ' JOIN ' . FeedMapper::tableName . 
 			' ON ' . self::tableName . '.feed_id = ' . FeedMapper::tableName . '.id WHERE (' . self::tableName . 
 			'.id = ? AND ' . FeedMapper::tableName . '.user_id = ? )');

@@ -35,6 +35,7 @@ class Security {
 	private $loggedInCheck;
 	private $appEnabledCheck;
 	private $isAdminCheck;
+	private $isSubAdminCheck;
 	private $appName;
 
 	/**
@@ -48,6 +49,7 @@ class Security {
 		$this->loggedInCheck = true;
 		$this->appEnabledCheck = true;
 		$this->isAdminCheck = true;
+				$this->isSubAdminCheck = true;
 	}
 
 
@@ -68,30 +70,16 @@ class Security {
 	}
 
 
+	public function setIsSubAdminCheck($isSubAdminCheck){
+		$this->isSubAdminCheck = $isSubAdminCheck;
+	}
+
+
 	/**
 	 * Runs all security checks
 	 */
 	public function runChecks() {
 
-		if($this->loggedInCheck){
-			\OCP\JSON::checkLoggedIn();
-		}
-
-		if($this->appEnabledCheck){
-			\OCP\JSON::checkAppEnabled($this->appName);
-		}
-
-		if($this->isAdminCheck){
-			\OCP\JSON::checkAdminUser();
-		}
-
-	}
-
-
-	/**
-	 * Runs all the security checks for AJAX requests
-	 */
-	public function runAjaxChecks(){
 		if($this->csrfCheck){
 			\OCP\JSON::callCheck();
 		}
@@ -106,6 +94,10 @@ class Security {
 
 		if($this->isAdminCheck){
 			\OCP\JSON::checkAdminUser();
+		}
+
+		if($this->isSubAdminCheck){
+			\OC_JSON::checkSubAdminUser();
 		}
 
 	}

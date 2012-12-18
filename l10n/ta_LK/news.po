@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ownCloud\n"
 "Report-Msgid-Bugs-To: http://bugs.owncloud.org/\n"
-"POT-Creation-Date: 2012-11-27 00:07+0100\n"
-"PO-Revision-Date: 2012-11-26 17:00+0000\n"
+"POT-Creation-Date: 2012-11-30 00:01+0100\n"
+"PO-Revision-Date: 2012-11-29 09:42+0000\n"
 "Last-Translator: suganthi <suganthi@nic.lk>\n"
 "Language-Team: Tamil (Sri-Lanka) (http://www.transifex.com/projects/p/owncloud/language/ta_LK/)\n"
 "MIME-Version: 1.0\n"
@@ -20,103 +20,103 @@ msgstr ""
 
 #: ajax/changefoldername.php:30
 msgid "Error changing name of folder "
-msgstr ""
+msgstr "கோப்புறையின் பெயரை மாற்றுவதில் வழு"
 
 #: ajax/collapsefolder.php:36
 msgid "Error collapsing folder."
-msgstr ""
+msgstr "கோப்புறையை தகர்த்துவதில் வழு"
 
 #: ajax/createfeed.php:52
 msgid "Feed already exists."
-msgstr ""
+msgstr "ஊட்டு ஏற்கனவே உள்ளது."
 
 #: ajax/createfeed.php:58
 msgid "Error adding feed."
-msgstr ""
+msgstr "ஊட்டை சேர்ப்பதில் வழு"
 
 #: ajax/createfeed.php:71
 msgid "Feed added!"
-msgstr ""
+msgstr "ஊட்டு சேர்க்கப்ட்டது!"
 
 #: ajax/createfolder.php:37
 msgid "Error adding folder."
-msgstr ""
+msgstr "கோப்புறையை சேர்ப்பதில் வழு."
 
 #: ajax/createfolder.php:47
 msgid "Folder added!"
-msgstr ""
+msgstr "கோப்புறை சேர்க்கப்பட்டது!"
 
 #: ajax/deletefeed.php:29
 msgid "Error removing feed."
-msgstr ""
+msgstr "ஊட்டை அகற்றுவதில் வழு."
 
 #: ajax/deletefolder.php:27
 msgid "Error removing folder."
-msgstr ""
+msgstr "கோப்புறையை அகற்றுவதில் வழு."
 
 #: ajax/feedlist.php:28
 msgid "Error updating feeds."
-msgstr ""
+msgstr "ஊட்டை இற்றைப்படுத்தலில் வழு."
 
 #: ajax/importopml.php:40
 msgid "Empty filename"
-msgstr ""
+msgstr "வெறுமையான கோப்பு பெயர்"
 
 #: ajax/importopml.php:50
 msgid "No source argument passed"
-msgstr ""
+msgstr "எந்த மூல வாதமும் கடத்தப்படவில்லை"
 
 #: ajax/importopml.php:54
 msgid "Error while reading file"
-msgstr ""
+msgstr "கோப்பை வாசிக்கும்போது வழு"
 
 #: ajax/importopml.php:64
 msgid "An error occurred while parsing the file."
-msgstr ""
+msgstr "கோப்பை கூறுப்படுத்தும்போது வழு ஒன்று ஏற்பட்டது."
 
 #: ajax/loadfeed.php:52
 msgid "Feed loaded!"
-msgstr ""
+msgstr "ஊட்டு ஏற்றப்பட்டது!"
 
 #: ajax/movefeedtofolder.php:37
 msgid "Error moving feed into folder."
-msgstr ""
+msgstr "ஊட்டை கோப்புறையினுள் இடமாற்றுவதில் வழு."
 
 #: ajax/selectfromcloud.php:31
 msgid "No file path was submitted."
-msgstr ""
+msgstr "கோப்புக்கான பாதை சமர்பிக்கப்படவில்லை."
 
 #: ajax/selectfromcloud.php:38
 msgid "File doesn't exist:"
-msgstr ""
+msgstr "கோப்பு ஏற்கனவே இல்லை"
 
 #: ajax/selectfromcloud.php:44
 msgid "Couldn't save temporary image: "
-msgstr ""
+msgstr "தற்காலிக படத்தை சேமிக்கமுடியாது"
 
 #: ajax/setallitemsread.php:63
 msgid "Error setting all items as read."
-msgstr ""
+msgstr "எல்லா அமைப்புகளையும் வாசிக்கப்பட்டதாக குறிப்பிடுவதில் வழு"
 
 #: ajax/setitemstatus.php:47
 msgid "Error marking item as read."
-msgstr ""
+msgstr "வாசிக்கப்பட்டதாக குறிப்பிடுவதில் வழு"
 
 #: ajax/updatefeed.php:37
 msgid "Error updating feed."
-msgstr ""
+msgstr "ஊட்டை இற்றைப்படுத்தலில் வழு."
 
 #: ajax/updatefeed.php:45
 msgid "Feed updated!"
-msgstr ""
+msgstr "ஊட்டு இற்றைப்படுத்தப்பட்டது!"
 
 #: appinfo/app.php:38 lib/search.php:21 opmlexporter.php:43
 msgid "News"
-msgstr ""
+msgstr "செய்திகள்"
 
 #: js/items.js:122
 msgid "Error while loading the feed"
-msgstr ""
+msgstr "ஊட்டை ஏற்றும்போது வழு"
 
 #: js/items.js:122 js/items.js:589 js/items.js:700 js/main.js:114
 #: js/menu.js:532 js/menu.js:592 js/menu.js:614 js/menu.js:641 js/menu.js:663
@@ -128,23 +128,23 @@ msgstr "வழு"
 
 #: js/main.js:33
 msgid "None"
-msgstr ""
+msgstr "ஒன்றுமில்லை"
 
 #: js/main.js:101 templates/main.php:17
 msgid "Show only unread"
-msgstr ""
+msgstr "வாசிக்காததை மட்டும் காட்டுக"
 
 #: js/main.js:105 templates/main.php:13
 msgid "Show everything"
-msgstr ""
+msgstr "எல்லாவற்றையும் காட்டுக"
 
 #: js/menu.js:505
 msgid "Are you sure you want to delete this feed?"
-msgstr ""
+msgstr "உங்களுக்கு இந்த ஊட்டை கட்டாயம் அழிக்கவேண்டுமா?"
 
 #: js/menu.js:513
 msgid "Are you sure you want to delete this folder and all its feeds?"
-msgstr ""
+msgstr "உங்களுக்கு இந்த கோப்புறையை மற்றும் அதன் எல்லா ஊட்டுக்களையும் நீக்கவேண்டுமா?"
 
 #: js/menu.js:521
 msgid "Warning"
@@ -152,96 +152,96 @@ msgstr "எச்சரிக்கை"
 
 #: js/news.js:28 js/news.js:58
 msgid "Name of the folder cannot be empty."
-msgstr ""
+msgstr "கோப்புறையின் பெயர் வெறுமையாக இருக்கமுடியாது."
 
 #: js/news.js:33 js/news.js:95
 msgid "Adding..."
-msgstr ""
+msgstr "சேர்க்கப்படுகிறது..."
 
 #: js/news.js:50 templates/part.dialogues.php:9
 msgid "Add folder"
-msgstr ""
+msgstr "கோப்புறையை சேர்க்க"
 
 #: js/news.js:63
 msgid "Changing..."
-msgstr ""
+msgstr "மாற்றப்படுகிறது..."
 
 #: js/news.js:79 templates/part.dialogues.php:34
 #: templates/part.dialogues.php:38 templates/part.dialogues.php:43
 msgid "Change folder name"
-msgstr ""
+msgstr "கோப்புறையின் பெயரை மாற்றுக"
 
 #: js/news.js:90
 msgid "URL cannot be empty."
-msgstr ""
+msgstr "URL  வெறுமையாக இருக்கமுடியாது."
 
 #: js/news.js:120 js/news.js:127 templates/firstrun.php:5
 msgid "Add feed"
-msgstr ""
+msgstr "ஊட்டை சேர்க்க"
 
 #: js/news.js:124
 msgid "Error while parsing the feed"
-msgstr ""
+msgstr "ஊட்டை கூறுப்படுத்தும்போது வழு"
 
 #: js/news.js:124
 msgid "Fatal Error"
-msgstr ""
+msgstr "கொல் வழு"
 
 #: js/settings.js:17
 msgid "No files selected."
-msgstr ""
+msgstr "கோப்புகள் தெரிவுசெய்யப்படவில்லை."
 
 #: js/settings.js:31
 msgid "Importing OPML file..."
-msgstr ""
+msgstr "OPML கோப்பு இறக்குமதி செய்யப்படுகிறது..."
 
 #: js/settings.js:42
 msgid "Not a valid type"
-msgstr ""
+msgstr "செல்லுபடியான ஒரு வகை அல்ல"
 
 #: js/settings.js:60
 msgid "Importing done"
-msgstr ""
+msgstr "இறக்குமதி செய்யப்பட்டது"
 
 #: js/settings.js:64
 msgid "Error while importing feeds."
-msgstr ""
+msgstr "ஊட்டை இறக்குமதி செய்யும்போது வழு "
 
 #: js/settings.js:88
 msgid "Select file"
-msgstr ""
+msgstr "கோப்பை தெரிவுசெய்க "
 
-#: lib/feedmapper.php:180 lib/itemmapper.php:207
+#: lib/feedmapper.php:180 lib/itemmapper.php:221
 msgid "no title"
-msgstr ""
+msgstr "தலைப்பு இல்லை"
 
 #: lib/foldermapper.php:127
 msgid "no name"
-msgstr ""
+msgstr "பெயர் இல்லை"
 
-#: lib/itemmapper.php:212
+#: lib/itemmapper.php:226
 msgid "no body"
-msgstr ""
+msgstr "உடல் இல்லை"
 
 #: opmlexporter.php:53
 msgid "subscriptions in ownCloud - News"
-msgstr ""
+msgstr "ownCloud இல் சேர்க்கப்பட்டுள்ளது - செய்திகள்"
 
 #: subscribe.php:30
 msgid "An error occurred"
-msgstr ""
+msgstr "ஒரு வழு ஏற்பட்டுள்ளது"
 
 #: subscribe.php:32
 msgid "Nice! You have subscribed to "
-msgstr ""
+msgstr "சிறந்தது! உங்களையும் சேர்க்கப்பட்டுள்ளது"
 
 #: subscribe.php:36
-msgid "You had already subcribed to this feed!"
-msgstr ""
+msgid "You had already subscribed to this feed!"
+msgstr "நீங்கள் ஏற்கனவே இந்த ஊட்டில் பங்குபற்றியுள்ளீர்கள்!"
 
 #: templates/firstrun.php:2
 msgid "You don't have any feed in your reader."
-msgstr ""
+msgstr "உங்களுடைய வாசிப்பில் ஒரு ஊட்டும் இல்லை."
 
 #: templates/firstrun.php:6 templates/part.dialogues.php:28
 msgid "Address"
@@ -253,11 +253,11 @@ msgstr ""
 
 #: templates/firstrun.php:11
 msgid "Import OPML"
-msgstr ""
+msgstr "OPML ஐ இறக்குமதி செய்க"
 
 #: templates/firstrun.php:12
 msgid "Upload file from desktop"
-msgstr ""
+msgstr "கணினி வழியிலிருந்து கோப்பை பதிவேற்றுக"
 
 #: templates/firstrun.php:12
 msgid "Upload"
@@ -265,11 +265,11 @@ msgstr "பதிவேற்றுக"
 
 #: templates/firstrun.php:13
 msgid "Select file from ownCloud"
-msgstr ""
+msgstr "ownCloud இலிருந்து கோப்பொன்றை தெரிவுசெய்க"
 
 #: templates/firstrun.php:13
 msgid "Select"
-msgstr ""
+msgstr "தெரிக"
 
 #: templates/firstrun.php:15 templates/settings.php:4
 msgid ""
@@ -284,19 +284,19 @@ msgstr "இறக்குமதி"
 
 #: templates/firstrun.php:24
 msgid "Or..."
-msgstr ""
+msgstr "அல்லது..."
 
 #: templates/main.php:34
 msgid "Add feed or folder"
-msgstr ""
+msgstr "ஊட்டை அல்லது கோப்புறையை சேர்க்க"
 
 #: templates/main.php:35
 msgid "Add Feed/Folder"
-msgstr ""
+msgstr "ஊட்டை/கோப்புறையை சேர்க்க"
 
 #: templates/main.php:37
 msgid "Feed"
-msgstr ""
+msgstr "ஊட்டு"
 
 #: templates/main.php:38
 msgid "Folder"
@@ -312,7 +312,7 @@ msgstr "கோப்புறையை சேர்க்க"
 
 #: templates/part.dialogues.php:4
 msgid "Add new folder"
-msgstr ""
+msgstr "புதிய கோப்புறையை சேர்க்க"
 
 #: templates/part.dialogues.php:8 templates/part.dialogues.php:42
 msgid "Folder name"
@@ -320,11 +320,11 @@ msgstr "கோப்புறை பெயர்"
 
 #: templates/part.dialogues.php:14
 msgid "Add Subscription"
-msgstr ""
+msgstr "அணியொட்டை சேர்க்க"
 
 #: templates/part.dialogues.php:17
 msgid "Add new feed"
-msgstr ""
+msgstr "புதிய ஊட்டை சேர்க்க"
 
 #: templates/part.dialogues.php:20
 msgid "Choose folder"
@@ -336,12 +336,12 @@ msgstr "சேர்க்க"
 
 #: templates/part.feeds.php:48
 msgid "New articles"
-msgstr ""
+msgstr "புதிய ஆக்கங்கள்"
 
 #: templates/part.feeds.php:51 templates/part.listfeed.php:34
 #: templates/part.listfolder.php:35
 msgid "Mark all read"
-msgstr ""
+msgstr "வாசித்த எல்லாவற்றையும் குறியிடுக"
 
 #: templates/part.feeds.php:55
 msgid "Starred"
@@ -357,24 +357,24 @@ msgstr "முக்கியமானதாக குறிப்பிடு�
 
 #: templates/part.items.php:38 templates/part.shared.php:38
 msgid "from"
-msgstr ""
+msgstr "இலிருந்து"
 
 #: templates/part.items.php:44 templates/part.shared.php:44
 msgid "by"
 msgstr "இனால்"
 
-#: templates/part.items.php:57 templates/part.items.php:58
+#: templates/part.items.php:70 templates/part.items.php:71
 #: templates/part.shared.php:55
 msgid "Share"
 msgstr "பகிர்வு"
 
-#: templates/part.items.php:59 templates/part.shared.php:60
+#: templates/part.items.php:72 templates/part.shared.php:60
 msgid "Keep unread"
 msgstr "வாசிக்கப்படாததை வைக்க"
 
 #: templates/part.listfeed.php:33
 msgid "Delete feed"
-msgstr ""
+msgstr "ஊட்டை அழிக்க"
 
 #: templates/part.listfolder.php:29
 msgid "Collapse"
@@ -382,23 +382,23 @@ msgstr ""
 
 #: templates/part.listfolder.php:33
 msgid "Delete folder"
-msgstr ""
+msgstr "கோப்பை அழிக்க"
 
 #: templates/part.listfolder.php:34
 msgid "Rename folder"
-msgstr ""
+msgstr "கோப்பின் பெயரை மாற்றுக"
 
 #: templates/settings.php:2
 msgid "Import feeds"
-msgstr ""
+msgstr "ஊட்டுக்களை இறக்குமதி செய்க "
 
 #: templates/settings.php:8
 msgid "Export feeds"
-msgstr ""
+msgstr "ஊட்டுக்களை ஏற்றுமதி செய்க"
 
 #: templates/settings.php:10
 msgid "Download OPML"
-msgstr ""
+msgstr "OPML ஐ பதிவிறக்குக"
 
 #: templates/settings.php:12
 msgid "Subscribelet"
