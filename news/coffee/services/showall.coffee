@@ -17,8 +17,7 @@ angular.module('News').factory '_ShowAll', ->
 			@showAll = false
 
 		handle: (data) ->
-			if data['showAll'] != undefined
-				@showAll = data['showAll']
+			@showAll = data
 
 
 	return ShowAll

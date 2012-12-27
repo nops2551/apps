@@ -9,7 +9,7 @@
 #
 ###
 
-angular.module('News').factory 'Persistence', () ->
+angular.module('News').factory 'Persistence', ->
 
 	class Persistence
 

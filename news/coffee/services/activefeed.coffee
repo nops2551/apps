@@ -18,8 +18,7 @@ angular.module('News').factory '_ActiveFeed', ->
 			@type = 3
 
 		handle: (data) ->
-			if data['activeFeed']
-				@id = data['activeFeed'].id
-				@type = data['activeFeed'].type
+			@id = data.id
+			@type = data.type
 
 	return ActiveFeed

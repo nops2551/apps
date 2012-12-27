@@ -13,13 +13,12 @@ angular.module('News').factory 'Model', ->
 
 	class Model
 
-		constructor: (@reactOn, @$rootScope) ->
+		constructor: () ->
 			@clearCache()
 
 		handle: (data) ->
-			if data[@reactOn]
-				for item in data[@reactOn]
-					@add(item)
+			for item in data
+				@add(item)
 
 
 		clearCache: () ->
@@ -76,3 +75,6 @@ angular.module('News').factory 'Model', ->
 
 		getItems: () ->
 			return @items
+
+
+	return Model

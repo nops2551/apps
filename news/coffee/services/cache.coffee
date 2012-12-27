@@ -1,6 +1,4 @@
-angular.module('News').factory 'Cache', 
-['FeedType', 'FeedModel', 'FolderModel',
-(FeedType, FeedModel, FolderModel) ->
+angular.module('News').factory '_Cache', ->
 
 	class Cache
 
@@ -146,7 +144,6 @@ angular.module('News').factory 'Cache',
 			return type == @feedType.Feed
 
 
-	return new Cache(FeedType, FeedModel, FolderModel)
-]
+	return Cache
 
 

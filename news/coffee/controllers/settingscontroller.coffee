@@ -109,6 +109,6 @@ angular.module('News').factory '_SettingsController', ['Controller', (Controller
 				@add = false
 				@settings = false
 
-	console.log 'yo'
+
 	return SettingsController
 ]

@@ -9,14 +9,12 @@
 #
 ###
 
-angular.module('News').factory 'ItemModel', 
-['Model', '$rootScope', 'Cache', 'FeedType',
-(Model, $rootScope, Cache, FeedType) ->
+angular.module('News').factory '_ItemModel', ['Model', (Model) ->
 
 	class ItemModel extends Model
 
-		constructor: ($rootScope, @cache, @feedType) ->
-			super('items', $rootScope)			
+		constructor: (@cache, @feedType) ->
+			super()			
 
 
 		clearCache: () ->
@@ -94,6 +92,6 @@ angular.module('News').factory 'ItemModel',
 			item.isImportant = isImportant
 
 
+	return ItemModel
 
-	return new ItemModel($rootScope, Cache, FeedType)
 ]

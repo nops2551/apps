@@ -9,24 +9,17 @@
 #
 ###
 
-angular.module('News').factory 'PersistenceNews', 
-['Persistence', '$http', '$rootScope', 'Loading', 'FeedModel', 'FolderModel', 
-'ItemModel', 'ShowAll', 'StarredCount', 'ActiveFeed',
-(Persistence, $http, $rootScope, Loading, FeedModel, FolderModel, ItemModel,
-ShowAll, StarredCount, ActiveFeed) ->
+angular.module('News').factory '_PersistenceNews', ['Persistence', (Persistence) ->
 
 	class PersistenceNews extends Persistence
 
-		constructor: ($http, @$rootScope, @loading, feedModel, folderModel, 
-						itemModel, showAll, starredCount, activeFeed) ->
+		constructor: ($http, @$rootScope, @loading, @publisher) ->
 			super('news', $http)
-			@models = [feedModel, folderModel, itemModel, showAll, starredCount,
-						activeFeed]
 
 
 		updateModels: (data) ->
-			for model in @models
-				model.handle(data)
+			for type, value of data
+				@publisher.publish(type, value)
 
 
 		loadInitial: () ->
@@ -152,6 +145,5 @@ ShowAll, StarredCount, ActiveFeed) ->
 			@post 'setallitemsread', data
 
 
-	return new PersistenceNews($http, $rootScope, Loading, FeedModel, FolderModel,
-								ItemModel, ShowAll, StarredCount, ActiveFeed)
+	return PersistenceNews
 ]

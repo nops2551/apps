@@ -18,8 +18,7 @@ angular.module('News').factory '_StarredCount', ->
 
 
 		handle: (data) ->
-			if data['starredCount'] != undefined
-				@count = data['starredCount']
+			@count = data
 
 
 	return StarredCount

@@ -207,7 +207,6 @@
         return SettingsController;
 
       })(Controller);
-      console.log('yo');
       return SettingsController;
     }
   ]);
@@ -226,8 +225,6 @@
 
   angular.module('News').controller('SettingsController', [
     '_SettingsController', '$scope', '$rootScope', 'ShowAll', 'PersistenceNews', 'FolderModel', 'FeedModel', function(_SettingsController, $scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel) {
-      console.log(_SettingsController);
-      console.log('hi');
       return new _SettingsController($scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel);
     }
   ]);
@@ -905,9 +902,7 @@
       }
 
       ShowAll.prototype.handle = function(data) {
-        if (data['showAll'] !== void 0) {
-          return this.showAll = data['showAll'];
-        }
+        return this.showAll = data;
       };
 
       return ShowAll;
@@ -928,17 +923,17 @@
   */
 
 
-  angular.module('News').factory('ItemModel', [
-    'Model', '$rootScope', 'Cache', 'FeedType', function(Model, $rootScope, Cache, FeedType) {
+  angular.module('News').factory('_ItemModel', [
+    'Model', function(Model) {
       var ItemModel;
       ItemModel = (function(_super) {
 
         __extends(ItemModel, _super);
 
-        function ItemModel($rootScope, cache, feedType) {
+        function ItemModel(cache, feedType) {
           this.cache = cache;
           this.feedType = feedType;
-          ItemModel.__super__.constructor.call(this, 'items', $rootScope);
+          ItemModel.__super__.constructor.call(this);
         }
 
         ItemModel.prototype.clearCache = function() {
@@ -1027,7 +1022,7 @@
         return ItemModel;
 
       })(Model);
-      return new ItemModel($rootScope, Cache, FeedType);
+      return ItemModel;
     }
   ]);
 
@@ -1043,33 +1038,87 @@
   */
 
 
-  angular.module('News').factory('ActiveFeed', [
-    '_ActiveFeed', function(_ActiveFeed) {
-      return new _ActiveFeed();
-    }
-  ]);
-
-  angular.module('News').factory('ShowAll', [
-    '_ShowAll', function(_ShowAll) {
-      return new _ShowAll();
-    }
-  ]);
-
-  angular.module('News').factory('Publisher', [
-    '_Publisher', function(_Publisher) {
-      return new _Publisher();
-    }
-  ]);
-
   angular.module('News').factory('Loading', [
     '_Loading', function(_Loading) {
       return new _Loading();
     }
   ]);
 
+  angular.module('News').factory('ActiveFeed', [
+    '_ActiveFeed', 'Publisher', function(_ActiveFeed, Publisher) {
+      var model;
+      model = new _ActiveFeed();
+      Publisher.subscribeTo('activeFeed', model);
+      return model;
+    }
+  ]);
+
+  angular.module('News').factory('ShowAll', [
+    '_ShowAll', 'Publisher', function(_ShowAll, Publisher) {
+      var model;
+      model = new _ShowAll();
+      Publisher.subscribeTo('showAll', model);
+      return model;
+    }
+  ]);
+
   angular.module('News').factory('StarredCount', [
-    '_StarredCount', function(_StarredCount) {
-      return new _StarredCount();
+    '_StarredCount', 'Publisher', function(_StarredCount, Publisher) {
+      var model;
+      model = new _StarredCount();
+      Publisher.subscribeTo('starredCount', model);
+      return model;
+    }
+  ]);
+
+  angular.module('News').factory('FeedModel', [
+    '_FeedModel', 'Publisher', function(_FeedModel, Publisher) {
+      var model;
+      model = new _FeedModel();
+      Publisher.subscribeTo('feeds', model);
+      return model;
+    }
+  ]);
+
+  angular.module('News').factory('FolderModel', [
+    '_FolderModel', 'Publisher', function(_FolderModel, Publisher) {
+      var model;
+      model = new _FolderModel();
+      Publisher.subscribeTo('folders', model);
+      return model;
+    }
+  ]);
+
+  angular.module('News').factory('ItemModel', [
+    '_ItemModel', 'Publisher', 'Cache', 'FeedType', function(_ItemModel, Publisher, Cache, FeedType) {
+      var model;
+      model = new _ItemModel(Cache, FeedType);
+      Publisher.subscribeTo('items', model);
+      return model;
+    }
+  ]);
+
+  angular.module('News').factory('Cache', [
+    '_Cache', 'FeedType', 'FeedModel', 'FolderModel', function(_Cache, FeedType, FeedModel, FolderModel) {
+      return new _Cache(FeedType, FeedModel, FolderModel);
+    }
+  ]);
+
+  angular.module('News').factory('PersistenceNews', [
+    '_PersistenceNews', '$http', '$rootScope', 'Loading', 'Publisher', function(_PersistenceNews, $http, $rootScope, Loading, Publisher) {
+      return new _PersistenceNews($http, $rootScope, Loading, Publisher);
+    }
+  ]);
+
+  angular.module('News').factory('GarbageRegistry', [
+    '_GarbageRegistry', 'ItemModel', function(_GarbageRegistry, ItemModel) {
+      return new _GarbageRegistry(ItemModel);
+    }
+  ]);
+
+  angular.module('News').factory('Publisher', [
+    '_Publisher', function(_Publisher) {
+      return new _Publisher();
     }
   ]);
 
@@ -1095,10 +1144,8 @@
       }
 
       ActiveFeed.prototype.handle = function(data) {
-        if (data['activeFeed']) {
-          this.id = data['activeFeed'].id;
-          return this.type = data['activeFeed'].type;
-        }
+        this.id = data.id;
+        return this.type = data.type;
       };
 
       return ActiveFeed;
@@ -1214,21 +1261,21 @@
   */
 
 
-  angular.module('News').factory('FolderModel', [
-    'Model', '$rootScope', function(Model, $rootScope) {
+  angular.module('News').factory('_FolderModel', [
+    'Model', function(Model, $rootScope) {
       var FolderModel;
       FolderModel = (function(_super) {
 
         __extends(FolderModel, _super);
 
-        function FolderModel($rootScope) {
-          FolderModel.__super__.constructor.call(this, 'folders', $rootScope);
+        function FolderModel() {
+          FolderModel.__super__.constructor.call(this);
         }
 
         return FolderModel;
 
       })(Model);
-      return new FolderModel($rootScope);
+      return FolderModel;
     }
   ]);
 
@@ -1244,27 +1291,26 @@
   */
 
 
-  angular.module('News').factory('PersistenceNews', [
-    'Persistence', '$http', '$rootScope', 'Loading', 'FeedModel', 'FolderModel', 'ItemModel', 'ShowAll', 'StarredCount', 'ActiveFeed', function(Persistence, $http, $rootScope, Loading, FeedModel, FolderModel, ItemModel, ShowAll, StarredCount, ActiveFeed) {
+  angular.module('News').factory('_PersistenceNews', [
+    'Persistence', function(Persistence) {
       var PersistenceNews;
       PersistenceNews = (function(_super) {
 
         __extends(PersistenceNews, _super);
 
-        function PersistenceNews($http, $rootScope, loading, feedModel, folderModel, itemModel, showAll, starredCount, activeFeed) {
+        function PersistenceNews($http, $rootScope, loading, publisher) {
           this.$rootScope = $rootScope;
           this.loading = loading;
+          this.publisher = publisher;
           PersistenceNews.__super__.constructor.call(this, 'news', $http);
-          this.models = [feedModel, folderModel, itemModel, showAll, starredCount, activeFeed];
         }
 
         PersistenceNews.prototype.updateModels = function(data) {
-          var model, _i, _len, _ref, _results;
-          _ref = this.models;
+          var type, value, _results;
           _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            model = _ref[_i];
-            _results.push(model.handle(data));
+          for (type in data) {
+            value = data[type];
+            _results.push(this.publisher.publish(type, value));
           }
           return _results;
         };
@@ -1429,7 +1475,7 @@
         return PersistenceNews;
 
       })(Persistence);
-      return new PersistenceNews($http, $rootScope, Loading, FeedModel, FolderModel, ItemModel, ShowAll, StarredCount, ActiveFeed);
+      return PersistenceNews;
     }
   ]);
 
@@ -1447,25 +1493,20 @@
 
   angular.module('News').factory('Model', function() {
     var Model;
-    return Model = (function() {
+    Model = (function() {
 
-      function Model(reactOn, $rootScope) {
-        this.reactOn = reactOn;
-        this.$rootScope = $rootScope;
+      function Model() {
         this.clearCache();
       }
 
       Model.prototype.handle = function(data) {
-        var item, _i, _len, _ref, _results;
-        if (data[this.reactOn]) {
-          _ref = data[this.reactOn];
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            item = _ref[_i];
-            _results.push(this.add(item));
-          }
-          return _results;
+        var item, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = data.length; _i < _len; _i++) {
+          item = data[_i];
+          _results.push(this.add(item));
         }
+        return _results;
       };
 
       Model.prototype.clearCache = function() {
@@ -1537,6 +1578,7 @@
       return Model;
 
     })();
+    return Model;
   });
 
   /*
@@ -1560,9 +1602,7 @@
       }
 
       StarredCount.prototype.handle = function(data) {
-        if (data['starredCount'] !== void 0) {
-          return this.count = data['starredCount'];
-        }
+        return this.count = data;
       };
 
       return StarredCount;
@@ -1594,179 +1634,177 @@
     };
   });
 
-  angular.module('News').factory('Cache', [
-    'FeedType', 'FeedModel', 'FolderModel', function(FeedType, FeedModel, FolderModel) {
-      var Cache;
-      Cache = (function() {
+  angular.module('News').factory('_Cache', function() {
+    var Cache;
+    Cache = (function() {
 
-        function Cache(feedType, feedModel, folderModel) {
-          this.feedType = feedType;
-          this.feedModel = feedModel;
-          this.folderModel = folderModel;
-          this.clear();
+      function Cache(feedType, feedModel, folderModel) {
+        this.feedType = feedType;
+        this.feedModel = feedModel;
+        this.folderModel = folderModel;
+        this.clear();
+      }
+
+      Cache.prototype.clear = function() {
+        this.feedCache = [];
+        this.folderCache = {};
+        this.folderCacheLastModified = 0;
+        this.importantCache = [];
+        this.highestId = 0;
+        this.lowestId = 0;
+        this.highestTimestamp = 0;
+        this.lowestTimestamp = 0;
+        this.highestIds = {};
+        this.lowestIds = {};
+        this.highestTimestamps = {};
+        return this.lowestTimestamps = {};
+      };
+
+      Cache.prototype.add = function(item) {
+        if (!this.feedCache[item.feedId]) {
+          this.feedCache[item.feedId] = [];
         }
+        this.feedCache[item.feedId].push(item);
+        if (this.highestTimestamp < item.date) {
+          this.highestTimestamp = item.date;
+        }
+        if (this.lowestTimestamp > item.date) {
+          this.lowestTimestamp = item.date;
+        }
+        if (this.highestId < item.id) {
+          this.highestId = item.id;
+        }
+        if (this.lowestId > item.id) {
+          this.lowestId = item.id;
+        }
+        if (item.isImportant) {
+          this.importantCache.push(item);
+        }
+        if (this.highestTimestamps[item.feedId] === void 0 || item.id > this.highestTimestamps[item.feedId]) {
+          this.highestTimestamps[item.feedId] = item.date;
+        }
+        if (this.lowestTimestamps[item.feedId] === void 0 || item.id > this.lowestTimestamps[item.feedId]) {
+          this.lowestTimestamps[item.feedId] = item.date;
+        }
+        if (this.highestIds[item.feedId] === void 0 || item.id > this.highestIds[item.feedId]) {
+          this.highestIds[item.feedId] = item.id;
+        }
+        if (this.lowestIds[item.feedId] === void 0 || item.id > this.lowestIds[item.feedId]) {
+          return this.lowestIds[item.feedId] = item.id;
+        }
+      };
 
-        Cache.prototype.clear = function() {
-          this.feedCache = [];
+      Cache.prototype.getItemsOfFeed = function(feedId) {
+        return this.feedCache[feedId];
+      };
+
+      Cache.prototype.getFeedIdsOfFolder = function(folderId) {
+        this.buildFolderCache(folderId);
+        return this.folderCache[folderId];
+      };
+
+      Cache.prototype.getImportantItems = function() {
+        return this.importantCache;
+      };
+
+      Cache.prototype.buildFolderCache = function(id) {
+        var feed, _i, _len, _ref, _results;
+        if (this.folderCacheLastModified !== this.feedModel.getLastModified()) {
           this.folderCache = {};
-          this.folderCacheLastModified = 0;
-          this.importantCache = [];
-          this.highestId = 0;
-          this.lowestId = 0;
-          this.highestTimestamp = 0;
-          this.lowestTimestamp = 0;
-          this.highestIds = {};
-          this.lowestIds = {};
-          this.highestTimestamps = {};
-          return this.lowestTimestamps = {};
-        };
-
-        Cache.prototype.add = function(item) {
-          if (!this.feedCache[item.feedId]) {
-            this.feedCache[item.feedId] = [];
-          }
-          this.feedCache[item.feedId].push(item);
-          if (this.highestTimestamp < item.date) {
-            this.highestTimestamp = item.date;
-          }
-          if (this.lowestTimestamp > item.date) {
-            this.lowestTimestamp = item.date;
-          }
-          if (this.highestId < item.id) {
-            this.highestId = item.id;
-          }
-          if (this.lowestId > item.id) {
-            this.lowestId = item.id;
-          }
-          if (item.isImportant) {
-            this.importantCache.push(item);
-          }
-          if (this.highestTimestamps[item.feedId] === void 0 || item.id > this.highestTimestamps[item.feedId]) {
-            this.highestTimestamps[item.feedId] = item.date;
-          }
-          if (this.lowestTimestamps[item.feedId] === void 0 || item.id > this.lowestTimestamps[item.feedId]) {
-            this.lowestTimestamps[item.feedId] = item.date;
-          }
-          if (this.highestIds[item.feedId] === void 0 || item.id > this.highestIds[item.feedId]) {
-            this.highestIds[item.feedId] = item.id;
-          }
-          if (this.lowestIds[item.feedId] === void 0 || item.id > this.lowestIds[item.feedId]) {
-            return this.lowestIds[item.feedId] = item.id;
-          }
-        };
-
-        Cache.prototype.getItemsOfFeed = function(feedId) {
-          return this.feedCache[feedId];
-        };
-
-        Cache.prototype.getFeedIdsOfFolder = function(folderId) {
-          this.buildFolderCache(folderId);
-          return this.folderCache[folderId];
-        };
-
-        Cache.prototype.getImportantItems = function() {
-          return this.importantCache;
-        };
-
-        Cache.prototype.buildFolderCache = function(id) {
-          var feed, _i, _len, _ref, _results;
-          if (this.folderCacheLastModified !== this.feedModel.getLastModified()) {
-            this.folderCache = {};
-            this.folderCacheLastModified = this.feedModel.getLastModified();
-          }
-          if (this.folderCache[id] === void 0) {
-            this.folderCache[id] = [];
-            _ref = this.feedModel.getItems();
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              feed = _ref[_i];
-              if (feed.folderId === id) {
-                _results.push(this.folderCache[id].push(feed.id));
-              } else {
-                _results.push(void 0);
-              }
+          this.folderCacheLastModified = this.feedModel.getLastModified();
+        }
+        if (this.folderCache[id] === void 0) {
+          this.folderCache[id] = [];
+          _ref = this.feedModel.getItems();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            feed = _ref[_i];
+            if (feed.folderId === id) {
+              _results.push(this.folderCache[id].push(feed.id));
+            } else {
+              _results.push(void 0);
             }
-            return _results;
           }
-        };
+          return _results;
+        }
+      };
 
-        Cache.prototype.getFeedsOfFolderId = function(id) {
-          this.buildFolderCache(id);
-          return this.folderCache[id];
-        };
+      Cache.prototype.getFeedsOfFolderId = function(id) {
+        this.buildFolderCache(id);
+        return this.folderCache[id];
+      };
 
-        Cache.prototype.removeItemInArray = function(id, array) {
-          var counter, element, removeItemIndex, _i, _len;
-          removeItemIndex = null;
-          counter = 0;
-          for (_i = 0, _len = array.length; _i < _len; _i++) {
-            element = array[_i];
-            if (element.id === id) {
-              removeItemIndex = counter;
-              break;
-            }
-            counter += 1;
+      Cache.prototype.removeItemInArray = function(id, array) {
+        var counter, element, removeItemIndex, _i, _len;
+        removeItemIndex = null;
+        counter = 0;
+        for (_i = 0, _len = array.length; _i < _len; _i++) {
+          element = array[_i];
+          if (element.id === id) {
+            removeItemIndex = counter;
+            break;
           }
-          if (removeItemIndex !== null) {
-            return array.splice(removeItemIndex, 1);
-          }
-        };
+          counter += 1;
+        }
+        if (removeItemIndex !== null) {
+          return array.splice(removeItemIndex, 1);
+        }
+      };
 
-        Cache.prototype.remove = function(item) {
-          this.removeItemInArray(item.id, this.feedCache[item.feedId]);
+      Cache.prototype.remove = function(item) {
+        this.removeItemInArray(item.id, this.feedCache[item.feedId]);
+        return this.removeItemInArray(item.id, this.importantCache);
+      };
+
+      Cache.prototype.setImportant = function(item, isImportant) {
+        if (isImportant) {
+          return this.importantCache.push(item);
+        } else {
           return this.removeItemInArray(item.id, this.importantCache);
-        };
+        }
+      };
 
-        Cache.prototype.setImportant = function(item, isImportant) {
-          if (isImportant) {
-            return this.importantCache.push(item);
-          } else {
-            return this.removeItemInArray(item.id, this.importantCache);
-          }
-        };
+      Cache.prototype.getHighestId = function(type, id) {
+        if (this.isFeed(type)) {
+          return this.highestIds[id] || 0;
+        } else {
+          return this.highestId;
+        }
+      };
 
-        Cache.prototype.getHighestId = function(type, id) {
-          if (this.isFeed(type)) {
-            return this.highestIds[id] || 0;
-          } else {
-            return this.highestId;
-          }
-        };
+      Cache.prototype.getHighestTimestamp = function(type, id) {
+        if (this.isFeed(type)) {
+          return this.highestTimestamps[id] || 0;
+        } else {
+          return this.highestTimestamp;
+        }
+      };
 
-        Cache.prototype.getHighestTimestamp = function(type, id) {
-          if (this.isFeed(type)) {
-            return this.highestTimestamps[id] || 0;
-          } else {
-            return this.highestTimestamp;
-          }
-        };
+      Cache.prototype.getLowestId = function(type, id) {
+        if (this.isFeed(type)) {
+          return this.lowestIds[id] || 0;
+        } else {
+          return this.lowestId;
+        }
+      };
 
-        Cache.prototype.getLowestId = function(type, id) {
-          if (this.isFeed(type)) {
-            return this.lowestIds[id] || 0;
-          } else {
-            return this.lowestId;
-          }
-        };
+      Cache.prototype.getLowestTimestamp = function(type, id) {
+        if (this.isFeed(type)) {
+          return this.lowestTimestamps[id] || 0;
+        } else {
+          return this.lowestTimestamp;
+        }
+      };
 
-        Cache.prototype.getLowestTimestamp = function(type, id) {
-          if (this.isFeed(type)) {
-            return this.lowestTimestamps[id] || 0;
-          } else {
-            return this.lowestTimestamp;
-          }
-        };
+      Cache.prototype.isFeed = function(type) {
+        return type === this.feedType.Feed;
+      };
 
-        Cache.prototype.isFeed = function(type) {
-          return type === this.feedType.Feed;
-        };
+      return Cache;
 
-        return Cache;
-
-      })();
-      return new Cache(FeedType, FeedModel, FolderModel);
-    }
-  ]);
+    })();
+    return Cache;
+  });
 
   /*
   # ownCloud - News app
@@ -1848,47 +1886,45 @@
   */
 
 
-  angular.module('News').factory('GarbageRegistry', [
-    'ItemModel', function(ItemModel) {
-      var garbageRegistry;
-      garbageRegistry = (function() {
+  angular.module('News').factory('_GarbageRegistry', function() {
+    var GarbageRegistry;
+    GarbageRegistry = (function() {
 
-        function garbageRegistry(itemModel) {
-          this.itemModel = itemModel;
-          this.registeredItemIds = {};
-        }
+      function GarbageRegistry(itemModel) {
+        this.itemModel = itemModel;
+        this.registeredItemIds = {};
+      }
 
-        garbageRegistry.prototype.register = function(item) {
-          var itemId;
-          itemId = item.id;
-          return this.registeredItemIds[itemId] = item;
-        };
+      GarbageRegistry.prototype.register = function(item) {
+        var itemId;
+        itemId = item.id;
+        return this.registeredItemIds[itemId] = item;
+      };
 
-        garbageRegistry.prototype.unregister = function(item) {
-          var itemId;
-          itemId = item.id;
-          return delete this.registeredItemIds[itemId];
-        };
+      GarbageRegistry.prototype.unregister = function(item) {
+        var itemId;
+        itemId = item.id;
+        return delete this.registeredItemIds[itemId];
+      };
 
-        garbageRegistry.prototype.clear = function() {
-          var id, item, _ref;
-          _ref = this.registeredItemIds;
-          for (id in _ref) {
-            item = _ref[id];
-            if (!item.keptUnread) {
-              this.itemModel.removeById(parseInt(id, 10));
-            }
-            item.keptUnread = false;
+      GarbageRegistry.prototype.clear = function() {
+        var id, item, _ref;
+        _ref = this.registeredItemIds;
+        for (id in _ref) {
+          item = _ref[id];
+          if (!item.keptUnread) {
+            this.itemModel.removeById(parseInt(id, 10));
           }
-          return this.registeredItemIds = {};
-        };
+          item.keptUnread = false;
+        }
+        return this.registeredItemIds = {};
+      };
 
-        return garbageRegistry;
+      return GarbageRegistry;
 
-      })();
-      return new garbageRegistry(ItemModel);
-    }
-  ]);
+    })();
+    return GarbageRegistry;
+  });
 
   /*
   # ownCloud - News app
@@ -1902,15 +1938,15 @@
   */
 
 
-  angular.module('News').factory('FeedModel', [
-    'Model', '$rootScope', function(Model, $rootScope) {
+  angular.module('News').factory('_FeedModel', [
+    'Model', function(Model) {
       var FeedModel;
       FeedModel = (function(_super) {
 
         __extends(FeedModel, _super);
 
-        function FeedModel($rootScope) {
-          FeedModel.__super__.constructor.call(this, 'feeds', $rootScope);
+        function FeedModel() {
+          FeedModel.__super__.constructor.call(this);
         }
 
         FeedModel.prototype.add = function(item) {
@@ -1927,7 +1963,7 @@
         return FeedModel;
 
       })(Model);
-      return new FeedModel($rootScope);
+      return FeedModel;
     }
   ]);
 
@@ -1943,15 +1979,15 @@
   */
 
 
-  angular.module('News').factory('FeedModel', [
-    'Model', '$rootScope', function(Model, $rootScope) {
+  angular.module('News').factory('_FeedModel', [
+    'Model', function(Model) {
       var FeedModel;
       FeedModel = (function(_super) {
 
         __extends(FeedModel, _super);
 
-        function FeedModel($rootScope) {
-          FeedModel.__super__.constructor.call(this, 'feeds', $rootScope);
+        function FeedModel() {
+          FeedModel.__super__.constructor.call(this);
         }
 
         FeedModel.prototype.add = function(item) {
@@ -1968,7 +2004,7 @@
         return FeedModel;
 
       })(Model);
-      return new FeedModel($rootScope);
+      return FeedModel;
     }
   ]);
 

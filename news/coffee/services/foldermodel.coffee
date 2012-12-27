@@ -9,14 +9,13 @@
 #
 ###
 
-angular.module('News').factory 'FolderModel', 
-['Model', '$rootScope', 
-(Model, $rootScope) ->
+angular.module('News').factory '_FolderModel', ['Model', (Model, $rootScope) ->
 
 	class FolderModel extends Model
 
-		constructor: ($rootScope) ->
-			super('folders', $rootScope)
+		constructor: ->
+			super()
 
-	return new FolderModel($rootScope)
+
+	return FolderModel
 ]

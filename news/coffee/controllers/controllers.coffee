@@ -12,8 +12,6 @@
 angular.module('News').controller 'SettingsController', 
 ['_SettingsController', '$scope', '$rootScope', 'ShowAll', 'PersistenceNews', 'FolderModel', 'FeedModel',
 (_SettingsController, $scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel) ->
-	console.log _SettingsController
-	console.log 'hi'
 	return new _SettingsController($scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel)
 ]
 

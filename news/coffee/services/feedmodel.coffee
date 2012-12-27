@@ -9,22 +9,23 @@
 #
 ###
 
-angular.module('News').factory 'FeedModel', 
-['Model', '$rootScope', 
-(Model, $rootScope) ->
+angular.module('News').factory '_FeedModel', ['Model', (Model) ->
 
 	class FeedModel extends Model
 
-		constructor: ($rootScope) ->
-			super('feeds', $rootScope)
+		constructor: () ->
+			super()
+
 
 		add: (item) ->
 			super(@bindAdditional(item))
+
 
 		bindAdditional: (item) ->
 			if item.icon == "url()"
 				item.icon = 'url(' + OC.imagePath('news', 'rss.svg') + ')'
 			return item
 
-	return new FeedModel($rootScope)
+
+	return FeedModel 
 ]

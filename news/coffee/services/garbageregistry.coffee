@@ -9,8 +9,9 @@
 #
 ###
 
-angular.module('News').factory 'GarbageRegistry', ['ItemModel', (ItemModel)->
-	class garbageRegistry
+angular.module('News').factory '_GarbageRegistry', ->
+	
+	class GarbageRegistry
 
 		constructor: (@itemModel) ->
 			@registeredItemIds = {}
@@ -34,5 +35,4 @@ angular.module('News').factory 'GarbageRegistry', ['ItemModel', (ItemModel)->
 			@registeredItemIds = {}
 
 
-	return new garbageRegistry(ItemModel)
-]
+	return GarbageRegistry
