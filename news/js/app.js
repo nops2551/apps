@@ -112,19 +112,10 @@
             return _this.$rootScope.$broadcast('triggerHideRead');
           };
           this.$scope.toggleSettings = function() {
-            if (_this.add) {
-              _this.add = false;
-            }
             return _this.settings = !_this.settings;
           };
           this.$scope.toggleAdd = function() {
-            if (_this.settings) {
-              _this.settings = false;
-            }
             return _this.add = !_this.add;
-          };
-          this.$scope.isExpanded = function() {
-            return _this.settings || _this.add;
           };
           this.$scope.addIsShown = function() {
             return _this.add;

@@ -310,10 +310,10 @@ div.add_parentfolder {
 
 
 /* feed settings */
-#feed_settings {
+
+.bottom_settings {
 	padding: 0;
 	bottom: 0;
-	height:2.8em;
 	width: 20em;
 	margin:0;
 	z-index: 100;
@@ -326,8 +326,28 @@ div.add_parentfolder {
 	transition: height 500ms;
 }
 
+.open_add {
+	height: 0;
+	z-index: 102;
+}
+
+.open_add.expanded {
+	height: 18em;
+}
+
+
+.bottom_popup {
+	transition: height 500ms;
+}
+
+
+#feed_settings {
+	height:2.8em;
+}
+
 #feed_settings.expanded {
 	height: 25em;
+	z-index: 101;
 }
 
 	.open_settings, .open_add {

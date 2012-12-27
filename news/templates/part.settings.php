@@ -1,41 +1,11 @@
-<div id="feed_settings" 
-		ng-controller="SettingsController" 
-		ng-class="{expanded: isExpanded()}"
-		hide-settings-when-focus-lost>
-	<ul class="controls">
-		<li class="view show_all" 
-		    ng-show="getShowAll()"
-		    ng-click="setShowAll(false)"
-		    title="<?php p($l->t('Show everything')); ?>">
-			<button></button>
-		</li>
-		<li class="view show_unread" 
-			ng-show="!getShowAll()"
-			ng-click="setShowAll(true)"
-			title="<?php p($l->t('Show only unread')); ?>">
-			<button></button>
-		</li>
-		<li style="float: right"
-			ng-class="{active: settingsAreShown()}">
-			<button id="settingsbtn" 
-			        title="<?php p($l->t('Settings')); ?>"
-			        ng-click="toggleSettings()">
-			    <img class="svg" 
-			         src="<?php print_unescaped(image_path('core','actions/settings.png')); ?>" 
-			         alt="<?php p($l->t('Settings')); ?>"   />
-			</button>
-		</li>
-		<li style="float: right"
-			title="<?php p($l->t('Add feed or folder')) ?>"
-			ng-class="{active: addIsShown()}">
-			<button ng-click="toggleAdd()">
-				<img class="svg" 
-				     src="<?php print_unescaped(link_to('news', 'img/add.svg')) ?>" 
-				     alt="<?php p($l->t('Add Feed/Folder')) ?>" /></button>
-		</li>
-	</ul>
+<div 
+	class="bottom_settings"
+	ng-controller="SettingsController"
+	hide-settings-when-focus-lost>
 
-	<div class="open_add" ng-show="addIsShown()">
+	<div class="open_add bottom_popup" 
+		ng-show="addIsShown()"
+		ng-class="{expanded: addIsShown()}">
 		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Add Folder')); ?></strong></legend>
 			<form name="addFolderForm">
@@ -81,29 +51,66 @@
 		</fieldset>
 	</div>
 
-	<div class="open_settings" ng-show="settingsAreShown()">
-		<fieldset class="personalblock">
-			<legend><strong><?php p($l->t('Subscribelet')); ?></strong></legend>
-			<p><?php print_unescaped($this->inc('part.subscribelet'));?>
-			</p>
-		</fieldset>
-		<fieldset class="personalblock">
-			<legend><strong><?php p($l->t('Import OPML')); ?></strong></legend>
-			<input type="file" id="file_upload_start" name="files[]" />
-			<button title="<?php p($l->t('From disk')); ?>"
-					id="browselink">
-				<?php p($l->t('From disk')); ?>
-			</button>
-			<button title="<?php p($l->t('From cloud')); ?>">
-				<?php p($l->t('From cloud')); ?>
-			</button>
-		</fieldset>
-		<fieldset class="personalblock">
-			<legend><strong><?php p($l->t('Export')); ?></strong></legend>
-			<a class="button" 
-				href="<?php print_unescaped(\OC_Helper::linkToRoute('news_export_opml')) ?>"
-				title="<?php p($l->t('Download OPML')); ?>"><?php p($l->t('Download OPML')); ?></a>
-		</fieldset>
 
+	<div id="feed_settings" class="bottom_popup"
+		ng-class="{expanded: settingsAreShown()}">
+		<ul class="controls">
+			<li class="view show_all" 
+			    ng-show="getShowAll()"
+			    ng-click="setShowAll(false)"
+			    title="<?php p($l->t('Show everything')); ?>">
+				<button></button>
+			</li>
+			<li class="view show_unread" 
+				ng-show="!getShowAll()"
+				ng-click="setShowAll(true)"
+				title="<?php p($l->t('Show only unread')); ?>">
+				<button></button>
+			</li>
+			<li style="float: right"
+				ng-class="{active: settingsAreShown()}">
+				<button id="settingsbtn" 
+				        title="<?php p($l->t('Settings')); ?>"
+				        ng-click="toggleSettings()">
+				    <img class="svg" 
+				         src="<?php print_unescaped(image_path('core','actions/settings.png')); ?>" 
+				         alt="<?php p($l->t('Settings')); ?>"   />
+				</button>
+			</li>
+			<li style="float: right"
+				title="<?php p($l->t('Add feed or folder')) ?>"
+				ng-class="{active: addIsShown()}">
+				<button ng-click="toggleAdd()">
+					<img class="svg" 
+					     src="<?php print_unescaped(link_to('news', 'img/add.svg')) ?>" 
+					     alt="<?php p($l->t('Add Feed/Folder')) ?>" /></button>
+			</li>
+		</ul>
+
+		<div class="open_settings" ng-show="settingsAreShown()">
+			<fieldset class="personalblock">
+				<legend><strong><?php p($l->t('Subscribelet')); ?></strong></legend>
+				<p><?php print_unescaped($this->inc('part.subscribelet'));?>
+				</p>
+			</fieldset>
+			<fieldset class="personalblock">
+				<legend><strong><?php p($l->t('Import OPML')); ?></strong></legend>
+				<input type="file" id="file_upload_start" name="files[]" />
+				<button title="<?php p($l->t('From disk')); ?>"
+						id="browselink">
+					<?php p($l->t('From disk')); ?>
+				</button>
+				<button title="<?php p($l->t('From cloud')); ?>">
+					<?php p($l->t('From cloud')); ?>
+				</button>
+			</fieldset>
+			<fieldset class="personalblock">
+				<legend><strong><?php p($l->t('Export')); ?></strong></legend>
+				<a class="button" 
+					href="<?php print_unescaped(\OC_Helper::linkToRoute('news_export_opml')) ?>"
+					title="<?php p($l->t('Download OPML')); ?>"><?php p($l->t('Download OPML')); ?></a>
+			</fieldset>
+
+		</div>
 	</div>
 </div>

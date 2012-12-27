@@ -17,7 +17,7 @@ util = require 'util'
 
 ### Configuration ###
 
-# path that contains your coffee files relative to this script
+# path that contains your coffee files
 sourceDirectory = __dirname
 
 # path and name of the compiled js file relative to this script without .js suffix

@@ -33,17 +33,10 @@ angular.module('News').factory '_SettingsController', ['Controller', (Controller
 				@$rootScope.$broadcast('triggerHideRead')
 
 			@$scope.toggleSettings = =>
-				if @add
-					@add = false
 				@settings = !@settings
 
 			@$scope.toggleAdd = =>
-				if @settings
-					@settings = false
 				@add = !@add
-
-			@$scope.isExpanded = =>
-				return  @settings || @add
 
 			@$scope.addIsShown = =>
 				return @add
