@@ -1967,45 +1967,4 @@
     }
   ]);
 
-  /*
-  # ownCloud - News app
-  #
-  # @author Bernhard Posselt
-  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
-  #
-  # This file is licensed under the Affero General Public License version 3 or later.
-  # See the COPYING-README file
-  #
-  */
-
-
-  angular.module('News').factory('_FeedModel', [
-    'Model', function(Model) {
-      var FeedModel;
-      FeedModel = (function(_super) {
-
-        __extends(FeedModel, _super);
-
-        function FeedModel() {
-          FeedModel.__super__.constructor.call(this);
-        }
-
-        FeedModel.prototype.add = function(item) {
-          return FeedModel.__super__.add.call(this, this.bindAdditional(item));
-        };
-
-        FeedModel.prototype.bindAdditional = function(item) {
-          if (item.icon === "url()") {
-            item.icon = 'url(' + OC.imagePath('news', 'rss.svg') + ')';
-          }
-          return item;
-        };
-
-        return FeedModel;
-
-      })(Model);
-      return FeedModel;
-    }
-  ]);
-
 }).call(this);
