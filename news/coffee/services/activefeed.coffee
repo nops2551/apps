@@ -9,16 +9,17 @@
 #
 ###
 
-angular.module('News').factory 'ActiveFeed',['$rootScope', ($rootScope) ->
+angular.module('News').factory '_ActiveFeed', ->
 
-	activeFeed = 
-		id: 0
-		type: 3
+	class ActiveFeed
 
-	activeFeed.handle = (data) ->
-		if data['activeFeed']
-			activeFeed.id = data['activeFeed'].id
-			activeFeed.type = data['activeFeed'].type
+		constructor: ->
+			@id = 0
+			@type = 3
 
-	return activeFeed
-]
+		handle: (data) ->
+			if data['activeFeed']
+				@id = data['activeFeed'].id
+				@type = data['activeFeed'].type
+
+	return ActiveFeed

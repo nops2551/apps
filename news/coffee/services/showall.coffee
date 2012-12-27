@@ -9,14 +9,16 @@
 #
 ###
 
-angular.module('News').factory 'ShowAll', ['$rootScope', ($rootScope) ->
+angular.module('News').factory '_ShowAll', ->
 	
-	showAll = 
-		showAll: false
+	class ShowAll
 
-	showAll.handle = (data) ->
-		if data['showAll'] != undefined
-			showAll.showAll = data['showAll']
+		constructor: ->
+			@showAll = false
 
-	return showAll
-]
+		handle: (data) ->
+			if data['showAll'] != undefined
+				@showAll = data['showAll']
+
+
+	return ShowAll

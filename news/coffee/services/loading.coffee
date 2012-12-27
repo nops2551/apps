@@ -9,6 +9,9 @@
 #
 ###
 
-angular.module('News').factory 'Loading', () ->
-	loading = 
-		loading: 0
+angular.module('News').factory '_Loading', ->
+
+	class Loading
+
+		constructor: ->
+			@loading = 0

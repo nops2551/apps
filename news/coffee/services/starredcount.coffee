@@ -9,14 +9,17 @@
 #
 ###
 
-angular.module('News').factory 'StarredCount', ['$rootScope', ($rootScope) ->
+angular.module('News').factory '_StarredCount', ->
 	
-	starredCount = 
-		count: 0
+	class StarredCount
 
-	starredCount.handle = (data) ->
-		if data['starredCount'] != undefined
-			starredCount.count = data['starredCount']
+		constructor: ->
+			@count = 0
 
-	return starredCount
-]
+
+		handle: (data) ->
+			if data['starredCount'] != undefined
+				@count = data['starredCount']
+
+
+	return StarredCount
