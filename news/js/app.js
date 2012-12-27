@@ -81,8 +81,8 @@
   */
 
 
-  angular.module('News').controller('SettingsController', [
-    'Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews', 'FolderModel', 'FeedModel', function(Controller, $scope, ShowAll, $rootScope, PersistenceNews, FolderModel, FeedModel) {
+  angular.module('News').factory('_SettingsController', [
+    'Controller', function(Controller) {
       var SettingsController;
       SettingsController = (function(_super) {
 
@@ -207,7 +207,8 @@
         return SettingsController;
 
       })(Controller);
-      return new SettingsController($scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel);
+      console.log('yo');
+      return SettingsController;
     }
   ]);
 
@@ -223,8 +224,40 @@
   */
 
 
+  angular.module('News').controller('SettingsController', [
+    '_SettingsController', '$scope', '$rootScope', 'ShowAll', 'PersistenceNews', 'FolderModel', 'FeedModel', function(_SettingsController, $scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel) {
+      console.log(_SettingsController);
+      console.log('hi');
+      return new _SettingsController($scope, $rootScope, ShowAll, PersistenceNews, FolderModel, FeedModel);
+    }
+  ]);
+
+  angular.module('News').controller('ItemController', [
+    '_ItemController', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', 'StarredCount', 'GarbageRegistry', 'ShowAll', 'Loading', '$rootScope', 'FeedType', function(_ItemController, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType) {
+      return new _ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType);
+    }
+  ]);
+
   angular.module('News').controller('FeedController', [
-    'Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', '$rootScope', 'Loading', 'Config', function(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) {
+    '_FeedController', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews', 'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', '$rootScope', 'Loading', 'Config', function(_FeedController, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) {
+      return new _FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config);
+    }
+  ]);
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
+  angular.module('News').factory('_FeedController', [
+    'Controller', function(Controller) {
       var FeedController;
       FeedController = (function(_super) {
 
@@ -476,7 +509,7 @@
         return FeedController;
 
       })(Controller);
-      return new FeedController($scope, FeedModel, FolderModel, FeedType, ActiveFeed, PersistenceNews, StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config);
+      return FeedController;
     }
   ]);
 
@@ -492,8 +525,8 @@
   */
 
 
-  angular.module('News').controller('ItemController', [
-    'Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel', 'StarredCount', 'GarbageRegistry', 'ShowAll', 'Loading', '$rootScope', 'FeedType', function(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType) {
+  angular.module('News').factory('_ItemController', [
+    'Controller', function(Controller) {
       var ItemController;
       ItemController = (function(_super) {
 
@@ -575,7 +608,7 @@
         return ItemController;
 
       })(Controller);
-      return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType);
+      return ItemController;
     }
   ]);
 

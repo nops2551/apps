@@ -9,16 +9,12 @@
 #
 ###
 
-angular.module('News').controller 'SettingsController', 
-['Controller', '$scope', 'ShowAll', '$rootScope', 'PersistenceNews',
-'FolderModel', 'FeedModel',
-(Controller, $scope, ShowAll, $rootScope, PersistenceNews, FolderModel,
-	FeedModel) ->
+angular.module('News').factory '_SettingsController', ['Controller', (Controller) ->
 
 	class SettingsController extends Controller
 
-		constructor: (@$scope, @$rootScope, @showAll, @persistence
-						@folderModel, @feedModel) ->
+		constructor: (@$scope, @$rootScope, @showAll, @persistence, @folderModel, 
+						@feedModel) ->
 			
 			@add = false
 			@settings = false
@@ -113,7 +109,6 @@ angular.module('News').controller 'SettingsController',
 				@add = false
 				@settings = false
 
-
-	return new SettingsController($scope, $rootScope, ShowAll, 
-									PersistenceNews, FolderModel, FeedModel)
+	console.log 'yo'
+	return SettingsController
 ]

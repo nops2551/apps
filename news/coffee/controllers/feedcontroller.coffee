@@ -9,12 +9,7 @@
 #
 ###
 
-angular.module('News').controller 'FeedController', 
-['Controller', '$scope', 'FeedModel', 'FeedType', 'FolderModel', 'ActiveFeed', 'PersistenceNews',
-'StarredCount', 'ShowAll', 'ItemModel', 'GarbageRegistry', '$rootScope', 'Loading',
-'Config',
-(Controller, $scope, FeedModel, FeedType, FolderModel, ActiveFeed, PersistenceNews
-StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) ->
+angular.module('News').factory '_FeedController', ['Controller', (Controller) ->
 
 	class FeedController extends Controller
 
@@ -224,8 +219,5 @@ StarredCount, ShowAll, ItemModel, GarbageRegistry, $rootScope, Loading, Config) 
 					return counter
 
 
-	return new FeedController($scope, FeedModel, FolderModel, FeedType, 
-								ActiveFeed, PersistenceNews, StarredCount, ShowAll,
-								ItemModel, GarbageRegistry, $rootScope, Loading,
-								Config)
+	return FeedController
 ]

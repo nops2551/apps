@@ -9,11 +9,7 @@
 #
 ###
 
-angular.module('News').controller 'ItemController', 
-['Controller', '$scope', 'ItemModel', 'ActiveFeed', 'PersistenceNews', 'FeedModel',
-'StarredCount', 'GarbageRegistry', 'ShowAll', 'Loading', '$rootScope', 'FeedType',
-(Controller, $scope, ItemModel, ActiveFeed, PersistenceNews, FeedModel, 
-StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType) ->
+angular.module('News').factory '_ItemController', ['Controller', (Controller) ->
 
 	class ItemController extends Controller
 
@@ -93,7 +89,5 @@ StarredCount, GarbageRegistry, ShowAll, Loading, $rootScope, FeedType) ->
 				@persistence.setImportant(itemId, item.isImportant)
 
 
-	return new ItemController($scope, ItemModel, ActiveFeed, PersistenceNews
-								FeedModel, StarredCount, GarbageRegistry, 
-								ShowAll, Loading, $rootScope, FeedType)
+	return ItemController
 ]
