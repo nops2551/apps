@@ -121,7 +121,8 @@ class NewsAjaxController extends Controller {
 				'date' => (int)$item->getDate(),
 				'body' => $item->getBody(),
 				'author' => $item->getAuthor(),
-				'url' => $item->getUrl()
+				'url' => $item->getUrl(),
+				'enclosure' => $item->getEnclosure()
 				)
 			);
 		}

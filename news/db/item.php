@@ -35,6 +35,7 @@ class Item {
 		$this->url = $url;
 		$this->guid = $guid;
 		$this->body = $body;
+		$this->enclosure = false;
 		if ($id == null) {
 			$this->status |= StatusFlag::UNREAD;
 		}
