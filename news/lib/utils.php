@@ -93,7 +93,7 @@ class Utils {
 						$enclosureType = $itemEnclosure->get_type();
 						$enclosureLink = $itemEnclosure->get_link();
 						if(stripos($enclosureType, "audio/") !== FALSE) {
-							$enclosure = new Item_Enclosure();
+							$enclosure = new Enclosure();
 							$enclosure->setMimeType($enclosureType);
 							$enclosure->setLink($enclosureLink);
 							$item->setEnclosure($enclosure);

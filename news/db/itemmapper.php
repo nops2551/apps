@@ -53,7 +53,7 @@ class ItemMapper {
 		$item->setFeedTitle($feed->getTitle());
 
 		if($row['enclosure_mime'] !== null && $row['enclosure_link'] !== null) {
-			$enclosure = new Item_Enclosure();
+			$enclosure = new Enclosure();
 			$enclosure->setMimeType($row['enclosure_mime']);
 			$enclosure->setLink($row['enclosure_link']);
 			$item->setEnclosure($enclosure);
