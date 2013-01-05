@@ -30,9 +30,9 @@
 		</h2>
 
 		<div class="enclosure" ng-show="item.enclosure">
-			<audio controls="controls"><source ng-src="{{item.enclosure.link}}" type="item.enclosure.type"></source></audio>
-			<a ng-href="{{item.enclosure.link}}" target="_blank">{{item.enclosure.filename}}</a>
+			<audio controls="controls"><source ng-src="{{item.enclosure.link}}" type="{{item.enclosure.type}}"></source></audio>
 		</div>
+		
 		<div class="body" 
 				ng-click="markRead(item.id, item.feedId)" 
 				ng-bind-html-unsafe="item.body">

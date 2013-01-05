@@ -10,6 +10,9 @@
 *
 */
 
+namespace OCA\News;
+
+
 class Enclosure {
     private $mimetype;
     private $link;

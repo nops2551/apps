@@ -601,6 +601,10 @@ div.add_parentfolder {
 			/**
 			 * Body of the feed item
 			 */
+			.feed_item .enclosure {
+				padding: 1em 3em 0 3.5em;
+			}
+
 			.feed_item div.body {
 				padding: .75em 3em 0 3em;
 				max-width: 55em;

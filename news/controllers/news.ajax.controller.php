@@ -111,6 +111,14 @@ class NewsAjaxController extends Controller {
 		$itemsArray = array();
 		foreach($items as $item){
 
+			$enclosure = $item->getEnclosure();
+			if($enclosure){
+				$enclosure = array(
+					'link' => $enclosure->getLink(),
+					'type' => $enclosure->getMimeType()
+				);
+			}
+
 			 array_push($itemsArray, array(
 				'id' => (int)$item->getId(),
 				'title' => $item->getTitle(),
@@ -122,7 +130,7 @@ class NewsAjaxController extends Controller {
 				'body' => $item->getBody(),
 				'author' => $item->getAuthor(),
 				'url' => $item->getUrl(),
-				'enclosure' => $item->getEnclosure()
+				'enclosure' => $enclosure
 				)
 			);
 		}
