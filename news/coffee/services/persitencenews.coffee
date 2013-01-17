@@ -145,5 +145,15 @@ angular.module('News').factory '_PersistenceNews', ['Persistence', (Persistence)
 			@post 'setallitemsread', data
 
 
+		uploadFromCloud: (path) ->
+
+			@post 'uploadOPMLFromCloud', data
+			
+
+		uploadFromLocal: (formdata) ->
+
+			@post 'uploadOPMLFromLocal', data
+
+
 	return PersistenceNews
 ]
