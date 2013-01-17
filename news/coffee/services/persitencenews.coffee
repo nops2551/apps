@@ -146,13 +146,37 @@ angular.module('News').factory '_PersistenceNews', ['Persistence', (Persistence)
 
 
 		uploadFromCloud: (path) ->
+			data =
+				cloudPath: path
+			
+			route = 'importFromCloud'
 
-			@post 'uploadOPMLFromCloud', data
+			@uploadOPMLProgressUpdate(route)
+
+			@post route, data
 			
 
-		uploadFromLocal: (formdata) ->
+		uploadFromLocal: (formData) ->
+			data =
+				opml: formData
+			
+			route = 'importFromLocal'
 
-			@post 'uploadOPMLFromLocal', data
+			@uploadOPMLProgressUpdate(route)
+
+			@post route, data, null, null, false, 'undefined'
+
+
+		uploadOPMLProgressUpdate: (route) ->
+			url = OC.Router.generate("news_ajax_" + route)
+			eventSource = new OC.EventSource(url)
+			eventSource.listen 'progress', =>
+
+			eventSource.listen 'success', (msg) =>
+				OC.dialogs.alert(msg, t('news', 'Success'))
+
+			eventSource.listen 'error', (msg) =>
+				OC.dialogs.alert(msg, t('news', 'Error'))
 
 
 	return PersistenceNews

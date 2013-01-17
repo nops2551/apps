@@ -435,7 +435,7 @@ class NewsAjaxController extends Controller {
 
 
 	public function uploadOPMLFromLocal(){
-		$file = $this->getUploadFilePath('opml');
+		$file = $this->getUploadFilePath('file');
 		return $this->importOPML($file['tmp_name']);
 	}
 

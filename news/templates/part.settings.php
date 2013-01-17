@@ -95,7 +95,7 @@
 			</fieldset>
 			<fieldset class="personalblock">
 				<legend><strong><?php p($l->t('Import OPML')); ?></strong></legend>
-				<input type="file" id="file_upload_start" name="files[]" />
+				<input type="file" id="file_upload_start" name="file" form-data/>
 				<button title="<?php p($l->t('From disk')); ?>"
 						id="browselink">
 					<?php p($l->t('From disk')); ?>

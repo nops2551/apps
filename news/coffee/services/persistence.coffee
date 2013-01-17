@@ -35,7 +35,7 @@ angular.module('News').factory 'Persistence', ->
 			return @appInitialized
 
 
-		post: (route, data={}, callback, errorCallback, init=false) ->
+		post: (route, data={}, callback, errorCallback, init=false, contentType='application/x-www-form-urlencoded') ->
 			if @isInitialized == false && init == false
 				request =
 					route: route
@@ -56,7 +56,7 @@ angular.module('News').factory 'Persistence', ->
 			# csrf token
 			headers =
 				requesttoken: oc_requesttoken
-				'Content-Type': 'application/x-www-form-urlencoded'
+				'Content-Type': contentType
 			
 			@$http.post(url, data, {headers: headers}).
 			success((data, status, headers, config) ->

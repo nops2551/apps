@@ -201,7 +201,7 @@ $this->create('news_ajax_importFromCloud', '/import/cloud')->action(
 	}
 );
 
-$this->create('news_ajax_importFromCloud', '/import/local')->action(
+$this->create('news_ajax_importFromLocal', '/import/local')->action(
 	function($params){		
 		callAjaxController('NewsAjaxController', 'uploadOPMLFromLocal', $params);
 	}

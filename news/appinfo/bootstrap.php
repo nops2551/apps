@@ -103,8 +103,7 @@ function createDIContainer(){
 
 	$newsContainer['NewsAjaxController'] = function($c){
 		return new NewsAjaxController($c['Request'], $c['API'], $c['FeedMapper'], 
-										$c['FolderMapper'], $c['ItemMapper'],
-										$c['EventSource']);
+										$c['FolderMapper'], $c['ItemMapper']);
 	};
 
 	return $newsContainer;

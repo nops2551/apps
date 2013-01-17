@@ -210,6 +210,31 @@
   */
 
 
+  angular.module('News').directive('formData', [
+    '$rootScope', function($rootScope) {
+      return function(scope, elm, attr) {
+        return $(elm).change(function() {
+          var formData;
+          formData = new FormData();
+          formData.append('file', elm.file);
+          return $rootScope.$broadcast('opmlUpload', formData);
+        });
+      };
+    }
+  ]);
+
+  /*
+  # ownCloud - News app
+  #
+  # @author Bernhard Posselt
+  # Copyright (c) 2012 - Bernhard Posselt <nukeawhale@gmail.com>
+  #
+  # This file is licensed under the Affero General Public License version 3 or later.
+  # See the COPYING-README file
+  #
+  */
+
+
   /*
   # This is used to signal the settings bar that the app has been focused and that
   # it should hide
@@ -635,11 +660,37 @@
         };
 
         PersistenceNews.prototype.uploadFromCloud = function(path) {
-          return this.post('uploadOPMLFromCloud', data);
+          var data, route;
+          data = {
+            cloudPath: path
+          };
+          route = 'importFromCloud';
+          this.uploadOPMLProgressUpdate(route);
+          return this.post(route, data);
         };
 
-        PersistenceNews.prototype.uploadFromLocal = function(formdata) {
-          return this.post('uploadOPMLFromLocal', data);
+        PersistenceNews.prototype.uploadFromLocal = function(formData) {
+          var data, route;
+          data = {
+            opml: formData
+          };
+          route = 'importFromLocal';
+          this.uploadOPMLProgressUpdate(route);
+          return this.post(route, data, null, null, false, 'undefined');
+        };
+
+        PersistenceNews.prototype.uploadOPMLProgressUpdate = function(route) {
+          var eventSource, url,
+            _this = this;
+          url = OC.Router.generate("news_ajax_" + route);
+          eventSource = new OC.EventSource(url);
+          eventSource.listen('progress', function() {});
+          eventSource.listen('success', function(msg) {
+            return OC.dialogs.alert(msg, t('news', 'Success'));
+          });
+          return eventSource.listen('error', function(msg) {
+            return OC.dialogs.alert(msg, t('news', 'Error'));
+          });
         };
 
         return PersistenceNews;
@@ -1058,13 +1109,16 @@
         return this.appInitialized;
       };
 
-      Persistence.prototype.post = function(route, data, callback, errorCallback, init) {
+      Persistence.prototype.post = function(route, data, callback, errorCallback, init, contentType) {
         var headers, request, url;
         if (data == null) {
           data = {};
         }
         if (init == null) {
           init = false;
+        }
+        if (contentType == null) {
+          contentType = 'application/x-www-form-urlencoded';
         }
         if (this.isInitialized === false && init === false) {
           request = {
@@ -1085,7 +1139,7 @@
         data = $.param(data);
         headers = {
           requesttoken: oc_requesttoken,
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': contentType
         };
         return this.$http.post(url, data, {
           headers: headers
@@ -1926,15 +1980,22 @@
           this.$scope.selectFromCloud = function() {
             return OC.dialogs.filepicker(t('news', 'Select file'), _this.importFromCloud, false, '', true);
           };
+          this.$scope.$on('opmlUpload', function(scope, formData) {
+            return _this.importFromLocal(formData);
+          });
           this.$scope.$on('hidesettings', function() {
             _this.add = false;
             return _this.settings = false;
           });
         }
 
-        SettingsController.prototype.importFromCloud = function(path) {};
+        SettingsController.prototype.importFromCloud = function(path) {
+          return this.persistence.uploadFromCloud(path);
+        };
 
-        SettingsController.prototype.importOPML = function(path) {};
+        SettingsController.prototype.importFromLocal = function(formData) {
+          return this.persistence.uploadFromLocal(formData);
+        };
 
         return SettingsController;
 
