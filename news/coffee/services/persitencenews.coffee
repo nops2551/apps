@@ -157,14 +157,12 @@ angular.module('News').factory '_PersistenceNews', ['Persistence', (Persistence)
 			
 
 		uploadFromLocal: (formData) ->
-			data =
-				opml: formData
-			
 			route = 'importFromLocal'
 
-			@uploadOPMLProgressUpdate(route)
-
-			@post route, data, null, null, false, 'undefined'
+			#@uploadOPMLProgressUpdate(route)
+			success = (data) ->
+				console.log(data)
+			@post route, formData, success, null, false, 'undefined'
 
 
 		uploadOPMLProgressUpdate: (route) ->

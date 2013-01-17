@@ -215,8 +215,11 @@
       return function(scope, elm, attr) {
         return $(elm).change(function() {
           var formData;
+          console.log(elm);
+          console.log(elm[0]);
+          console.log(elm[0].files);
           formData = new FormData();
-          formData.append('file', elm.file);
+          formData.append('file', elm[0].files[0]);
           return $rootScope.$broadcast('opmlUpload', formData);
         });
       };
@@ -670,13 +673,12 @@
         };
 
         PersistenceNews.prototype.uploadFromLocal = function(formData) {
-          var data, route;
-          data = {
-            opml: formData
-          };
+          var route, success;
           route = 'importFromLocal';
-          this.uploadOPMLProgressUpdate(route);
-          return this.post(route, data, null, null, false, 'undefined');
+          success = function(data) {
+            return console.log(data);
+          };
+          return this.post(route, formData, success, null, false, 'undefined');
         };
 
         PersistenceNews.prototype.uploadOPMLProgressUpdate = function(route) {
