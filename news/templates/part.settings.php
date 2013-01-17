@@ -100,7 +100,8 @@
 						id="browselink">
 					<?php p($l->t('From disk')); ?>
 				</button>
-				<button title="<?php p($l->t('From cloud')); ?>">
+				<button title="<?php p($l->t('From cloud')); ?>"
+						ng-click="selectFromCloud()">
 					<?php p($l->t('From cloud')); ?>
 				</button>
 			</fieldset>

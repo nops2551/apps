@@ -30,6 +30,7 @@ namespace OCA\News;
 
 \OC::$CLASSPATH['OCA\News\OPMLParser'] = 'apps/news/opmlparser.php';
 \OC::$CLASSPATH['OCA\News\OPMLExporter'] = 'apps/news/opmlexporter.php';
+\OC::$CLASSPATH['OCA\News\OPMLImporter'] = 'apps/news/opmlimporter.php';
 
 \OC::$CLASSPATH['OCA\News\Enclosure'] = 'apps/news/db/enclosure.php';
 \OC::$CLASSPATH['OCA\News\FeedMapper'] = 'apps/news/db/feedmapper.php';
@@ -75,6 +76,7 @@ function createDIContainer(){
 		return new Security($c['AppName']);	
 	});
 
+
 	/** 
 	 * MAPPERS
 	 */
@@ -101,7 +103,8 @@ function createDIContainer(){
 
 	$newsContainer['NewsAjaxController'] = function($c){
 		return new NewsAjaxController($c['Request'], $c['API'], $c['FeedMapper'], 
-										$c['FolderMapper'], $c['ItemMapper']);
+										$c['FolderMapper'], $c['ItemMapper'],
+										$c['EventSource']);
 	};
 
 	return $newsContainer;

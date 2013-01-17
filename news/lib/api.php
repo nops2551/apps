@@ -151,4 +151,13 @@ class API {
 	}
 	
 
+	public function getLocalFilePath($path){
+		return \OC_Filesystem::getLocalFile($path);
+	}
+
+
+	public function openEventSource(){
+		return new \OC_EventSource();
+	}
+
 }

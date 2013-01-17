@@ -426,4 +426,77 @@ class NewsAjaxController extends Controller {
 	}
 
 
+	public function uploadOPMLFromCloud(){
+		$path = $this->params('cloudPath');
+		$localFilePath = $this->api->getLocalFilePath($path);
+		return $this->importOPML($localFilePath);
+	}
+
+
+	public function uploadOPML(){
+		$file = $this->getUploadFilePath('opml');
+		return $this->importOPML($file['tmp_name']);
+	}
+
+
+	private function importOPML($file){
+		$opml = file_get_contents($file);
+
+		$eventSource = $this->api->openEventSource();
+
+		try {
+			$raw = OPMLParser::parse($raw);
+
+		} catch(OPMLParseException $ex) {
+			$error = $this->api->getTrans()->t('Could not import OPML: invalid XML');
+			$data = array(
+				'error',
+				'msg' => $error
+			);
+			$eventSource->send($data);
+			$eventSource->close();
+			exit();
+		}
+
+		// import
+		$parsed = $raw->getData();
+
+		$importer = new OPMLImporter();
+
+		// execute this function when a folder is added
+		$onFolderAdd = function($folder){
+			$data = array(
+				'progress',
+				'folders' => $this->foldersToArray(array($folder))
+			);
+			$eventSource->send($data);
+		};
+
+		// execute this function when a feed is added
+		$onFeedAdd = function($feed){
+			$data = array(
+				'progress',
+				'feeeds' => $this->feedsToArray(array($feed))
+			);
+			$eventSource->send($data);
+		};
+
+		$importer->import($parsed, $onFolderAdd, $onFeedAdd);
+		$successFullyImportedCount = $importer->getSuccessfullyImportedCount();
+
+		$msg = $this->api->getTrans()->t('Successfully importet ' 
+				. $successFullyImportedCount
+				. ' feeds of ' 
+				. $raw->getCount());
+		$data = array(
+			'success',
+			'msg' => $msg
+		);
+
+		$eventSource->send($data);
+		$eventSource->close();
+
+		return null;
+	}
+
 }

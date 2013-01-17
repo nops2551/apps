@@ -98,10 +98,19 @@ angular.module('News').factory '_SettingsController', ['Controller', (Controller
 					@persistence.createFolder(name, onSuccess)
 				
 
+			@$scope.selectFromCloud = =>
+				OC.dialogs.filepicker(t('news', 'Select file'), @importFromCloud, false, '', true);
+
+
 			@$scope.$on 'hidesettings', =>
 				@add = false
 				@settings = false
 
+
+		importFromCloud: (path) ->
+			
+
+		importOPML: (path) ->
 
 	return SettingsController
 ]
