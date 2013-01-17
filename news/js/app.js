@@ -634,6 +634,14 @@
           return this.post('setallitemsread', data);
         };
 
+        PersistenceNews.prototype.uploadFromCloud = function(path) {
+          return this.post('uploadOPMLFromCloud', data);
+        };
+
+        PersistenceNews.prototype.uploadFromLocal = function(formdata) {
+          return this.post('uploadOPMLFromLocal', data);
+        };
+
         return PersistenceNews;
 
       })(Persistence);

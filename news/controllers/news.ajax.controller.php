@@ -207,6 +207,7 @@ class NewsAjaxController extends Controller {
 			'feeds' => $feedsArray
 		);
 
+
 		return $this->renderJSON($result);
 
 	}
@@ -433,7 +434,7 @@ class NewsAjaxController extends Controller {
 	}
 
 
-	public function uploadOPML(){
+	public function uploadOPMLFromLocal(){
 		$file = $this->getUploadFilePath('opml');
 		return $this->importOPML($file['tmp_name']);
 	}
