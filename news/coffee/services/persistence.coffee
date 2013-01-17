@@ -51,7 +51,8 @@ angular.module('News').factory 'Persistence', ->
 
 			url = OC.Router.generate("news_ajax_" + route)
 
-			data = $.param(data)
+			if not data instanceof FormData
+				data = $.param(data)
 
 			# csrf token
 			headers =

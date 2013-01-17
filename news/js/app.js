@@ -215,9 +215,6 @@
       return function(scope, elm, attr) {
         return $(elm).change(function() {
           var formData;
-          console.log(elm);
-          console.log(elm[0]);
-          console.log(elm[0].files);
           formData = new FormData();
           formData.append('file', elm[0].files[0]);
           return $rootScope.$broadcast('opmlUpload', formData);
@@ -1138,7 +1135,9 @@
           errorCallback = function() {};
         }
         url = OC.Router.generate("news_ajax_" + route);
-        data = $.param(data);
+        if (!data instanceof FormData) {
+          data = $.param(data);
+        }
         headers = {
           requesttoken: oc_requesttoken,
           'Content-Type': contentType
