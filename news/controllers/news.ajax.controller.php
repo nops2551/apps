@@ -449,11 +449,7 @@ class NewsAjaxController extends Controller {
 
 		} catch(OPMLParseException $ex) {
 			$error = $this->api->getTrans()->t('Could not import OPML: invalid XML');
-			$data = array(
-				'error',
-				'msg' => $error
-			);
-			$eventSource->send($data);
+			$eventSource->send('error', $error);
 			$eventSource->close();
 			exit();
 		}
@@ -465,20 +461,12 @@ class NewsAjaxController extends Controller {
 
 		// execute this function when a folder is added
 		$onFolderAdd = function($folder){
-			$data = array(
-				'progress',
-				'folders' => $this->foldersToArray(array($folder))
-			);
-			$eventSource->send($data);
+			$eventSource->send('progress', $this->foldersToArray(array($folder)));
 		};
 
 		// execute this function when a feed is added
 		$onFeedAdd = function($feed){
-			$data = array(
-				'progress',
-				'feeeds' => $this->feedsToArray(array($feed))
-			);
-			$eventSource->send($data);
+			$eventSource->send('progress', $this->feedsToArray(array($feed)));
 		};
 
 		$importer->import($parsed, $onFolderAdd, $onFeedAdd);
@@ -488,12 +476,7 @@ class NewsAjaxController extends Controller {
 				. $successFullyImportedCount
 				. ' feeds of ' 
 				. $raw->getCount());
-		$data = array(
-			'success',
-			'msg' => $msg
-		);
-
-		$eventSource->send($data);
+		$eventSource->send('success', $msg);
 		$eventSource->close();
 
 		return null;
