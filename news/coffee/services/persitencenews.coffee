@@ -162,7 +162,7 @@ angular.module('News').factory '_PersistenceNews', ['Persistence', (Persistence)
 			#@uploadOPMLProgressUpdate(route)
 			success = (data) ->
 				console.log(data)
-			@post route, formData, success, null, false, 'undefined'
+			@post route, formData, success, null, false, undefined
 
 
 		uploadOPMLProgressUpdate: (route) ->
