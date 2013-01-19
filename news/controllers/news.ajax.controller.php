@@ -207,7 +207,6 @@ class NewsAjaxController extends Controller {
 			'feeds' => $feedsArray
 		);
 
-
 		return $this->renderJSON($result);
 
 	}

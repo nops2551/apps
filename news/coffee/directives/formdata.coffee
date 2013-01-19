@@ -15,6 +15,8 @@ angular.module('News').directive 'formData', ['$rootScope', ($rootScope) ->
 		$(elm).change ->
 			formData = new FormData()
 			formData.append 'file', elm[0].files[0]
+			console.log elm[0].files[0]
+			console.log elm[0].files
 			$rootScope.$broadcast 'opmlUpload', formData
 
 ]

@@ -51,13 +51,12 @@ angular.module('News').factory 'Persistence', ->
 
 			url = OC.Router.generate("news_ajax_" + route)
 
-			if not data instanceof FormData
-				data = $.param(data)
+			data = $.param(data)
 
 			# csrf token
 			headers =
 				requesttoken: oc_requesttoken
-				'Content-Type': contentType
+				'Content-Type': 'application/x-www-form-urlencoded'
 			
 			@$http.post(url, data, {headers: headers}).
 			success((data, status, headers, config) ->

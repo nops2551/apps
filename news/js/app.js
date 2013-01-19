@@ -217,6 +217,8 @@
           var formData;
           formData = new FormData();
           formData.append('file', elm[0].files[0]);
+          console.log(elm[0].files[0]);
+          console.log(elm[0].files);
           return $rootScope.$broadcast('opmlUpload', formData);
         });
       };
@@ -675,7 +677,7 @@
           success = function(data) {
             return console.log(data);
           };
-          return this.post(route, formData, success, null, false, 'undefined');
+          return this.post(route, formData, success, null, false, void 0);
         };
 
         PersistenceNews.prototype.uploadOPMLProgressUpdate = function(route) {
@@ -1135,12 +1137,10 @@
           errorCallback = function() {};
         }
         url = OC.Router.generate("news_ajax_" + route);
-        if (!data instanceof FormData) {
-          data = $.param(data);
-        }
+        data = $.param(data);
         headers = {
           requesttoken: oc_requesttoken,
-          'Content-Type': contentType
+          'Content-Type': 'application/x-www-form-urlencoded'
         };
         return this.$http.post(url, data, {
           headers: headers
