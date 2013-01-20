@@ -19,7 +19,7 @@ span.placeholder-hide-except-screenreader {
 }
 
 span.placeholder-hide{
-        display:none;
+	display:none;
 }
 
 /* overwrite for the HTML5 Boilerplate way to hide labels */

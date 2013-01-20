@@ -660,15 +660,15 @@ Calendar={
 				var files = e.dataTransfer.files;
 				for(var i = 0;i < files.length;i++){
 					var file = files[i];
-                                        var reader = new FileReader();
+					var reader = new FileReader();
 					reader.onload = function(event){
-                                                Calendar.UI.Drop.doImport(event.target.result);
+						Calendar.UI.Drop.doImport(event.target.result);
 						$('#fullcalendar').fullCalendar('refetchEvents');
 					}
 					reader.readAsDataURL(file);
 				}
 			},
-                        doImport:function(data){
+			doImport:function(data){
 				$.post(OC.filePath('calendar', 'ajax/import', 'dropimport.php'), {'data':data},function(result) {
 					if(result.status == 'success'){
 						$('#fullcalendar').fullCalendar('addEventSource', result.eventSource);
@@ -897,7 +897,6 @@ $(document).ready(function(){
 			else {
 				$('#fullcalendar').fullCalendar('option', 'aspectRatio', 1.35);
 			}
-			$('#fullcalendar').fullCalendar('rerenderEvents');
 		},
 		columnFormat: {
 		    week: 'ddd d. MMM'
@@ -921,11 +920,6 @@ $(document).ready(function(){
 					return Calendar.UI.getEventPopupText(event);
 				}
 			});
-		},
-		eventAfterRender: function(event, element, view) {
-			if(view.name == 'agendaWeek'){
-				element.find('.fc-event-title').html(element.find('.fc-event-title').text());
-			}
 		},
 		loading: Calendar.UI.loading,
 		eventSources: eventSources

@@ -45,7 +45,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
     slice = classes.slice,
 
-    featureName,
+    featureName, 
 
 
     injectElementWithStyles = function( rule, callback, nodes, testnames ) {
@@ -105,7 +105,7 @@ window.Modernizr = (function( window, document, undefined ) {
       return bool;
 
      },
-
+ 
 
     isEventSupported = (function() {
 
@@ -152,7 +152,7 @@ window.Modernizr = (function( window, document, undefined ) {
       };
     }
     else {
-      hasOwnProp = function (object, property) {
+      hasOwnProp = function (object, property) { 
         return ((property in object) && is(object.constructor.prototype[property], 'undefined'));
       };
     }
@@ -586,7 +586,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
        }
 
-       return Modernizr;
+       return Modernizr; 
      };
 
 
@@ -807,8 +807,8 @@ Modernizr.load=function(){yepnope.apply(window,[].slice.call(arguments,0));};
 // While IE10 has implemented the track element, IE10 does not expose the underlying APIs to create timed text tracks by JS (really sad)
 // By Addy Osmani
 Modernizr.addTest({
-        texttrackapi: (typeof (document.createElement('video').addTextTrack) === 'function'),
-        // a more strict test for track including UI support: document.createElement('track').kind === 'subtitles'
-        track: ('kind' in document.createElement('track'))
+	texttrackapi: (typeof (document.createElement('video').addTextTrack) === 'function'),
+	// a more strict test for track including UI support: document.createElement('track').kind === 'subtitles'
+	track: ('kind' in document.createElement('track'))
 });
 ;

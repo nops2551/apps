@@ -200,7 +200,7 @@ if($data['repeating'] == 1) {
 }
 $calendar_options = OC_Calendar_Calendar::allCalendars(OCP\USER::getUser());
 $category_options = OC_Calendar_App::getCategoryOptions();
-+$access_class_options = OC_Calendar_App::getAccessClassOptions();
+$access_class_options = OC_Calendar_App::getAccessClassOptions();
 $repeat_options = OC_Calendar_App::getRepeatOptions();
 $repeat_end_options = OC_Calendar_App::getEndOptions();
 $repeat_month_options = OC_Calendar_App::getMonthOptions();
@@ -217,8 +217,8 @@ if($permissions & OCP\PERMISSION_UPDATE) {
 } elseif($permissions & OCP\PERMISSION_READ) {
 	$tmpl = new OCP\Template('calendar', 'part.showevent');
 } elseif($permissions === 0) {
-        OCP\JSON::error(array('data' => array('message' => OC_Calendar_App::$l10n->t('You do not have the permissions to edit this event.'))));
-        exit;
+	OCP\JSON::error(array('data' => array('message' => OC_Calendar_App::$l10n->t('You do not have the permissions to edit this event.'))));
+	exit;
 }
 
 $tmpl->assign('eventid', $id);

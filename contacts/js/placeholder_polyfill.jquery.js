@@ -1,4 +1,4 @@
-
+  
 
 
 <!DOCTYPE html>
@@ -16,8 +16,8 @@
     <meta name="msapplication-TileImage" content="/windows-tile.png">
     <meta name="msapplication-TileColor" content="#ffffff">
 
-
-
+    
+    
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
     <meta content="authenticity_token" name="csrf-param" />
@@ -25,12 +25,12 @@
 
     <link href="https://a248.e.akamai.net/assets.github.com/assets/github-b2d08c748f42859d0426de9792978e5eea5a8ab6.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="https://a248.e.akamai.net/assets.github.com/assets/github2-853ca93ac5a549fa8faf0da003398c7979ff0619.css" media="screen" rel="stylesheet" type="text/css" />
-
+    
 
 
     <script src="https://a248.e.akamai.net/assets.github.com/assets/frameworks-eee761b9d5e06efb064aaaf528c44ef8e1601e71.js" type="text/javascript"></script>
     <script src="https://a248.e.akamai.net/assets.github.com/assets/github-6a24f522069c57808f98782174bedcc7186d7dc7.js" type="text/javascript"></script>
-
+    
 
         <link rel='permalink' href='/ginader/HTML5-placeholder-polyfill/blob/9f9622f2cf14ba6925f1ea890af9d6222092d64e/src/placeholder_polyfill.jquery.js'>
     <meta property="og:title" content="HTML5-placeholder-polyfill"/>
@@ -50,11 +50,11 @@
   <body class="logged_out page-blob linux vis-public env-production ">
     <div id="wrapper">
 
+      
 
+      
 
-
-
-
+      
 
 
         <div class="header header-logged-out">
@@ -65,7 +65,7 @@
               <img alt="GitHub" class="github-logo-4x-hover" height="30" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7@4x-hover.png?1337118066" />
             </a>
 
-
+              
 <ul class="top-nav">
     <li class="explore"><a href="https://github.com/explore">Explore GitHub</a></li>
   <li class="search"><a href="https://github.com/search">Search</a></li>
@@ -83,18 +83,18 @@
         </div>
 
 
+      
 
-
-
+      
 
 
             <div class="site hfeed" itemscope itemtype="http://schema.org/WebPage">
       <div class="hentry">
-
+        
         <div class="pagehead repohead instapaper_ignore readability-menu">
           <div class="container">
             <div class="title-actions-bar">
-
+              
 
 
                   <ul class="pagehead-actions">
@@ -119,7 +119,7 @@
               </h1>
             </div>
 
-
+            
 
   <ul class="tabs">
     <li><a href="/ginader/HTML5-placeholder-polyfill" class="selected" highlight="repo_sourcerepo_downloadsrepo_commitsrepo_tagsrepo_branches">Code</a></li>
@@ -134,14 +134,14 @@
 
 
   </ul>
-
+  
 <div class="tabnav">
 
   <span class="tabnav-right">
     <ul class="tabnav-tabs">
       <li><a href="/ginader/HTML5-placeholder-polyfill/tags" class="tabnav-tab" highlight="repo_tags">Tags <span class="counter blank">0</span></a></li>
     </ul>
-
+    
   </span>
 
   <div class="tabnav-widget scope">
@@ -197,17 +197,17 @@
 
 </div>
 
+  
+  
+  
 
 
-
-
-
-
+            
           </div>
         </div><!-- /.repohead -->
 
         <div id="js-repo-pjax-container" class="container context-loader-container" data-pjax-container>
-
+          
 
 
 <!-- blob contrib key: blob_contributors:v21:84e4b704ece68b5a5fb7edd0f16de628 -->
@@ -225,7 +225,7 @@
 
       <a href="/ginader/HTML5-placeholder-polyfill/find/master" class="js-slide-to" data-hotkey="t" style="display:none">Show File Finder</a>
 
-
+        
   <div class="commit file-history-tease" data-path="src/placeholder_polyfill.jquery.js/">
     <img class="main-avatar" height="24" src="https://secure.gravatar.com/avatar/527f4d53dface556f273bd7995a4ade9?s=140&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="24" />
     <span class="author">Dirk Ginader</span>
@@ -618,7 +618,7 @@
 </div><!-- /.#footer -->
 
 
-
+    
 
 <div id="keyboard_shortcuts_pane" class="instapaper_ignore readability-extra" style="display:none">
   <h2>Keyboard Shortcuts <small><a href="#" class="js-see-all-keyboard-shortcuts">(see all)</a></small></h2>
@@ -996,9 +996,10 @@ I think you should use an
       <a href="#" class="mini-icon mini-icon-remove-close ajax-error-dismiss"></a>
     </div>
 
-
-
+    
+    
     <span id='server_response_time' data-time='0.06884' data-host='fe13'></span>
-
+    
   </body>
 </html>
+

@@ -70,11 +70,11 @@ class OC_Calendar_Export{
 			return false;
 		}
 
-                $sharedAccessClassPermissions = OC_Calendar_App::getAccessClassPermissions($object->VEVENT->CLASS->value);
-                if (!($sharedAccessClassPermissions & OCP\PERMISSION_READ)) {
-                        return '';
-                }
-                $object = OC_Calendar_Object::cleanByAccessClass($event['calendarid'], $object);
+		$sharedAccessClassPermissions = OC_Calendar_App::getAccessClassPermissions($object->VEVENT->CLASS->value);
+		if (!($sharedAccessClassPermissions & OCP\PERMISSION_READ)) {
+			return '';
+		}
+		$object = OC_Calendar_Object::cleanByAccessClass($event['calendarid'], $object);
 
 		if($object->VEVENT){
 			$dtstart = $object->VEVENT->DTSTART;
