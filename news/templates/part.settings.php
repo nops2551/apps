@@ -7,6 +7,30 @@
 		ng-show="addIsShown()"
 		ng-class="{expanded: addIsShown()}">
 		<fieldset class="personalblock">
+			<legend><strong><?php p($l->t('Add Subscription')); ?></strong></legend>
+			<form>
+				<select name="folder" 
+						title="<?php p($l->t('Folder under which the feed is being saved')); ?>"
+						ng-model="folderId"
+						ng-disabled="isAddingFeed()"
+						ng-options="folder.name for folder in getFolders()">
+					<option value=""><?php p($l->t('-- choose folder --')); ?></option>
+				</select>
+				<p class="error">
+					<span ng-show="feedEmptyError"><?php p($l->t('Address must not be empty!')); ?></span>
+					<span ng-show="feedExistsError"><?php p($l->t('Feed exists already!')); ?></span>
+					<span ng-show="feedError"><?php p($l->t('Could not add feed!')); ?></span>
+				</p>
+				<input type="text" 
+					ng-model="feedUrl" 
+					placeholder="<?php p($l->t('Address')); ?>" 
+					ng-disabled="isAddingFeed()">
+				<button title="<?php p($l->t('Add')); ?>" 
+						ng-class="{loading: isAddingFeed()}"
+						ng-click="addFeed(feedUrl, folderId)"><?php p($l->t('Add')); ?></button>
+			</form>	
+		</fieldset>
+		<fieldset class="personalblock">
 			<legend><strong><?php p($l->t('Add Folder')); ?></strong></legend>
 			<form name="addFolderForm">
 				<p class="error">
@@ -23,31 +47,6 @@
 						ng-click="addFolder(folderName)"
 						ng-class="{loading: isAddingFolder()}"><?php p($l->t('Add')); ?></button>
 			</form>
-		</fieldset>
-		<fieldset class="personalblock">
-			<legend><strong><?php p($l->t('Add Subscription')); ?></strong></legend>
-			<form>
-
-				<select name="folder" 
-						title="<?php p($l->t('Folder under which the feed is being saved')); ?>"
-						ng-model="folderId"
-						ng-disabled="isAddingFeed()"
-						ng-options="folder.name for folder in getFolders()">
-					<option value=""><?php p($l->t('-- choose folder --')); ?></option>
-				</select>
-				<p class="error">
-					<span ng-show="feedEmptyError"><?php p($l->t('Adress must not be empty!')); ?></span>
-					<span ng-show="feedExistsError"><?php p($l->t('Feed exists already!')); ?></span>
-					<span ng-show="feedError"><?php p($l->t('Could not add feed!')); ?></span>
-				</p>
-				<input type="text" 
-					ng-model="feedUrl" 
-					placeholder="<?php p($l->t('Adress')); ?>" 
-					ng-disabled="isAddingFeed()">
-				<button title="<?php p($l->t('Add')); ?>" 
-						ng-class="{loading: isAddingFeed()}"
-						ng-click="addFeed(feedUrl, folderId)"><?php p($l->t('Add')); ?></button>
-			</form>	
 		</fieldset>
 	</div>
 
@@ -89,29 +88,21 @@
 
 		<div class="open_settings" ng-show="settingsAreShown()">
 			<fieldset class="personalblock">
+				<legend><strong><?php p($l->t('Import / Export')); ?></strong></legend>
+				<input type="file" id="file_upload_start" name="files[]" form-data/>
+				<button title="<?php p($l->t('Import OPML')); ?>"
+						id="browselink">
+					<?php p($l->t('Import OPML')); ?>
+				</button>
+				<a class="button" 
+					href="<?php print_unescaped(\OC_Helper::linkToRoute('news_export_opml')) ?>"
+					title="<?php p($l->t('Export OPML')); ?>"><?php p($l->t('Export OPML')); ?></a>
+			</fieldset>
+			<fieldset class="personalblock">
 				<legend><strong><?php p($l->t('Subscribelet')); ?></strong></legend>
 				<p><?php print_unescaped($this->inc('part.subscribelet'));?>
 				</p>
 			</fieldset>
-			<fieldset class="personalblock">
-				<legend><strong><?php p($l->t('Import OPML')); ?></strong></legend>
-				<input type="file" id="file_upload_start" name="files[]" form-data/>
-				<button title="<?php p($l->t('From disk')); ?>"
-						id="browselink">
-					<?php p($l->t('From disk')); ?>
-				</button>
-				<button title="<?php p($l->t('From cloud')); ?>"
-						ng-click="selectFromCloud()">
-					<?php p($l->t('From cloud')); ?>
-				</button>
-			</fieldset>
-			<fieldset class="personalblock">
-				<legend><strong><?php p($l->t('Export')); ?></strong></legend>
-				<a class="button" 
-					href="<?php print_unescaped(\OC_Helper::linkToRoute('news_export_opml')) ?>"
-					title="<?php p($l->t('Download OPML')); ?>"><?php p($l->t('Download OPML')); ?></a>
-			</fieldset>
-
 		</div>
 	</div>
 </div>

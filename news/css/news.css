@@ -331,6 +331,14 @@ div.add_parentfolder {
 	z-index: 102;
 }
 
+.open_add .personalblock {
+	margin-bottom: 1em;
+}
+
+.open_add .personalblock legend {
+	margin-bottom: -1em;
+}
+
 .open_add.expanded {
 	height: 18em;
 }
@@ -346,7 +354,7 @@ div.add_parentfolder {
 }
 
 #feed_settings.expanded {
-	height: 25em;
+	height: 20em;
 	z-index: 101;
 }
 
@@ -404,7 +412,7 @@ div.add_parentfolder {
 		height: 2.4em;
 		width: 2.4em;
 		padding: .2em .1em 0 .1em;
-		margin: .15em 0 0 .15em;
+		margin: .15em .15em 0 .30em;
 	}
 
 	#feed_settings .controls > li:last-child button {
