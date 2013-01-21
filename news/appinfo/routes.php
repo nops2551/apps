@@ -195,14 +195,8 @@ $this->create('news_ajax_setallitemsread', '/ajax/setallitemsread')->action(
 /**
  * Import stuff
  */
-$this->create('news_ajax_importFromCloud', '/import/cloud')->action(
+$this->create('news_ajax_importOPML', '/import')->action(
 	function($params){		
-		callAjaxController('NewsAjaxController', 'uploadOPMLFromCloud', $params);
-	}
-);
-
-$this->create('news_ajax_importFromLocal', '/import/local')->action(
-	function($params){		
-		callAjaxController('NewsAjaxController', 'uploadOPMLFromLocal', $params);
+		callAjaxController('NewsAjaxController', 'uploadOPML', $params);
 	}
 );

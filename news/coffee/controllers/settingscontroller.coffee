@@ -97,20 +97,12 @@ angular.module('News').factory '_SettingsController', ['Controller', (Controller
 						@addingFolder = false
 					@persistence.createFolder(name, onSuccess)
 				
-
-			@$scope.selectFromCloud = =>
-				OC.dialogs.filepicker(t('news', 'Select file'), @importFromCloud, false, '', true);
-
 			@$scope.$on 'opmlUpload', (scope, formData) =>
 				@importFromLocal(formData)
 
 			@$scope.$on 'hidesettings', =>
 				@add = false
 				@settings = false
-
-
-		importFromCloud: (path) ->
-			@persistence.uploadFromCloud(path)
 
 		importFromLocal: (formData) ->
 			@persistence.uploadFromLocal(formData)			

@@ -145,19 +145,8 @@ angular.module('News').factory '_PersistenceNews', ['Persistence', (Persistence)
 			@post 'setallitemsread', data
 
 
-		uploadFromCloud: (path) ->
-			data =
-				cloudPath: path
-			
-			route = 'importFromCloud'
-
-			@uploadOPMLProgressUpdate(route)
-
-			@post route, data
-			
-
-		uploadFromLocal: (formData) ->
-			route = 'importFromLocal'
+		uploadOPML: (formData) ->
+			route = 'importOPML'
 
 			#@uploadOPMLProgressUpdate(route)
 			success = (data) ->

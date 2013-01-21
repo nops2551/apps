@@ -425,15 +425,8 @@ class NewsAjaxController extends Controller {
 
 	}
 
-
-	public function uploadOPMLFromCloud(){
-		$path = $this->params('cloudPath');
-		$localFilePath = $this->api->getLocalFilePath($path);
-		return $this->importOPML($localFilePath);
-	}
-
-
-	public function uploadOPMLFromLocal(){
+	
+	public function uploadOPML(){
 		$file = $this->getUploadedFile('file');
 		print_r($_FILES);
 		//return $this->importOPML($file['tmp_name']);
